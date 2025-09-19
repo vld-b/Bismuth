@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Input.Inking;
@@ -19,31 +20,43 @@ namespace WID
             InitializeComponent();
             inkPres = inkMain.InkPresenter;
             inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
-            inkPres.StrokesCollected += RecoginzeStroke;
+            inkPres.StrokesCollected += RecognizeStroke;
             inkRec = new InkRecognizerContainer();
         }
 
-        private void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
+        private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
         {
-            foreach (InkRecognizer recognizer in inkRec.GetRecognizers())
+            //foreach (InkRecognizer recognizer in inkRec.GetRecognizers())
+            //{
+            //    if (recognizer.Name.Equals("Microsoft English (US) Handwriting Recognizer"))
+            //    {
+            //        inkRec.SetDefaultRecognizer(recognizer);
+            //        break;
+            //    }
+            //}
+            //inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.Recent).Completed = (resAsync, status) => {
+            //    IReadOnlyList<InkRecognitionResult> res = resAsync.GetResults();
+            //    if (res.Count > 0)
+            //    {
+            //        txtTest.Text = string.Empty;
+            //        foreach (InkRecognitionResult result in res)
+            //        {
+            //            txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
+            //        }
+            //    }
+            //};
+            if (!inkPres.StrokeContainer.GetStrokes().Any())
+                return;
+
+            IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
+            if (results.Count > 0)
             {
-                if (recognizer.Name.Equals("Microsoft English (US) Handwriting Recognizer"))
+                txtTest.Text = string.Empty;
+                foreach (InkRecognitionResult result in results)
                 {
-                    inkRec.SetDefaultRecognizer(recognizer);
-                    break;
+                    txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
                 }
             }
-            inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.Recent).Completed = (resAsync, status) => {
-                IReadOnlyList<InkRecognitionResult> res = resAsync.GetResults();
-                if (res.Count > 0)
-                {
-                    txtTest.Text = string.Empty;
-                    foreach (InkRecognitionResult result in res)
-                    {
-                        txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-                    }
-                }
-            };
         }
     }
 }
