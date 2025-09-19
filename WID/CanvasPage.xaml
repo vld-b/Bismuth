@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="WID.CanvasPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    
+    <Page.Background>
+        <AcrylicBrush
+            BackgroundSource="HostBackdrop"
+            TintColor="Black"
+            TintOpacity="0.6"
+            FallbackColor="Black" />
+    </Page.Background>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid
+            Background="White"
+            Grid.Row="0"
+            >
+            <InkCanvas
+                x:Name="inkMain"
+                />
+        </Grid>
+        <TextBlock x:Name="txtTest" Text="Hello" Grid.Row="1" />
+        <InkToolbar 
+            Grid.Row="3"
+            TargetInkCanvas="{x:Bind inkMain}"
+            >
+            <InkToolbarCustomToolButton
+                x:Name="btnSave"
+                Click="SaveFile"
+                >
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE105;" />
+            </InkToolbarCustomToolButton>
+        </InkToolbar>
+    </Grid>
+</Page>

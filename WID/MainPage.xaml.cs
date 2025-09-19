@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 
@@ -12,51 +17,26 @@ namespace WID
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private InkPresenter inkPres;
-        private InkRecognizerContainer inkRec;
-
+        public StorageFolder notes => ApplicationData.Current.LocalFolder;
         public MainPage()
         {
             InitializeComponent();
-            inkPres = inkMain.InkPresenter;
-            inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
-            inkPres.StrokesCollected += RecognizeStroke;
-            inkRec = new InkRecognizerContainer();
+            LoadNotebooks();
         }
 
-        private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
+        private async void LoadNotebooks()
         {
-            //foreach (InkRecognizer recognizer in inkRec.GetRecognizers())
-            //{
-            //    if (recognizer.Name.Equals("Microsoft English (US) Handwriting Recognizer"))
-            //    {
-            //        inkRec.SetDefaultRecognizer(recognizer);
-            //        break;
-            //    }
-            //}
-            //inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.Recent).Completed = (resAsync, status) => {
-            //    IReadOnlyList<InkRecognitionResult> res = resAsync.GetResults();
-            //    if (res.Count > 0)
-            //    {
-            //        txtTest.Text = string.Empty;
-            //        foreach (InkRecognitionResult result in res)
-            //        {
-            //            txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-            //        }
-            //    }
-            //};
-            if (!inkPres.StrokeContainer.GetStrokes().Any())
-                return;
-
-            IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
-            if (results.Count > 0)
+            IReadOnlyList<StorageFile> notebooks = await notes.GetFilesAsync();
+            foreach (StorageFile nb in notebooks)
             {
-                txtTest.Text = string.Empty;
-                foreach (InkRecognitionResult result in results)
-                {
-                    txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-                }
+                lvNotebooks.Items.Add(new NotebookItem(nb.Name));
             }
+        }
+
+        private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            StorageFile newNotebook = await notes.CreateFileAsync("Test", CreationCollisionOption.GenerateUniqueName);
+            lvNotebooks.Items.Add(new NotebookItem(newNotebook.Name));
         }
     }
 }

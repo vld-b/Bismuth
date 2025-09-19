@@ -7,6 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <DataTemplate x:Key="NotebookItem" x:DataType="local:NotebookItem">
+            <TextBlock Text="{x:Bind Name}" />
+        </DataTemplate>
+    </Page.Resources>
+
     <Page.Background>
         <AcrylicBrush
             BackgroundSource="HostBackdrop"
@@ -14,27 +20,24 @@
             TintOpacity="0.6"
             FallbackColor="Black" />
     </Page.Background>
-    
+
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid
-            Background="White"
+
+        <Button 
+            x:Name="btnNewBook"
             Grid.Row="0"
-            >
-            <InkCanvas
-                x:Name="inkMain"
-                />
-        </Grid>
-        <TextBlock x:Name="txtTest" Text="Hello" Grid.Row="1" />
-        <InkToolbar 
-            Grid.Row="3"
-            TargetInkCanvas="{x:Bind inkMain}"
-            >
-        </InkToolbar>
+            Content="New notebook"
+            Click="CreateNewNotebook"
+            />
+
+        <ListView
+            x:Name="lvNotebooks"
+            ItemTemplate="{StaticResource NotebookItem}"
+            Grid.Row="1"
+            />
     </Grid>
 </Page>
