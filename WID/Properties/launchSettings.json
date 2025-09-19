@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "WID": {
+      "commandName": "MsixPackage"
+    }
+  }
+}
