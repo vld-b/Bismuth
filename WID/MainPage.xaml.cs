@@ -9,6 +9,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
+using WinRT;
 
 namespace WID
 {
@@ -26,17 +27,46 @@ namespace WID
 
         private async void LoadNotebooks()
         {
+            lvNotebooks.Items.Clear();
+
+            IReadOnlyList<StorageFolder> folders = await notes.GetFoldersAsync();
+            foreach (StorageFolder folder in folders)
+            {
+                lvNotebooks.Items.Add(new NotebookItem(folder.Name, true));
+            }
+
             IReadOnlyList<StorageFile> notebooks = await notes.GetFilesAsync();
             foreach (StorageFile nb in notebooks)
             {
-                lvNotebooks.Items.Add(new NotebookItem(nb.Name));
+                lvNotebooks.Items.Add(new NotebookItem(nb.Name, false));
             }
         }
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             StorageFile newNotebook = await notes.CreateFileAsync("Test", CreationCollisionOption.GenerateUniqueName);
-            lvNotebooks.Items.Add(new NotebookItem(newNotebook.Name));
+            lvNotebooks.Items.Add(new NotebookItem(newNotebook.Name, false));
+        }
+
+        private async void CreateNewFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            StorageFolder newFolder = await notes.CreateFolderAsync("Test", CreationCollisionOption.GenerateUniqueName);
+            int index = (await notes.GetFoldersAsync()).Count - 1;
+            lvNotebooks.Items.Insert(index, new NotebookItem(newFolder.Name, true));
+        }
+
+        private async void DeleteFolderOrFile(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
+            if (nbItem.IsFolder)
+            {
+                Directory.Delete(notes.Path + "\\" + nbItem.Name.Replace("(Folder) ", ""), true);
+                lvNotebooks.Items.Remove(nbItem);
+            } else
+            {
+                File.Delete(notes.Path + "\\" + nbItem.Name);
+                lvNotebooks.Items.Remove(nbItem);
+            }
         }
     }
 }

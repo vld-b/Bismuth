@@ -9,7 +9,26 @@
 
     <Page.Resources>
         <DataTemplate x:Key="NotebookItem" x:DataType="local:NotebookItem">
-            <TextBlock Text="{x:Bind Name}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Name="tbNotebookTitle"
+                    Text="{x:Bind Name}"
+                    VerticalAlignment="Center"
+                    Grid.Column="0"
+                    />
+                <Button
+                    Click="DeleteFolderOrFile"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.RightOf="tbNotebookTitle"
+                    Grid.Column="1"
+                    >
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
+                </Button>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
@@ -18,7 +37,7 @@
             BackgroundSource="HostBackdrop"
             TintColor="Black"
             TintOpacity="0.6"
-            FallbackColor="Black" />
+            FallbackColor="#FF888888" />
     </Page.Background>
 
     <Grid>
@@ -27,12 +46,21 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button 
-            x:Name="btnNewBook"
+        <StackPanel
+            Orientation="Horizontal"
             Grid.Row="0"
-            Content="New notebook"
-            Click="CreateNewNotebook"
-            />
+            >
+            <Button 
+                x:Name="btnNewBook"
+                Content="New notebook"
+                Click="CreateNewNotebook"
+                />
+            <Button 
+                x:Name="btnNewFolder"
+                Content="New folder"
+                Click="CreateNewFolder"
+                />
+        </StackPanel>
 
         <ListView
             x:Name="lvNotebooks"
