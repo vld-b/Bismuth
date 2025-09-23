@@ -17,20 +17,43 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <Grid
+            x:Name="TitleBar"
+            Background="Transparent"
+            Width="Auto"
+            Height="Auto"
+             >
+            <TextBlock
+                x:Name="tbAppTitle"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                />
+        </Grid>
+
+        <Button
+            Grid.Row="0"
+            Click="PageBack"
+            >
+            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;"  />
+        </Button>
+
         <Grid
             Background="White"
-            Grid.Row="0"
+            Grid.Row="1"
             >
             <InkCanvas
                 x:Name="inkMain"
                 />
         </Grid>
-        <TextBlock x:Name="txtTest" Text="Hello" Grid.Row="1" />
+        
+        <TextBlock x:Name="txtTest" Text="Hello" Grid.Row="2" />
+        
         <InkToolbar 
             Grid.Row="3"
             TargetInkCanvas="{x:Bind inkMain}"

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Input.Inking;
@@ -29,10 +31,21 @@ namespace WID
         public CanvasPage()
         {
             InitializeComponent();
+            SetTitlebar();
             inkPres = inkMain.InkPresenter;
+            inkRec = new InkRecognizerContainer();
+            SetupInk();
+        }
+
+        private void SetupInk()
+        {
             inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
             inkPres.StrokesCollected += RecognizeStroke;
-            inkRec = new InkRecognizerContainer();
+        }
+        private void SetTitlebar()
+        {
+            Window.Current.SetTitleBar(TitleBar);
+            tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
         }
 
         private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -76,6 +89,12 @@ namespace WID
                 return;
 
 
+        }
+
+        private void PageBack(object sender, RoutedEventArgs e)
+        {
+            if (Frame.CanGoBack)
+                Frame.GoBack();
         }
     }
 }

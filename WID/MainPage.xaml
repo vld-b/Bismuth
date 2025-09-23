@@ -13,6 +13,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock
                     x:Name="tbNotebookTitle"
@@ -21,10 +22,14 @@
                     Grid.Column="0"
                     />
                 <Button
-                    Click="DeleteFolderOrFile"
-                    RelativePanel.AlignRightWithPanel="True"
-                    RelativePanel.RightOf="tbNotebookTitle"
+                    Click="OpenNote"
                     Grid.Column="1"
+                    >
+                    
+                </Button>
+                <Button
+                    Click="DeleteFolderOrFile"
+                    Grid.Column="2"
                     >
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
                 </Button>
@@ -46,26 +51,41 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel
-            Orientation="Horizontal"
-            Grid.Row="0"
+        <Grid
+            x:Name="TitleBar"
+            Background="Transparent"
+            Height="Auto"
             >
-            <Button 
-                x:Name="btnNewBook"
-                Content="New notebook"
-                Click="CreateNewNotebook"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                x:Name="tbAppTitle"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 />
+        </Grid>
+
+        <StackPanel
+        Orientation="Horizontal"
+        Grid.Row="0"
+        >
             <Button 
-                x:Name="btnNewFolder"
-                Content="New folder"
-                Click="CreateNewFolder"
-                />
+            x:Name="btnNewBook"
+            Content="New notebook"
+            Click="CreateNewNotebook"
+            />
+            <Button 
+            x:Name="btnNewFolder"
+            Content="New folder"
+            Click="CreateNewFolder"
+            />
         </StackPanel>
 
         <ListView
-            x:Name="lvNotebooks"
-            ItemTemplate="{StaticResource NotebookItem}"
-            Grid.Row="1"
-            />
+        x:Name="lvNotebooks"
+        ItemTemplate="{StaticResource NotebookItem}"
+        Grid.Row="1"
+        />
     </Grid>
 </Page>
