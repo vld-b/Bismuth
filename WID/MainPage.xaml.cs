@@ -50,21 +50,21 @@ namespace WID
             IReadOnlyList<StorageFile> notebooks = await notes.GetFilesAsync();
             foreach (StorageFile nb in notebooks)
             {
-                lvNotebooks.Items.Add(new NotebookItem(nb.Name, false));
+                lvNotebooks.Items.Add(new NotebookItem(nb.DisplayName, false));
             }
         }
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            StorageFile newNotebook = await notes.CreateFileAsync("Test", CreationCollisionOption.GenerateUniqueName);
-            lvNotebooks.Items.Add(new NotebookItem(newNotebook.Name, false));
+            StorageFile newNotebook = await notes.CreateFileAsync("Test.gif", CreationCollisionOption.GenerateUniqueName);
+            lvNotebooks.Items.Add(new NotebookItem(newNotebook.DisplayName, false));
         }
 
         private async void CreateNewFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             StorageFolder newFolder = await notes.CreateFolderAsync("Test", CreationCollisionOption.GenerateUniqueName);
             int index = (await notes.GetFoldersAsync()).Count - 1;
-            lvNotebooks.Items.Insert(index, new NotebookItem(newFolder.Name, true));
+            lvNotebooks.Items.Insert(index, new NotebookItem(newFolder.DisplayName, true));
         }
 
         private void DeleteFolderOrFile(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -84,7 +84,9 @@ namespace WID
 
         private void OpenNote(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(CanvasPage), null, new DrillInNavigationTransitionInfo());
+            NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
+            if (nbItem == null) return;
+            Frame.Navigate(typeof(CanvasPage), nbItem.fileName, new DrillInNavigationTransitionInfo());
         }
     }
 }

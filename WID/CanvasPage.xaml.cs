@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.Preview.Notes;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -25,8 +28,12 @@ namespace WID
     /// </summary>
     public sealed partial class CanvasPage : Page
     {
+        private StorageFolder notes => ApplicationData.Current.LocalFolder;
+
         private readonly InkPresenter inkPres;
         private readonly InkRecognizerContainer inkRec;
+
+        private string? fileName;
 
         public CanvasPage()
         {
@@ -91,10 +98,31 @@ namespace WID
 
         }
 
-        private void PageBack(object sender, RoutedEventArgs e)
+        private async void PageBack(object sender, RoutedEventArgs e)
         {
+            if (fileName != null)
+            {
+                StorageFile f = await notes.GetFileAsync(fileName);
+                await inkPres.StrokeContainer.SaveAsync((await f.OpenStreamForWriteAsync()).AsOutputStream());
+            }
+
             if (Frame.CanGoBack)
                 Frame.GoBack();
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            fileName = e.Parameter as string;
+            if (inkPres == null || fileName == null)
+                return;
+
+            Console.WriteLine("Starting to load file");
+            StorageFile f = await notes.GetFileAsync(fileName);
+            Console.WriteLine("Loaded file");
+            if ((new FileInfo(f.Path)).Length >= 0)
+                await inkPres.StrokeContainer.LoadAsync((await f.OpenStreamForReadAsync()).AsInputStream());
         }
     }
 }
