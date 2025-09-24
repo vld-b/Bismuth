@@ -77,16 +77,16 @@ namespace WID
                 lvNotebooks.Items.Remove(nbItem);
             } else
             {
-                File.Delete(notes.Path + "\\" + nbItem.Name);
+                File.Delete(notes.Path + "\\" + nbItem.fileName);
                 lvNotebooks.Items.Remove(nbItem);
             }
         }
 
-        private void OpenNote(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void OpenNote(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
             if (nbItem == null) return;
-            Frame.Navigate(typeof(CanvasPage), nbItem.fileName, new DrillInNavigationTransitionInfo());
+            Frame.Navigate(typeof(CanvasPage), await notes.GetFileAsync(nbItem.fileName), new DrillInNavigationTransitionInfo());
         }
     }
 }

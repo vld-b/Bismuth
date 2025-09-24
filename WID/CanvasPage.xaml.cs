@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,7 +34,7 @@ namespace WID
         private readonly InkPresenter inkPres;
         private readonly InkRecognizerContainer inkRec;
 
-        private string? fileName;
+        private StorageFile? file;
 
         public CanvasPage()
         {
@@ -46,7 +47,11 @@ namespace WID
 
         private void SetupInk()
         {
-            inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            #if DEBUG
+                inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+            #else
+                inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            #endif
             inkPres.StrokesCollected += RecognizeStroke;
         }
         private void SetTitlebar()
@@ -100,10 +105,10 @@ namespace WID
 
         private async void PageBack(object sender, RoutedEventArgs e)
         {
-            if (fileName != null)
+            if (file != null)
             {
-                StorageFile f = await notes.GetFileAsync(fileName);
-                await inkPres.StrokeContainer.SaveAsync((await f.OpenStreamForWriteAsync()).AsOutputStream());
+                using (IOutputStream opStream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
+                    await inkPres.StrokeContainer.SaveAsync(opStream);
             }
 
             if (Frame.CanGoBack)
@@ -114,15 +119,15 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            fileName = e.Parameter as string;
-            if (inkPres == null || fileName == null)
+            file = e.Parameter as StorageFile;
+            if (inkPres == null || file == null)
                 return;
 
-            Console.WriteLine("Starting to load file");
-            StorageFile f = await notes.GetFileAsync(fileName);
-            Console.WriteLine("Loaded file");
-            if ((new FileInfo(f.Path)).Length >= 0)
-                await inkPres.StrokeContainer.LoadAsync((await f.OpenStreamForReadAsync()).AsInputStream());
+            if (new FileInfo(file.Path).Length > 0)
+            {
+                using (IInputStream ipStream = (await file.OpenStreamForReadAsync()).AsInputStream())
+                    await inkPres.StrokeContainer.LoadAsync(ipStream);
+            }
         }
     }
 }
