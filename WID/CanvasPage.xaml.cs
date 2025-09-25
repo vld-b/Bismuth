@@ -36,6 +36,9 @@ namespace WID
 
         private StorageFile? file;
 
+        private Stack<InkStroke> undoStack = new Stack<InkStroke>();
+        private Stack<InkStroke> redoStack = new Stack<InkStroke>();
+
         public CanvasPage()
         {
             InitializeComponent();
@@ -53,11 +56,16 @@ namespace WID
                 inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
             #endif
             inkPres.StrokesCollected += RecognizeStroke;
+            inkPres.StrokesCollected += AddStrokeToUndoStack;
         }
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
             tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
+        }
+
+        private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
+        {
         }
 
         private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)

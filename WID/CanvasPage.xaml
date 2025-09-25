@@ -52,6 +52,9 @@
             <Button
                 Click="SaveFileWithDialog"
                 >
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="S" Modifiers="Control" />
+                </Button.KeyboardAccelerators>
                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE105;" />
             </Button>
         </StackPanel>
