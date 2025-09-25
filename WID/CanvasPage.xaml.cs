@@ -95,17 +95,9 @@ namespace WID
             }
         }
 
-        private void SaveFile(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void SaveFileWithDialog(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (!inkPres.StrokeContainer.GetStrokes().Any())
-                return;
-
-
-        }
-
-        private async void PageBack(object sender, RoutedEventArgs e)
-        {
-            if (file != null)
+            if (file != null && inkPres.StrokeContainer.GetStrokes().Any())
             {
                 ContentDialog saveDialog = new ContentDialog()
                 {
@@ -118,6 +110,11 @@ namespace WID
                 saveDialog.Hide();
                 await res;
             }
+        }
+
+        private void PageBack(object sender, RoutedEventArgs e)
+        {
+            SaveFileWithDialog(sender, e);
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
