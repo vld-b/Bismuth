@@ -107,8 +107,16 @@ namespace WID
         {
             if (file != null)
             {
+                ContentDialog saveDialog = new ContentDialog()
+                {
+                    Title = "Saving file...",
+                    Content = new SavingFileDialog(),
+                };
+                IAsyncOperation<ContentDialogResult> res = saveDialog.ShowAsync();
                 using (IOutputStream opStream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
                     await inkPres.StrokeContainer.SaveAsync(opStream);
+                saveDialog.Hide();
+                await res;
             }
 
             if (Frame.CanGoBack)
