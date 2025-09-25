@@ -13,7 +13,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock
                     x:Name="tbNotebookTitle"
@@ -21,18 +20,23 @@
                     VerticalAlignment="Center"
                     Grid.Column="0"
                     />
-                <Button
-                    Click="OpenNote"
+                <StackPanel
                     Grid.Column="1"
+                    Spacing="10"
+                    Orientation="Horizontal"
                     >
-                    
-                </Button>
-                <Button
-                    Click="DeleteFolderOrFile"
-                    Grid.Column="2"
-                    >
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
-                </Button>
+                    <Button
+                        Click="OpenNote"
+                        >
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE104;" />
+                    </Button>
+                    <Button
+                        Click="DeleteFolderOrFile"
+                        >
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
+                    </Button>
+                </StackPanel>
+
             </Grid>
         </DataTemplate>
     </Page.Resources>

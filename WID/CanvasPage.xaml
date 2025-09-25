@@ -49,14 +49,57 @@
                 >
                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;"  />
             </Button>
-            <Button
-                Click="SaveFileWithDialog"
+            <muxc:DropDownButton
+                AutomationProperties.Name="ddFileOptions"
                 >
-                <Button.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="S" Modifiers="Control" />
-                </Button.KeyboardAccelerators>
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE105;" />
-            </Button>
+                <muxc:DropDownButton.Content>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE160;" />
+                </muxc:DropDownButton.Content>
+                <muxc:DropDownButton.Flyout>
+                    <MenuFlyout
+                        Placement="BottomEdgeAlignedLeft"
+                        >
+                        <MenuFlyoutItem
+                            Text="Save File"
+                            Click="SaveFileWithDialog"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="S" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE105;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem
+                            x:Name="btUndoStroke"
+                            Text="Undo"
+                            Click="UndoStroke"
+                            IsEnabled="False"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="Z" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10E;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            x:Name="btRedoStroke"
+                            Text="Redo"
+                            Click="RedoStroke"
+                            IsEnabled="False"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="Y" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10D;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </muxc:DropDownButton.Flyout>
+            </muxc:DropDownButton>
         </StackPanel>
 
 
@@ -65,11 +108,16 @@
             ZoomMode="Enabled"
             MinZoomFactor="0.1"
             MaxZoomFactor="10"
+            IsVerticalScrollChainingEnabled="True"
+            HorizontalScrollMode="Enabled"
+            VerticalScrollMode="Enabled"
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Hidden"
             >
             <Grid
                 Background="White"
+                Width="1920"
+                Height="2880"
                 >
                 <InkCanvas
                     x:Name="inkMain"
@@ -78,7 +126,7 @@
         </ScrollViewer>
 
         
-        <TextBlock x:Name="txtTest" Text="Hello" Grid.Row="2" />
+        <TextBlock x:Name="tbTest" Text="Hello" Grid.Row="2" />
 
         <InkToolbar 
             Grid.Row="3"

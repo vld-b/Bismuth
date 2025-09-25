@@ -66,6 +66,11 @@ namespace WID
 
         private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
         {
+            foreach (InkStroke stroke in args.Strokes)
+            {
+                undoStack.Push(stroke);
+            }
+            btUndoStroke.IsEnabled = true;
         }
 
         private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -95,10 +100,10 @@ namespace WID
             IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
             if (results.Count > 0)
             {
-                txtTest.Text = string.Empty;
+                tbTest.Text = string.Empty;
                 foreach (InkRecognitionResult result in results)
                 {
-                    txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
+                    tbTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
                 }
             }
         }
@@ -118,6 +123,27 @@ namespace WID
                 saveDialog.Hide();
                 await res;
             }
+        }
+
+        private void UndoStroke(object sender, RoutedEventArgs e)
+        {
+            if (!undoStack.Any()) return;
+
+            redoStack.Push(undoStack.Peek().Clone());
+            undoStack.Pop().Selected = true;
+            inkPres.StrokeContainer.DeleteSelected();
+            btUndoStroke.IsEnabled = undoStack.Any();
+            btRedoStroke.IsEnabled = true;
+        }
+
+        private void RedoStroke(object sender, RoutedEventArgs e)
+        {
+            if (!redoStack.Any()) return;
+
+            undoStack.Push(redoStack.Pop());
+            inkPres.StrokeContainer.AddStroke(undoStack.Peek());
+            btUndoStroke.IsEnabled = true;
+            btRedoStroke.IsEnabled = redoStack.Any();
         }
 
         private void PageBack(object sender, RoutedEventArgs e)
