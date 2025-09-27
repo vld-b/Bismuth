@@ -46,11 +46,17 @@
             >
             <Button
                 Click="PageBack"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="Go Back"
                 >
                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;"  />
             </Button>
             <muxc:DropDownButton
                 AutomationProperties.Name="ddFileOptions"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="File Options"
                 >
                 <muxc:DropDownButton.Content>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE160;" />
@@ -114,15 +120,17 @@
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Hidden"
             >
-            <Grid
+            <ListView>
+                <Grid
                 Background="White"
                 Width="1920"
                 Height="2880"
                 >
-                <InkCanvas
+                    <InkCanvas
                     x:Name="inkMain"
                     />
-            </Grid>
+                </Grid>
+            </ListView>
         </ScrollViewer>
 
         

@@ -27,11 +27,13 @@
                     >
                     <Button
                         Click="OpenNote"
+                        ToolTipService.ToolTip="Open File"
                         >
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE104;" />
                     </Button>
                     <Button
                         Click="DeleteFolderOrFile"
+                        ToolTipService.ToolTip="Delete File"
                         >
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
                     </Button>
