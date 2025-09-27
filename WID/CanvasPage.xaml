@@ -16,6 +16,18 @@
             FallbackColor="Black" />
     </Page.Background>
 
+    <Page.Resources>
+        <DataTemplate x:Key="PageItem" x:DataType="local:Page">
+            <Grid
+                Background="White"
+                Width="1920"
+                Height="2880"
+                >
+                <InkCanvas />
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -106,6 +118,14 @@
                     </MenuFlyout>
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
+            <Button
+                Click="AddPage"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="Add Page"
+                >
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE109;" />
+            </Button>
         </StackPanel>
 
 
@@ -120,7 +140,9 @@
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Hidden"
             >
-            <ListView>
+            <ListView
+                x:Name="lvPageView"
+                >
                 <Grid
                 Background="White"
                 Width="1920"

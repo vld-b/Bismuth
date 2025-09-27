@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ABI.Windows.UI;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -11,6 +13,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -167,6 +170,16 @@ namespace WID
                 using (IInputStream ipStream = (await file.OpenStreamForReadAsync()).AsInputStream())
                     await inkPres.StrokeContainer.LoadAsync(ipStream);
             }
+        }
+
+        private void AddPage(object sender, RoutedEventArgs e)
+        {
+            Grid pageBG = new Grid()
+            {
+                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
+                Width = 1920,
+                Height = 2880
+            };
         }
     }
 }
