@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
-    
+
     <Page.Background>
         <AcrylicBrush
             BackgroundSource="HostBackdrop"
@@ -15,18 +15,6 @@
             TintOpacity="0.6"
             FallbackColor="Black" />
     </Page.Background>
-
-    <Page.Resources>
-        <DataTemplate x:Key="PageItem" x:DataType="local:NotebookPage">
-            <Grid
-                Background="White"
-                Width="1920"
-                Height="2880"
-                Loaded="PageGridLoaded"
-                >
-            </Grid>
-        </DataTemplate>
-    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
