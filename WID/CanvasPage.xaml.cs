@@ -1,9 +1,11 @@
 ﻿using ABI.Windows.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
@@ -34,6 +36,7 @@ namespace WID
     {
         private StorageFolder notes => ApplicationData.Current.LocalFolder;
 
+        private List<NotebookPage> pages = new List<NotebookPage>();
         private readonly InkPresenter inkPres;
         private readonly InkRecognizerContainer inkRec;
 
@@ -46,20 +49,30 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
-            inkPres = inkMain.InkPresenter;
+            //inkPres = inkMain.InkPresenter;
             inkRec = new InkRecognizerContainer();
-            SetupInk();
+            //SetupInk();
         }
 
-        private void SetupInk()
+        private void SetupInk(NotebookPage? pageToSetup = null)
         {
-            #if DEBUG
-                inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
-            #else
-                inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
-            #endif
-            inkPres.StrokesCollected += RecognizeStroke;
-            inkPres.StrokesCollected += AddStrokeToUndoStack;
+            if (pageToSetup != null)
+            {
+                return;
+            }
+            //if (!lvPageView.Items.Any())
+                //lvPageView.Items.Add(new NotebookPage());
+            //foreach (NotebookPage page in lvPageView.Items)
+            {
+                //#if DEBUG
+                //    page.drawingCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+                //#else
+                //    page.drawingCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+                //#endif
+                //page.drawingCanvas.InkPresenter.StrokesCollected += RecognizeStroke;
+                //page.drawingCanvas.InkPresenter.StrokesCollected += AddStrokeToUndoStack;
+
+            }
         }
         private void SetTitlebar()
         {
@@ -174,12 +187,101 @@ namespace WID
 
         private void AddPage(object sender, RoutedEventArgs e)
         {
-            Grid pageBG = new Grid()
+            NotebookPage page = new NotebookPage();
+            page.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+            page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
+            spPageView.Children.Add(page);
+        }
+
+        private void PageGridLoaded(object sender, RoutedEventArgs e)
+        {
+            //NotebookPage nbPage = new NotebookPage();
+            //((Grid)sender).Children.Add(nbPage.drawingCanvas);
+            //nbPage.drawingCanvas.InkPresenter.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
+            //pages.Add(nbPage);
+        }
+
+        private void InkToolChanged(InkToolbar sender, object args)
+        {
+            foreach (NotebookPage page in spPageView.Children)
             {
-                Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 255, 255)),
-                Width = 1920,
-                Height = 2880
+                page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
+            }
+        }
+
+        private void InkToolbarLoaded(object sender, RoutedEventArgs e)
+        {
+            InkToolbarToolButton eraserButton = inkToolbar.GetToolButton(InkToolbarTool.Eraser);
+            eraserButton.Checked += (s, e) =>
+            {
+                foreach (NotebookPage page in spPageView.Children)
+                {
+                    page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
+                }
             };
+            eraserButton.Unchecked += (s, e) =>
+            {
+                foreach (NotebookPage page in spPageView.Children)
+                {
+                    page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                }
+            };
+            InkToolbarStencilButton stencilButton = (InkToolbarStencilButton)inkToolbar.GetMenuButton(InkToolbarMenuKind.Stencil);
+            //stencilButton.Checked += (s, e) =>
+            //{
+            //    switch (stencilButton.SelectedStencil)
+            //    {
+            //        case InkToolbarStencilKind.Ruler:
+            //            foreach (NotebookPage page in spPageView.Children)
+            //            {
+            //                page.ruler.IsVisible = true;
+            //            }
+            //            break;
+            //        case InkToolbarStencilKind.Protractor:
+            //            foreach (NotebookPage page in spPageView.Children)
+            //            {
+            //                page.protractor.IsVisible = true;
+            //            }
+            //            break;
+            //    }
+
+            //};
+            inkToolbar.IsStencilButtonCheckedChanged += (s, e) =>
+            {
+                if (!inkToolbar.IsStencilButtonChecked)
+                {
+                    foreach (NotebookPage page in spPageView.Children)
+                    {
+                        page.ruler.IsVisible = page.protractor.IsVisible = false;
+                    }
+                    return;
+                }
+                switch (e.StencilKind)
+                {
+                    case InkToolbarStencilKind.Ruler:
+                        foreach (NotebookPage page in spPageView.Children)
+                        {
+                            page.ruler.IsVisible = true;
+                        }
+                        e.StencilButton.SelectedStencil = InkToolbarStencilKind.Ruler;
+                        break;
+                    case InkToolbarStencilKind.Protractor:
+                        foreach (NotebookPage page in spPageView.Children)
+                        {
+                            page.protractor.IsVisible = true;
+                        }
+                        e.StencilButton.SelectedStencil = InkToolbarStencilKind.Protractor;
+                        break;
+                }
+
+            };
+            //stencilButton.Unchecked += (s, e) =>
+            //{
+            //    foreach (NotebookPage page in spPageView.Children)
+            //    {
+            //        page.ruler.IsVisible = page.protractor.IsVisible = false;
+            //    }
+            //};
         }
     }
 }

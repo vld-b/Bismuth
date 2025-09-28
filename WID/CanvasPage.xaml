@@ -17,13 +17,13 @@
     </Page.Background>
 
     <Page.Resources>
-        <DataTemplate x:Key="PageItem" x:DataType="local:Page">
+        <DataTemplate x:Key="PageItem" x:DataType="local:NotebookPage">
             <Grid
                 Background="White"
                 Width="1920"
                 Height="2880"
+                Loaded="PageGridLoaded"
                 >
-                <InkCanvas />
             </Grid>
         </DataTemplate>
     </Page.Resources>
@@ -140,27 +140,23 @@
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Hidden"
             >
-            <ListView
-                x:Name="lvPageView"
+            <StackPanel
+                x:Name="spPageView"
+                Orientation="Vertical"
+                Spacing="20"
                 >
-                <Grid
-                Background="White"
-                Width="1920"
-                Height="2880"
-                >
-                    <InkCanvas
-                    x:Name="inkMain"
-                    />
-                </Grid>
-            </ListView>
+            </StackPanel>
         </ScrollViewer>
 
         
         <TextBlock x:Name="tbTest" Text="Hello" Grid.Row="2" />
 
-        <InkToolbar 
+        <InkToolbar
+            x:Name="inkToolbar"
             Grid.Row="3"
-            TargetInkCanvas="{x:Bind inkMain}"
+            ActiveToolChanged="InkToolChanged"
+            InkDrawingAttributesChanged="InkToolChanged"
+            Loaded="InkToolbarLoaded"
             >
         </InkToolbar>
     </Grid>
