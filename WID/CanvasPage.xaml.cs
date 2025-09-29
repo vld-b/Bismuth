@@ -189,16 +189,10 @@ namespace WID
         {
             NotebookPage page = new NotebookPage();
             page.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+            if ((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked)
+                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
             page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
             spPageView.Children.Add(page);
-        }
-
-        private void PageGridLoaded(object sender, RoutedEventArgs e)
-        {
-            //NotebookPage nbPage = new NotebookPage();
-            //((Grid)sender).Children.Add(nbPage.drawingCanvas);
-            //nbPage.drawingCanvas.InkPresenter.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
-            //pages.Add(nbPage);
         }
 
         private void InkToolChanged(InkToolbar sender, object args)
@@ -209,79 +203,52 @@ namespace WID
             }
         }
 
-        private void InkToolbarLoaded(object sender, RoutedEventArgs e)
+        private void RulerChecked(object sender, RoutedEventArgs e)
         {
-            InkToolbarToolButton eraserButton = inkToolbar.GetToolButton(InkToolbarTool.Eraser);
-            eraserButton.Checked += (s, e) =>
+            foreach (NotebookPage page in spPageView.Children)
             {
-                foreach (NotebookPage page in spPageView.Children)
-                {
-                    page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
-                }
-            };
-            eraserButton.Unchecked += (s, e) =>
-            {
-                foreach (NotebookPage page in spPageView.Children)
-                {
-                    page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
-                }
-            };
-            InkToolbarStencilButton stencilButton = (InkToolbarStencilButton)inkToolbar.GetMenuButton(InkToolbarMenuKind.Stencil);
-            //stencilButton.Checked += (s, e) =>
-            //{
-            //    switch (stencilButton.SelectedStencil)
-            //    {
-            //        case InkToolbarStencilKind.Ruler:
-            //            foreach (NotebookPage page in spPageView.Children)
-            //            {
-            //                page.ruler.IsVisible = true;
-            //            }
-            //            break;
-            //        case InkToolbarStencilKind.Protractor:
-            //            foreach (NotebookPage page in spPageView.Children)
-            //            {
-            //                page.protractor.IsVisible = true;
-            //            }
-            //            break;
-            //    }
+                page.ruler.IsVisible = true;
+            }
+        }
 
-            //};
-            inkToolbar.IsStencilButtonCheckedChanged += (s, e) =>
+        private void RulerUnchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
             {
-                if (!inkToolbar.IsStencilButtonChecked)
-                {
-                    foreach (NotebookPage page in spPageView.Children)
-                    {
-                        page.ruler.IsVisible = page.protractor.IsVisible = false;
-                    }
-                    return;
-                }
-                switch (e.StencilKind)
-                {
-                    case InkToolbarStencilKind.Ruler:
-                        foreach (NotebookPage page in spPageView.Children)
-                        {
-                            page.ruler.IsVisible = true;
-                        }
-                        e.StencilButton.SelectedStencil = InkToolbarStencilKind.Ruler;
-                        break;
-                    case InkToolbarStencilKind.Protractor:
-                        foreach (NotebookPage page in spPageView.Children)
-                        {
-                            page.protractor.IsVisible = true;
-                        }
-                        e.StencilButton.SelectedStencil = InkToolbarStencilKind.Protractor;
-                        break;
-                }
+                page.ruler.IsVisible = false;
+            }
+        }
 
-            };
-            //stencilButton.Unchecked += (s, e) =>
-            //{
-            //    foreach (NotebookPage page in spPageView.Children)
-            //    {
-            //        page.ruler.IsVisible = page.protractor.IsVisible = false;
-            //    }
-            //};
+        private void ProtractorChecked(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.protractor.IsVisible = true;
+            }
+        }
+
+        private void ProtractorUnchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.protractor.IsVisible = false;
+            }
+        }
+
+        private void EraserChecked(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
+            }
+        }
+
+        private void EraserUnchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+            }
         }
     }
 }
