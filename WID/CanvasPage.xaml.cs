@@ -2,11 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
@@ -126,19 +130,23 @@ namespace WID
 
         private async void SaveFileWithDialog(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            if (file != null && inkPres.StrokeContainer.GetStrokes().Any())
-            {
-                ContentDialog saveDialog = new ContentDialog()
-                {
-                    Title = "Saving file...",
-                    Content = new SavingFileDialog(),
-                };
-                IAsyncOperation<ContentDialogResult> res = saveDialog.ShowAsync();
-                using (IOutputStream opStream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
-                    await inkPres.StrokeContainer.SaveAsync(opStream);
-                saveDialog.Hide();
-                await res;
-            }
+            //if (file != null && inkPres.StrokeContainer.GetStrokes().Any())
+            //{
+            //    ContentDialog saveDialog = new ContentDialog()
+            //    {
+            //        Title = "Saving file...",
+            //        Content = new SavingFileDialog(),
+            //    };
+            //    IAsyncOperation<ContentDialogResult> res = saveDialog.ShowAsync();
+            //    using (IOutputStream opStream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
+            //        await inkPres.StrokeContainer.SaveAsync(opStream);
+            //    saveDialog.Hide();
+            //    await res;
+            //}
+            FileConfig conf = new FileConfig("oioioi");
+            string json = JsonSerializer.Serialize(conf, FileConfigJsonContext.Default.FileConfig);
+            StorageFile file = await notes.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
+            await FileIO.WriteTextAsync(file, json);
         }
 
         private void UndoStroke(object sender, RoutedEventArgs e)
