@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Preview.Notes;
+using Windows.Devices.Usb;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -143,10 +144,22 @@ namespace WID
             //    saveDialog.Hide();
             //    await res;
             //}
-            FileConfig conf = new FileConfig("oioioi");
-            string json = JsonSerializer.Serialize(conf, FileConfigJsonContext.Default.FileConfig);
-            StorageFile file = await notes.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteTextAsync(file, json);
+            List<string> pages = new List<string>();
+            int i = 0;
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                StorageFile pageFile = await notes.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
+                pages.Add(pageFile.Name);
+                using (IOutputStream opStream = (await pageFile.OpenStreamForWriteAsync()).AsOutputStream())
+                    await page.inkPres.StrokeContainer.SaveAsync(opStream);
+                ++i;
+            }
+            FileConfig conf = new FileConfig(pages);
+            //string json = JsonSerializer.Serialize(conf, FileConfigJsonContext.Default.FileConfig);
+            StorageFile configFile = await notes.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            using (Stream opStream = await configFile.OpenStreamForWriteAsync())
+                await JsonSerializer.SerializeAsync(opStream, conf, FileConfigJsonContext.Default.FileConfig);
+            //await FileIO.WriteTextAsync(file, json);
         }
 
         private void UndoStroke(object sender, RoutedEventArgs e)

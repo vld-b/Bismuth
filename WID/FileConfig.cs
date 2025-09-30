@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Windows.Media.AppBroadcasting;
 
 namespace WID
 {
     class FileConfig
     {
-        public string chamoy { get; set; }
+        public List<string> pageMapping { get; set; }
 
-        public FileConfig(string chamoy)
+        public FileConfig(List<string> pageMapping)
         {
-            this.chamoy = chamoy;
+            this.pageMapping = pageMapping;
         }
     }
 
