@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -56,8 +57,38 @@ namespace WID
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            StorageFile newNotebook = await notes.CreateFileAsync("Test.gif", CreationCollisionOption.GenerateUniqueName);
-            lvNotebooks.Items.Add(new NotebookItem(newNotebook.DisplayName, false));
+            //StorageFile newNotebook = await notes.CreateFileAsync("Test.gif", CreationCollisionOption.GenerateUniqueName);
+            //lvNotebooks.Items.Add(new NotebookItem(newNotebook.DisplayName, false));
+            TextBox txtbox = new TextBox
+            {
+                PlaceholderText = "Enter name for notebook",
+                AcceptsReturn = false,
+            };
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Create new notebook",
+                Content = txtbox,
+                PrimaryButtonText = "Create",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+
+            await dialog.ShowAsync();
+
+            try
+            {
+                StorageFile newNotebook = await notes.CreateFileAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
+            } catch
+            {
+                ContentDialog dialogFailed = new ContentDialog
+                {
+                    Title = "Failed to create file",
+                    PrimaryButtonText = "Ok",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+                await dialogFailed.ShowAsync();
+            }
         }
 
         private async void CreateNewFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
