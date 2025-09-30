@@ -14,6 +14,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Animation;
 using WinRT;
 
@@ -45,20 +46,15 @@ namespace WID
             IReadOnlyList<StorageFolder> folders = await notes.GetFoldersAsync();
             foreach (StorageFolder folder in folders)
             {
-                lvNotebooks.Items.Add(new NotebookItem(folder.Name, true));
-            }
-
-            IReadOnlyList<StorageFile> notebooks = await notes.GetFilesAsync();
-            foreach (StorageFile nb in notebooks)
-            {
-                lvNotebooks.Items.Add(new NotebookItem(nb.DisplayName, false));
+                if (folder.Name.EndsWith(".notebook"))
+                    lvNotebooks.Items.Add(new NotebookItem(folder.Name, false));
+                else
+                    lvNotebooks.Items.Add(new NotebookItem(folder.Name, true));
             }
         }
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            //StorageFile newNotebook = await notes.CreateFileAsync("Test.gif", CreationCollisionOption.GenerateUniqueName);
-            //lvNotebooks.Items.Add(new NotebookItem(newNotebook.DisplayName, false));
             TextBox txtbox = new TextBox
             {
                 PlaceholderText = "Enter name for notebook",
@@ -74,16 +70,34 @@ namespace WID
                 DefaultButton = ContentDialogButton.Primary,
             };
 
-            await dialog.ShowAsync();
+            ContentDialogResult res = await dialog.ShowAsync();
+
+            if (res == ContentDialogResult.None)
+                return;
+            else if (res == ContentDialogResult.Primary && txtbox.Text == string.Empty)
+            {
+                ContentDialog dialogNoName = new ContentDialog
+                {
+                    Title = "No name entered",
+                    Content = "Empty file names are not supported",
+                    PrimaryButtonText = "Ok",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+                await dialogNoName.ShowAsync();
+                return;
+            }
 
             try
             {
-                StorageFile newNotebook = await notes.CreateFileAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
-            } catch
+                StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
+                lvNotebooks.Items.Add(new NotebookItem(newNotebook.Name, false));
+            }
+            catch
             {
                 ContentDialog dialogFailed = new ContentDialog
                 {
-                    Title = "Failed to create file",
+                    Title = "Failed to create notebook",
+                    Content = "A file with the same name already exists",
                     PrimaryButtonText = "Ok",
                     DefaultButton = ContentDialogButton.Primary,
                 };
@@ -117,7 +131,7 @@ namespace WID
         {
             NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
             if (nbItem == null) return;
-            Frame.Navigate(typeof(CanvasPage), await notes.GetFileAsync(nbItem.fileName), new DrillInNavigationTransitionInfo());
+            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(nbItem.Name), new DrillInNavigationTransitionInfo());
         }
     }
 }

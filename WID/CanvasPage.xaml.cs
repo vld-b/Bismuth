@@ -45,7 +45,10 @@ namespace WID
         private readonly InkPresenter inkPres;
         private readonly InkRecognizerContainer inkRec;
 
-        private StorageFile? file;
+        private StorageFolder? file;
+        private StorageFile? configFile;
+
+        private FileConfig? config;
 
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
@@ -144,22 +147,28 @@ namespace WID
             //    saveDialog.Hide();
             //    await res;
             //}
+            if (file is null || configFile is null)
+                return;
+
+            Debug.WriteLine("Saving document");
+
             List<string> pages = new List<string>();
             int i = 0;
             foreach (NotebookPage page in spPageView.Children)
             {
-                StorageFile pageFile = await notes.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
+                StorageFile pageFile = await file.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
                 pages.Add(pageFile.Name);
                 using (IOutputStream opStream = (await pageFile.OpenStreamForWriteAsync()).AsOutputStream())
                     await page.inkPres.StrokeContainer.SaveAsync(opStream);
                 ++i;
             }
-            FileConfig conf = new FileConfig(pages);
-            //string json = JsonSerializer.Serialize(conf, FileConfigJsonContext.Default.FileConfig);
-            StorageFile configFile = await notes.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            if (config is null)
+                config = new FileConfig(pages);
+            else
+                config.pageMapping = pages;
+            configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
-                await JsonSerializer.SerializeAsync(opStream, conf, FileConfigJsonContext.Default.FileConfig);
-            //await FileIO.WriteTextAsync(file, json);
+                await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
         }
 
         private void UndoStroke(object sender, RoutedEventArgs e)
@@ -195,25 +204,40 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            file = e.Parameter as StorageFile;
-            if (inkPres == null || file == null)
+            file = e.Parameter as StorageFolder;
+            if (file is null)
                 return;
 
-            if (new FileInfo(file.Path).Length > 0)
+            configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            if ((new FileInfo(configFile.Path)).Length != 0)
             {
-                using (IInputStream ipStream = (await file.OpenStreamForReadAsync()).AsInputStream())
-                    await inkPres.StrokeContainer.LoadAsync(ipStream);
+                using (Stream ipStream = await configFile.OpenStreamForReadAsync())
+                    config = JsonSerializer.Deserialize(ipStream, FileConfigJsonContext.Default.FileConfig);
+                foreach (string pageName in config!.pageMapping)
+                {
+                    StorageFile ink = await file.GetFileAsync(pageName);
+                    NotebookPage page = new NotebookPage();
+                    page.Loaded += (s, e) => SetupPage(page);
+                    using (IInputStream ipStream = (await ink.OpenStreamForReadAsync()).AsInputStream())
+                        await page.inkPres.StrokeContainer.LoadAsync(ipStream);
+                    spPageView.Children.Add(page);
+                }
             }
         }
 
         private void AddPage(object sender, RoutedEventArgs e)
         {
             NotebookPage page = new NotebookPage();
+            SetupPage(page);
+            spPageView.Children.Add(page);
+        }
+
+        private void SetupPage(NotebookPage page)
+        {
             page.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
             if ((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked)
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
             page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
-            spPageView.Children.Add(page);
         }
 
         private void InkToolChanged(InkToolbar sender, object args)

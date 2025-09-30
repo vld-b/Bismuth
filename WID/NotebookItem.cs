@@ -15,7 +15,7 @@ namespace WID
         public NotebookItem(string Name, bool IsFolder)
         {
             this.Name = (IsFolder ? "(Folder) " : "") + Name;
-            this.fileName = Name+".gif";
+            this.fileName = Name;
             this.IsFolder = IsFolder;
         }
     }
