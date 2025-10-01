@@ -17,7 +17,7 @@
     <Version>$(AssemblyVersion)</Version>
     <AssemblyName></AssemblyName>
     <UseWPF>False</UseWPF>
-    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AppPackages\**" />

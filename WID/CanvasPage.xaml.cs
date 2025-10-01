@@ -39,9 +39,6 @@ namespace WID
     /// </summary>
     public sealed partial class CanvasPage : Page
     {
-        private StorageFolder notes => ApplicationData.Current.LocalFolder;
-
-        private List<NotebookPage> pages = new List<NotebookPage>();
         private readonly InkPresenter inkPres;
         private readonly InkRecognizerContainer inkRec;
 
@@ -57,35 +54,13 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
-            //inkPres = inkMain.InkPresenter;
             inkRec = new InkRecognizerContainer();
-            //SetupInk();
         }
 
-        private void SetupInk(NotebookPage? pageToSetup = null)
-        {
-            if (pageToSetup != null)
-            {
-                return;
-            }
-            //if (!lvPageView.Items.Any())
-                //lvPageView.Items.Add(new NotebookPage());
-            //foreach (NotebookPage page in lvPageView.Items)
-            {
-                //#if DEBUG
-                //    page.drawingCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
-                //#else
-                //    page.drawingCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
-                //#endif
-                //page.drawingCanvas.InkPresenter.StrokesCollected += RecognizeStroke;
-                //page.drawingCanvas.InkPresenter.StrokesCollected += AddStrokeToUndoStack;
-
-            }
-        }
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
-            tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
+            tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName+": ";
         }
 
         private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -134,19 +109,6 @@ namespace WID
 
         private async void SaveFileWithDialog(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            //if (file != null && inkPres.StrokeContainer.GetStrokes().Any())
-            //{
-            //    ContentDialog saveDialog = new ContentDialog()
-            //    {
-            //        Title = "Saving file...",
-            //        Content = new SavingFileDialog(),
-            //    };
-            //    IAsyncOperation<ContentDialogResult> res = saveDialog.ShowAsync();
-            //    using (IOutputStream opStream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
-            //        await inkPres.StrokeContainer.SaveAsync(opStream);
-            //    saveDialog.Hide();
-            //    await res;
-            //}
             if (file is null || configFile is null)
                 return;
 
@@ -205,6 +167,8 @@ namespace WID
             file = e.Parameter as StorageFolder;
             if (file is null)
                 return;
+
+            tbAppTitle.Text += file.DisplayName;
 
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
