@@ -14,19 +14,20 @@ jobs:
 
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        platform: [x64,arm64]
+        configuration: [Release]
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Publish (x64)
-      run: dotnet publish ./WID/WID.csproj -c Release -r win-x64 --self-contained true -o out/x64
-    - name: Publish (arm64)
-      run: dotnet publish ./WID/WID.csproj -c Release -r win-arm64 --self-contained true -o out/arm64
-    - name: Test (x64)
-      run: dotnet test --no-build --verbosity normal --arch x64
-    - name: Test (arm64)
-      run: dotnet test --no-build --verbosity normal --arch arm64
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3
+
+    - name: Restore NuGet packages
+      run: nuget restore WID.sln
+
+    - name: Build project using MSBuild
+      run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
