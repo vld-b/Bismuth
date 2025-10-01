@@ -50,6 +50,9 @@ jobs:
     - name: Publish project using MSBuild
       run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always
 
+    - name: Show folder structure
+      run: dir
+
     - name: Upload app package artifacts
       uses: actions/upload-artifact@v4
       with:
