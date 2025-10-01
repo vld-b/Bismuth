@@ -39,9 +39,6 @@ namespace WID
     /// </summary>
     public sealed partial class CanvasPage : Page
     {
-        private readonly InkPresenter inkPres;
-        private readonly InkRecognizerContainer inkRec;
-
         private StorageFolder? file;
         private StorageFile? configFile;
 
@@ -54,7 +51,6 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
-            inkRec = new InkRecognizerContainer();
         }
 
         private void SetTitlebar()
@@ -93,18 +89,18 @@ namespace WID
             //        }
             //    }
             //};
-            if (!inkPres.StrokeContainer.GetStrokes().Any())
-                return;
+            //if (!inkPres.StrokeContainer.GetStrokes().Any())
+            //    return;
 
-            IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
-            if (results.Count > 0)
-            {
-                tbTest.Text = string.Empty;
-                foreach (InkRecognitionResult result in results)
-                {
-                    tbTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-                }
-            }
+            //IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
+            //if (results.Count > 0)
+            //{
+            //    tbTest.Text = string.Empty;
+            //    foreach (InkRecognitionResult result in results)
+            //    {
+            //        tbTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
+            //    }
+            //}
         }
 
         private async void SaveFileWithDialog(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -137,7 +133,7 @@ namespace WID
 
             redoStack.Push(undoStack.Peek().Clone());
             undoStack.Pop().Selected = true;
-            inkPres.StrokeContainer.DeleteSelected();
+            //inkPres.StrokeContainer.DeleteSelected();
             btUndoStroke.IsEnabled = undoStack.Any();
             btRedoStroke.IsEnabled = true;
         }
@@ -147,7 +143,7 @@ namespace WID
             if (!redoStack.Any()) return;
 
             undoStack.Push(redoStack.Pop());
-            inkPres.StrokeContainer.AddStroke(undoStack.Peek());
+            //inkPres.StrokeContainer.AddStroke(undoStack.Peek());
             btUndoStroke.IsEnabled = true;
             btRedoStroke.IsEnabled = redoStack.Any();
         }
