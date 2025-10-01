@@ -23,9 +23,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Publish (x64)
-      run: dotnet publish ./WID/WID.csproj -c Release -r win-x64 --self-containted true -o out/x64
+      run: dotnet publish ./WID/WID.csproj -c Release -r win-x64 --self-contained true -o out/x64
     - name: Publish (arm64)
-      run: dotnet publish ./WID/WID.csproj -c Release -r win-arm64 --self-containted true -o out/arm64
+      run: dotnet publish ./WID/WID.csproj -c Release -r win-arm64 --self-contained true -o out/arm64
     - name: Test (x64)
       run: dotnet test --no-build --verbosity normal --arch x64
     - name: Test (arm64)
