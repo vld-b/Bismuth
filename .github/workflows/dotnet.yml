@@ -48,7 +48,7 @@ jobs:
         powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
-      run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always
+      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
 
     - name: Show folder structure
       run: dir WID
@@ -58,6 +58,7 @@ jobs:
       with:
         name: AppPackages
         path: |
+          WID\AppPackages/Release/**
           **/AppPackages/**
           **/*.msixbundle
           **/*.appxupload
