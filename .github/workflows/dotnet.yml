@@ -23,11 +23,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # - name: Free disk space
-    #   run: |
-    #     echo "Cleaning up runner disk space..."
-    #     rd /s /q "C:\Program Files (x86)\Android"
-    #     rd /s /q "C:\Program Files\dotnet\packs"
+    - name: Install Windows SDK 26100
+      run: choco install windows-sdk-10-version-26100-all
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
