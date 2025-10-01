@@ -32,6 +32,9 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3
 
+    - name: Setup signtool
+      uses: phuonghuynh/code-sign-action@v2.0.8
+
     - name: Install NuGet
       uses: nuget/setup-nuget@v2
 
@@ -56,6 +59,7 @@ jobs:
         ForEach-Object {
           Copy-Item -Path $_.FullName -Destination . -Force
         }
+    
     - name: Sign MSIX package
       run: signtool sign /fd SHA256 /f MyAppCert.pfx /p (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force) "*.msix"
 
