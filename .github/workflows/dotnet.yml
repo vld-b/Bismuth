@@ -47,11 +47,8 @@ jobs:
       run: |
         powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
-    - name: Build UWP project (single-node, no shared compilation)
-      run: msbuild WID\WID.csproj /t:Restore,Build /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UseSharedCompilation=false /nr:false /m:1 /v:minimal
-
     - name: Publish project using MSBuild
-      run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always /p:UseSharedCompilation=false /m:1
+      run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always
 
     - name: Build project using MSBuild
       run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UseSharedCompilation=false /m:1
