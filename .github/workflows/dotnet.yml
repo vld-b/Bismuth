@@ -23,20 +23,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Build UWP project (single-node, no shared compilation)
-      run: msbuild WID\WID.csproj /t:Restore,Build /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UseSharedCompilation=false /nr:false /m:1 /v:minimal
-
-    - name: Free disk space
-      run: |
-        echo "Cleaning up runner disk space..."
-        rd /s /q "C:\Program Files (x86)\Android"
-        rd /s /q "C:\Program Files\dotnet\packs"
+    # - name: Free disk space
+    #   run: |
+    #     echo "Cleaning up runner disk space..."
+    #     rd /s /q "C:\Program Files (x86)\Android"
+    #     rd /s /q "C:\Program Files\dotnet\packs"
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3
 
     - name: Restore NuGet packages
       run: nuget restore WID.sln
+
+    - name: Build UWP project (single-node, no shared compilation)
+      run: msbuild WID\WID.csproj /t:Restore,Build /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UseSharedCompilation=false /nr:false /m:1 /v:minimal
 
     - name: Publish project using MSBuild
       run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always /p:UseSharedCompilation=false /m:1
