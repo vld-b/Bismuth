@@ -22,10 +22,10 @@ jobs:
         dotnet-version: 9.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build (x64)
-      run: dotnet build --no-restore --arch x64 -c Release
-    - name: Build (arm64)
-      run: dotnet build --no-restore --arch arm64 -c Release
+    - name: Publish (x64)
+      run: dotnet publish ./WID/WID.csproj -c Release -r win-x64 --self-containted true -o out/x64
+    - name: Publish (arm64)
+      run: dotnet publish ./WID/WID.csproj -c Release -r win-arm64 --self-containted true -o out/arm64
     - name: Test (x64)
       run: dotnet test --no-build --verbosity normal --arch x64
     - name: Test (arm64)
