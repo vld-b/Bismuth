@@ -45,7 +45,7 @@ jobs:
         powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
-      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always /p:UseSharedCompilation=false
+      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always /p:UseSharedCompilation=false /m:1
 
     - name: Copy build bins
       run: Get-ChildItem -Path . -Recurse -Filter *.msix |
