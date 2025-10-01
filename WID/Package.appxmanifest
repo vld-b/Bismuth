@@ -9,7 +9,7 @@
   <Identity
     Name="com.vld-b.WID"
     Publisher="CN=vld-b"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="3c46c478-c1fc-4622-bd3f-8cab22421a55" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
