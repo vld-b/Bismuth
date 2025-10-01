@@ -3,7 +3,6 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
-    <SelfContained>true</SelfContained>
     <Nullable>enable</Nullable>
     <UseUwp>true</UseUwp>
     <Platforms>x86;x64;arm64</Platforms>
@@ -22,6 +21,7 @@
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AppPackages\**" />
