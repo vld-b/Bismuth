@@ -150,8 +150,6 @@ namespace WID
             if (file is null || configFile is null)
                 return;
 
-            Debug.WriteLine("Saving document");
-
             List<string> pages = new List<string>();
             int i = 0;
             foreach (NotebookPage page in spPageView.Children)
