@@ -50,15 +50,15 @@ jobs:
     - name: Publish project using MSBuild
       run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
 
-    - name: Show folder structure
-      run: dir WID
+    - name: Copy build bins
+      run: Get-ChildItem -Path . -Recurse -Filter *.msix |
+        Where-Object { $_.FullName -notmatch '\\Dependencies\\' } |
+        ForEach-Object {
+          Copy-Item -Path $_.FullName -Destination . -Force
+        }
 
     - name: Upload app package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: AppPackages
-        path: |
-          WID\AppPackages/Release/**
-          **/AppPackages/**
-          **/*.msixbundle
-          **/*.appxupload
+        name: Binaries - Release - ${{ matrix.architecture }}
+        path: "*.msix"
