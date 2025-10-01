@@ -23,6 +23,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Build UWP project (single-node, no shared compilation)
+      run: msbuild WID\WID.csproj /t:Restore,Build /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UseSharedCompilation=false /nr:false /m:1 /v:minimal
+
     - name: Free disk space
       run: |
         echo "Cleaning up runner disk space..."
