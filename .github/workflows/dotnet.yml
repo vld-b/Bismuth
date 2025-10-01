@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [x64,arm64]
+        arch: [x64,arm64]
         configuration: [Release]
 
     steps:
@@ -48,7 +48,7 @@ jobs:
         powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
-      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
+      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
 
     - name: Copy build bins
       run: Get-ChildItem -Path . -Recurse -Filter *.msix |
@@ -60,5 +60,5 @@ jobs:
     - name: Upload app package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Binaries - Release - ${{ matrix.architecture }}
+        name: Binaries - Release - ${{ matrix.arch }}
         path: "*.msix"
