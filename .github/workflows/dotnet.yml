@@ -29,5 +29,8 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore WID.sln
 
+    - name: Publish project using MSBuild
+      run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxBundle=Always
+
     - name: Build project using MSBuild
       run: msbuild WID.sln /p:Configurations=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
