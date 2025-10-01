@@ -26,8 +26,8 @@ jobs:
     - name: Free disk space
       run: |
         echo "Cleaning up runner disk space..."
-        rmdir /S /Q "C:\Program Files (x86)\Android"
-        rmdir /S /Q "C:\Program Files\dotnet\packs"
+        rd /s /q "C:\Program Files (x86)\Android"
+        rd /s /q "C:\Program Files\dotnet\packs"
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.3
