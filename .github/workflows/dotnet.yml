@@ -23,10 +23,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build (x64)
-      run: dotnet build --no-restore -r win-x64 -c Release
+      run: dotnet build --no-restore --arch x64 -c Release
     - name: Build (arm64)
-      run: dotnet build --no-restore -r win-arm64 -c Release
+      run: dotnet build --no-restore --arch arm64 -c Release
     - name: Test (x64)
-      run: dotnet test --no-build --verbosity normal -r win-x64
+      run: dotnet test --no-build --verbosity normal --arch x64
     - name: Test (arm64)
-      run: dotnet test --no-build --verbosity normal -r win-arm64
+      run: dotnet test --no-build --verbosity normal --arch arm64
