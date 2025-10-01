@@ -31,8 +31,6 @@ jobs:
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
-      with:
-        msbuild-architecture: ${{ matrix.arch }}
 
     - name: Setup signtool
       uses: phuonghuynh/code-sign-action@v2.0.8
