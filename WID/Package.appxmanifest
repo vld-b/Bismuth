@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="com.vld-b.WID"
+    Name="com.vld-b.bismuth"
     Publisher="CN=vld-b"
     Version="0.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="3c46c478-c1fc-4622-bd3f-8cab22421a55" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>WID</DisplayName>
+    <DisplayName>Bismuth</DisplayName>
     <PublisherDisplayName>vld-b</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="WID.App">
       <uap:VisualElements
-        DisplayName="WriteItDown"
+        DisplayName="Bismuth"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="WriteItDown is a Note-Taking app made for Windows 11 with special focus for Windows on ARM devices (e.g. the new Microsoft Surface Pro 11)!"

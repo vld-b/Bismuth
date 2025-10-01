@@ -48,9 +48,4 @@
   <ItemGroup>
     <PRIResource Remove="AppPackages\**" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>
