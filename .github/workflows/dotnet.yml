@@ -23,9 +23,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install Windows SDK 26100
-      run: choco install windows-sdk-10-version-26100-all
-
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
@@ -48,7 +45,7 @@ jobs:
         powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
-      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
+      run: msbuild WID.sln /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always /p:UseSharedCompilation=false
 
     - name: Copy build bins
       run: Get-ChildItem -Path . -Recurse -Filter *.msix |
