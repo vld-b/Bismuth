@@ -58,6 +58,7 @@ namespace WID
                 Window.Current.Activate();
 
                 CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+                ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
             }
         }
 

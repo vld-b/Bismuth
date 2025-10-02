@@ -24,6 +24,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+
         <Grid
             x:Name="TitleBar"
             Background="Transparent"
@@ -59,7 +60,7 @@
                 ToolTipService.ToolTip="File Options"
                 >
                 <muxc:DropDownButton.Content>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE160;" />
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
                 </muxc:DropDownButton.Content>
                 <muxc:DropDownButton.Flyout>
                     <MenuFlyout
@@ -112,31 +113,55 @@
                 BorderBrush="Transparent"
                 ToolTipService.ToolTip="Add Page"
                 >
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE109;" />
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE109;" />
             </Button>
+            <ToggleButton
+                Click="OpenPageOverview"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="Open page overview"
+                >
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE82D;" />
+            </ToggleButton>
         </StackPanel>
 
 
-        <ScrollViewer
+        <SplitView
             Grid.Row="1"
-            ZoomMode="Enabled"
-            MinZoomFactor="0.1"
-            MaxZoomFactor="10"
-            IsVerticalScrollChainingEnabled="True"
-            HorizontalScrollMode="Enabled"
-            VerticalScrollMode="Enabled"
-            HorizontalScrollBarVisibility="Hidden"
-            VerticalScrollBarVisibility="Hidden"
+            x:Name="svPageOverview"
+            PaneBackground="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+            OpenPaneLength="400"
+            DisplayMode="Inline"
             >
-            <StackPanel
-                x:Name="spPageView"
-                Orientation="Vertical"
-                Spacing="20"
+            <SplitView.Pane>
+                <Grid
+                    BorderBrush="{ThemeResource SystemControlAcrylicWindowBrush}"
+                    BorderThickness="0, 0, 4, 0"
+                    >
+                    <Button>
+                        Halihalo
+                    </Button>
+                </Grid>
+            </SplitView.Pane>
+            <ScrollViewer
+                ZoomMode="Enabled"
+                MinZoomFactor="0.1"
+                MaxZoomFactor="10"
+                IsVerticalScrollChainingEnabled="True"
+                HorizontalScrollMode="Enabled"
+                VerticalScrollMode="Enabled"
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalScrollBarVisibility="Hidden"
                 >
-            </StackPanel>
-        </ScrollViewer>
+                <StackPanel
+                    x:Name="spPageView"
+                    Orientation="Vertical"
+                    Spacing="20"
+                    >
+                </StackPanel>
+            </ScrollViewer>
+        </SplitView>
 
-        
         <TextBlock x:Name="tbTest" Text="Hello" Grid.Row="2" />
 
         <InkToolbar
@@ -145,6 +170,7 @@
             ActiveToolChanged="InkToolChanged"
             InkDrawingAttributesChanged="InkToolChanged"
             InitialControls="PensOnly"
+            HorizontalAlignment="Center"
             >
             <InkToolbarEraserButton
                 Checked="EraserChecked"

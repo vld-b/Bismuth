@@ -253,5 +253,11 @@ namespace WID
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
             }
         }
+
+        private void OpenPageOverview(object sender, RoutedEventArgs e)
+        {
+            svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
+            (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
+        }
     }
 }

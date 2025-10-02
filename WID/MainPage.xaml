@@ -29,13 +29,13 @@
                         Click="OpenNote"
                         ToolTipService.ToolTip="Open File"
                         >
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE104;" />
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE104;" />
                     </Button>
                     <Button
                         Click="DeleteFolderOrFile"
                         ToolTipService.ToolTip="Delete File"
                         >
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE107;" />
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE107;" />
                     </Button>
                 </StackPanel>
 
@@ -69,6 +69,7 @@
                 x:Name="tbAppTitle"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                Grid.Column="0"
                 />
         </Grid>
 
