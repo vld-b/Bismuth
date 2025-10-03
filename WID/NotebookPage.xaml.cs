@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,6 +36,28 @@ namespace WID
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+        }
+
+        public async Task LoadFromStream(IInputStream stream)
+        {
+            await inkPres.StrokeContainer.LoadAsync(stream);
+        }
+
+        public async Task LoadFromFile(StorageFile file)
+        {
+            using (IInputStream stream = (await file.OpenStreamForReadAsync()).AsInputStream())
+                await this.LoadFromStream(stream);
+        }
+
+        public async Task SaveToStream(IOutputStream stream)
+        {
+            await inkPres.StrokeContainer.SaveAsync(stream);
+        }
+
+        public async Task SaveToFile(StorageFile file)
+        {
+            using (IOutputStream stream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
+                await this.SaveToStream(stream);
         }
     }
 }

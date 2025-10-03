@@ -114,8 +114,7 @@ namespace WID
             {
                 StorageFile pageFile = await file.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
                 pages.Add(pageFile.Name);
-                using (IOutputStream opStream = (await pageFile.OpenStreamForWriteAsync()).AsOutputStream())
-                    await page.inkPres.StrokeContainer.SaveAsync(opStream);
+                await page.SaveToFile(pageFile);
                 ++i;
             }
             if (config is null)
@@ -175,9 +174,8 @@ namespace WID
                 {
                     StorageFile ink = await file.GetFileAsync(pageName);
                     NotebookPage page = new NotebookPage();
+                    await page.LoadFromFile(ink);
                     page.Loaded += (s, e) => SetupPage(page);
-                    using (IInputStream ipStream = (await ink.OpenStreamForReadAsync()).AsInputStream())
-                        await page.inkPres.StrokeContainer.LoadAsync(ipStream);
                     spPageView.Children.Add(page);
                 }
             }
