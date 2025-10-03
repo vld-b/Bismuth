@@ -256,6 +256,24 @@ namespace WID
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
+            ThumbnailGridViewLoaded(null, null);
+        }
+
+        private async void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                NotebookPage pageThumb = new NotebookPage();
+                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                {
+                    await page.SaveToStream(stream);
+                    stream.Seek(0);
+                    await pageThumb.LoadFromStream(stream);
+                }
+                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                gvThumbnails.Items.Clear();
+                gvThumbnails.Items.Add(pageThumb);
+            }
         }
     }
 }

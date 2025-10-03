@@ -146,9 +146,21 @@
                     BorderBrush="{ThemeResource SystemControlAcrylicWindowBrush}"
                     BorderThickness="0, 0, 4, 0"
                     >
-                    <Button>
-                        Halihalo
-                    </Button>
+                    <GridView
+                        x:Name="gvThumbnails"
+                        Loaded="ThumbnailGridViewLoaded"
+                        >
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <local:NotebookPage />
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid Orientation="Vertical" MaximumRowsOrColumns="2" />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                    </GridView>
                 </Grid>
             </SplitView.Pane>
             <ScrollViewer
