@@ -18,6 +18,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Devices.Usb;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -28,6 +29,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -173,7 +175,7 @@ namespace WID
                 foreach (string pageName in config!.pageMapping)
                 {
                     StorageFile ink = await file.GetFileAsync(pageName);
-                    NotebookPage page = new NotebookPage();
+                    NotebookPage page = new NotebookPage(1920, 2880);
                     await page.LoadFromFile(ink);
                     page.Loaded += (s, e) => SetupPage(page);
                     spPageView.Children.Add(page);
@@ -256,7 +258,30 @@ namespace WID
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
-            ThumbnailGridViewLoaded(null, null);
+            //ThumbnailGridViewLoaded(null, null);
+            gvThumbnails.Items.Clear();
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                NotebookPage pageThumb = new NotebookPage(page.Width, page.Height);
+                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                //{
+                //    await page.SaveToStream(stream);
+                //    stream.Seek(0);
+                //    await pageThumb.LoadFromStream(stream);
+                //}
+                pageThumb.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                pageThumb.RenderTransform = new ScaleTransform
+                {
+                    ScaleX = 176 / page.Width,
+                    ScaleY = 264 / page.Height,
+                    CenterX = 0,
+                    CenterY = 0,
+                };
+                gvThumbnails.Items.Add(pageThumb);
+                //gvThumbnails.Items.Add(await RenderThumbnail(page));
+                Debug.WriteLine("Added a page with:" + gvThumbnails.Items.Count);
+            }
         }
 
         private async void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
@@ -271,9 +296,31 @@ namespace WID
                     await pageThumb.LoadFromStream(stream);
                 }
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                pageThumb.Width = 200;
+                pageThumb.Height = 200;
                 gvThumbnails.Items.Clear();
                 gvThumbnails.Items.Add(pageThumb);
             }
+        }
+
+        private async Task<SoftwareBitmapSource> RenderThumbnail(NotebookPage page)
+        {
+            RenderTargetBitmap rtbmp = new RenderTargetBitmap();
+            await rtbmp.RenderAsync(page);
+
+            SoftwareBitmap swbmp = SoftwareBitmap.CreateCopyFromBuffer(
+                await rtbmp.GetPixelsAsync(),
+                BitmapPixelFormat.Rgba8,
+                rtbmp.PixelWidth,
+                rtbmp.PixelHeight,
+                BitmapAlphaMode.Premultiplied);
+
+            SoftwareBitmap resized = SoftwareBitmap.Convert(swbmp, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+
+            SoftwareBitmapSource source = new SoftwareBitmapSource();
+            await source.SetBitmapAsync(resized);
+
+            return source;
         }
     }
 }

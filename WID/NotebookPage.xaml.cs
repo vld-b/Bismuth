@@ -26,6 +26,7 @@ namespace WID
     /// </summary>
     public sealed partial class NotebookPage : Grid
     {
+        public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
@@ -33,9 +34,16 @@ namespace WID
         public NotebookPage()
         {
             this.InitializeComponent();
+            canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+        }
+
+        public NotebookPage(double width, double height) : this()
+        {
+            grid.Width = width;
+            grid.Height = height;
         }
 
         public async Task LoadFromStream(IInputStream stream)

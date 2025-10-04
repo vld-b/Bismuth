@@ -17,6 +17,15 @@
             FallbackColor="Black" />
     </Page.Background>
 
+    <Page.Resources>
+        <DataTemplate
+            x:Key="PageThumbnail"
+            x:DataType="local:NotebookPage"
+            >
+            <local:NotebookPage />
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -148,18 +157,37 @@
                     >
                     <GridView
                         x:Name="gvThumbnails"
+                        Height="Auto"
+                        Width="Auto"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
                         Loaded="ThumbnailGridViewLoaded"
+                        CanDragItems="True"
+                        CanReorderItems="True"
+                        AllowDrop="True"
+                        ReorderMode="Enabled"
                         >
-                        <GridView.ItemTemplate>
-                            <DataTemplate>
-                                <local:NotebookPage />
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <ItemsWrapGrid Orientation="Vertical" MaximumRowsOrColumns="2" />
+                                <ItemsWrapGrid
+                                    Orientation="Horizontal"
+                                    MaximumRowsOrColumns="2"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
+                        <GridView.ItemContainerStyle>
+                            <Style 
+                                TargetType="GridViewItem"
+                                >
+                                <Setter Property="Width" Value="176" />
+                                <Setter Property="Height" Value="264" />
+                                <Setter Property="Margin" Value="10" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </GridView.ItemContainerStyle>
                     </GridView>
                 </Grid>
             </SplitView.Pane>
