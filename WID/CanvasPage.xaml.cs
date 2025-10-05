@@ -1,11 +1,13 @@
 ﻿using ABI.Windows.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
@@ -110,7 +112,7 @@ namespace WID
             if (file is null || configFile is null)
                 return;
 
-            List<string> pages = new List<string>();
+            ObservableCollection<string> pages = new ObservableCollection<string>();
             int i = 0;
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -120,7 +122,7 @@ namespace WID
                 ++i;
             }
             if (config is null)
-                config = new FileConfig(pages);
+                config = new FileConfig(pages, i, new List<int>());
             else
                 config.pageMapping = pages;
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
@@ -175,8 +177,14 @@ namespace WID
                 foreach (string pageName in config!.pageMapping)
                 {
                     StorageFile ink = await file.GetFileAsync(pageName);
-                    NotebookPage page = new NotebookPage(1920, 2880);
-                    await page.LoadFromFile(ink);
+                    NotebookPage page;
+                    int firstParanthesis = pageName.IndexOf("(");
+                    int currentPageID = 0;
+                    if (firstParanthesis == -1)
+                        page = new NotebookPage(0, 1920, 2880);
+                    else
+                        page = new NotebookPage(int.Parse(pageName[(pageName.IndexOf("(") + 1)..pageName.IndexOf(")")]), 1920, 2880);
+                        await page.LoadFromFile(ink);
                     page.Loaded += (s, e) => SetupPage(page);
                     spPageView.Children.Add(page);
                 }
@@ -185,7 +193,7 @@ namespace WID
 
         private void AddPage(object sender, RoutedEventArgs e)
         {
-            NotebookPage page = new NotebookPage();
+            NotebookPage page = new NotebookPage(++config!.maxID);
             SetupPage(page);
             spPageView.Children.Add(page);
         }
@@ -262,7 +270,7 @@ namespace WID
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage(page.Width, page.Height);
+                NotebookPage pageThumb = new NotebookPage(page.id, page.Width, page.Height);
                 //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 //{
                 //    await page.SaveToStream(stream);
@@ -280,21 +288,20 @@ namespace WID
                 };
                 gvThumbnails.Items.Add(pageThumb);
                 //gvThumbnails.Items.Add(await RenderThumbnail(page));
-                Debug.WriteLine("Added a page with:" + gvThumbnails.Items.Count);
             }
         }
 
-        private async void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
+        private void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
         {
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage();
-                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-                {
-                    await page.SaveToStream(stream);
-                    stream.Seek(0);
-                    await pageThumb.LoadFromStream(stream);
-                }
+                NotebookPage pageThumb = new NotebookPage(page.id);
+                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                //{
+                //    await page.SaveToStream(stream);
+                //    stream.Seek(0);
+                //    await pageThumb.LoadFromStream(stream);
+                //}
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.Width = 200;
                 pageThumb.Height = 200;
@@ -321,6 +328,11 @@ namespace WID
             await source.SetBitmapAsync(resized);
 
             return source;
+        }
+
+        private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+
         }
     }
 }

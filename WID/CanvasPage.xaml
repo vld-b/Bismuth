@@ -17,15 +17,6 @@
             FallbackColor="Black" />
     </Page.Background>
 
-    <Page.Resources>
-        <DataTemplate
-            x:Key="PageThumbnail"
-            x:DataType="local:NotebookPage"
-            >
-            <local:NotebookPage />
-        </DataTemplate>
-    </Page.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -166,6 +157,7 @@
                         CanReorderItems="True"
                         AllowDrop="True"
                         ReorderMode="Enabled"
+                        DragItemsCompleted="PagesReordered"
                         >
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
