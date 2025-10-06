@@ -1,11 +1,13 @@
 ﻿using ABI.Windows.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
@@ -18,6 +20,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Devices.Usb;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -28,6 +31,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -108,18 +112,17 @@ namespace WID
             if (file is null || configFile is null)
                 return;
 
-            List<string> pages = new List<string>();
+            ObservableCollection<string> pages = new ObservableCollection<string>();
             int i = 0;
             foreach (NotebookPage page in spPageView.Children)
             {
                 StorageFile pageFile = await file.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
                 pages.Add(pageFile.Name);
-                using (IOutputStream opStream = (await pageFile.OpenStreamForWriteAsync()).AsOutputStream())
-                    await page.inkPres.StrokeContainer.SaveAsync(opStream);
+                await page.SaveToFile(pageFile);
                 ++i;
             }
             if (config is null)
-                config = new FileConfig(pages);
+                config = new FileConfig(pages, i, new List<int>());
             else
                 config.pageMapping = pages;
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
@@ -174,10 +177,15 @@ namespace WID
                 foreach (string pageName in config!.pageMapping)
                 {
                     StorageFile ink = await file.GetFileAsync(pageName);
-                    NotebookPage page = new NotebookPage();
+                    NotebookPage page;
+                    int firstParanthesis = pageName.IndexOf("(");
+                    int currentPageID = 0;
+                    if (firstParanthesis == -1)
+                        page = new NotebookPage(0, 1920, 2880);
+                    else
+                        page = new NotebookPage(int.Parse(pageName[(pageName.IndexOf("(") + 1)..pageName.IndexOf(")")]), 1920, 2880);
+                        await page.LoadFromFile(ink);
                     page.Loaded += (s, e) => SetupPage(page);
-                    using (IInputStream ipStream = (await ink.OpenStreamForReadAsync()).AsInputStream())
-                        await page.inkPres.StrokeContainer.LoadAsync(ipStream);
                     spPageView.Children.Add(page);
                 }
             }
@@ -185,7 +193,7 @@ namespace WID
 
         private void AddPage(object sender, RoutedEventArgs e)
         {
-            NotebookPage page = new NotebookPage();
+            NotebookPage page = new NotebookPage(++config!.maxID);
             SetupPage(page);
             spPageView.Children.Add(page);
         }
@@ -258,6 +266,83 @@ namespace WID
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
+            //ThumbnailGridViewLoaded(null, null);
+            gvThumbnails.Items.Clear();
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                NotebookPage pageThumb = new NotebookPage(page.id, page.Width, page.Height);
+                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                //{
+                //    await page.SaveToStream(stream);
+                //    stream.Seek(0);
+                //    await pageThumb.LoadFromStream(stream);
+                //}
+                pageThumb.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                pageThumb.RenderTransform = new ScaleTransform
+                {
+                    ScaleX = 176 / page.Width,
+                    ScaleY = 264 / page.Height,
+                    CenterX = 0,
+                    CenterY = 0,
+                };
+                gvThumbnails.Items.Add(pageThumb);
+                //gvThumbnails.Items.Add(await RenderThumbnail(page));
+            }
+        }
+
+        private void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                NotebookPage pageThumb = new NotebookPage(page.id);
+                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                //{
+                //    await page.SaveToStream(stream);
+                //    stream.Seek(0);
+                //    await pageThumb.LoadFromStream(stream);
+                //}
+                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                pageThumb.Width = 200;
+                pageThumb.Height = 200;
+                gvThumbnails.Items.Clear();
+                gvThumbnails.Items.Add(pageThumb);
+            }
+        }
+
+        private async Task<SoftwareBitmapSource> RenderThumbnail(NotebookPage page)
+        {
+            RenderTargetBitmap rtbmp = new RenderTargetBitmap();
+            await rtbmp.RenderAsync(page);
+
+            SoftwareBitmap swbmp = SoftwareBitmap.CreateCopyFromBuffer(
+                await rtbmp.GetPixelsAsync(),
+                BitmapPixelFormat.Rgba8,
+                rtbmp.PixelWidth,
+                rtbmp.PixelHeight,
+                BitmapAlphaMode.Premultiplied);
+
+            SoftwareBitmap resized = SoftwareBitmap.Convert(swbmp, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+
+            SoftwareBitmapSource source = new SoftwareBitmapSource();
+            await source.SetBitmapAsync(resized);
+
+            return source;
+        }
+
+        private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            for (int i = 0; i < gvThumbnails.Items.Count; ++i)
+            {
+                if ((gvThumbnails.Items[i] as NotebookPage)!.id != (spPageView.Children[i] as NotebookPage)!.id)
+                {
+                    uint oldIndex = (uint)spPageView.Children.OfType<NotebookPage>().ToList().FindIndex(n => ((NotebookPage)n).id == ((NotebookPage)gvThumbnails.Items[i])!.id), newIndex = (uint)i;
+                    spPageView.Children.Move(oldIndex, newIndex);
+                    if (config is not null)
+                        config.pageMapping.Move((int)oldIndex, (int)newIndex);
+                    break;
+                }
+            }
         }
     }
 }

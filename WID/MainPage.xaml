@@ -60,7 +60,7 @@
         <Grid
             x:Name="TitleBar"
             Background="Transparent"
-            Height="Auto"
+            Height="36"
             >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

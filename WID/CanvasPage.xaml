@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     mc:Ignorable="d">
 
     <Page.Background>
@@ -40,7 +41,7 @@
 
         <StackPanel
             Grid.Row="0"
-            Height="Auto"
+            Height="36"
             Width="Auto"
             Orientation="Horizontal"
             Spacing="10"
@@ -51,7 +52,14 @@
                 BorderBrush="Transparent"
                 ToolTipService.ToolTip="Go Back"
                 >
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE112;"  />
+                <muxc:AnimatedIcon>
+                    <muxc:AnimatedIcon.Source>
+                        <animatedvisuals:AnimatedBackVisualSource />
+                    </muxc:AnimatedIcon.Source>
+                    <muxc:AnimatedIcon.FallbackIconSource>
+                        <muxc:FontIconSource FontFamily="Segoe Fluent Icons" Glyph="&#xE112;" />
+                    </muxc:AnimatedIcon.FallbackIconSource>
+                </muxc:AnimatedIcon>
             </Button>
             <muxc:DropDownButton
                 AutomationProperties.Name="ddFileOptions"
@@ -138,9 +146,41 @@
                     BorderBrush="{ThemeResource SystemControlAcrylicWindowBrush}"
                     BorderThickness="0, 0, 4, 0"
                     >
-                    <Button>
-                        Halihalo
-                    </Button>
+                    <GridView
+                        x:Name="gvThumbnails"
+                        Height="Auto"
+                        Width="Auto"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Loaded="ThumbnailGridViewLoaded"
+                        CanDragItems="True"
+                        CanReorderItems="True"
+                        AllowDrop="True"
+                        ReorderMode="Enabled"
+                        DragItemsCompleted="PagesReordered"
+                        >
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid
+                                    Orientation="Horizontal"
+                                    MaximumRowsOrColumns="2"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemContainerStyle>
+                            <Style 
+                                TargetType="GridViewItem"
+                                >
+                                <Setter Property="Width" Value="176" />
+                                <Setter Property="Height" Value="264" />
+                                <Setter Property="Margin" Value="10" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                            </Style>
+                        </GridView.ItemContainerStyle>
+                    </GridView>
                 </Grid>
             </SplitView.Pane>
             <ScrollViewer
