@@ -334,19 +334,33 @@ namespace WID
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
         {
-            for (int i = 0; i < gvThumbnails.Items.Count; ++i)
+            Debug.WriteLine(((NotebookPage)args.Items[0]).id);
+            int movedPageID = ((NotebookPage)args.Items[0]).id;
+            int oldIndex = -1, newIndex = -1, i = 0;
+
+            foreach (NotebookPage page in spPageView.Children)
             {
-                int currentPageId = ((NotebookPage)((GridViewItem)gvThumbnails.Items[i]).Content)!.id;
-                if (currentPageId != ((NotebookPage)spPageView.Children[i])!.id)
+                if (page.id == movedPageID)
                 {
-                    uint oldIndex = (uint)spPageView.Children.OfType<NotebookPage>().ToList().FindIndex(n => n.id == currentPageId), newIndex = (uint)i;
-                    spPageView.Children.Move(oldIndex, newIndex);
-                    tbTest.Text += "Changed " + oldIndex + " with " + newIndex;
-                    if (config is not null)
-                        config.pageMapping.Move((int)oldIndex, (int)newIndex);
+                    oldIndex = i;
                     break;
                 }
+                ++i;
             }
+
+            i = 0;
+            foreach (GridViewItem page in sender.Items)
+            {
+                if (((NotebookPage)page.Content).id == movedPageID)
+                {
+                    newIndex = i;
+                    break;
+                }
+                ++i;
+            }
+
+            if (oldIndex != -1 && newIndex != -1 && oldIndex != newIndex)
+                spPageView.Children.Move((uint)oldIndex, (uint)newIndex);
         }
     }
 }
