@@ -360,7 +360,10 @@ namespace WID
             }
 
             if (oldIndex != -1 && newIndex != -1 && oldIndex != newIndex)
+            {
                 spPageView.Children.Move((uint)oldIndex, (uint)newIndex);
+                config!.pageMapping.Move(oldIndex, newIndex);
+            }
         }
     }
 }
