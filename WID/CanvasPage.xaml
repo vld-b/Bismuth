@@ -153,9 +153,9 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Loaded="ThumbnailGridViewLoaded"
-                        CanDragItems="True"
-                        CanReorderItems="True"
                         AllowDrop="True"
+                        CanReorderItems="True"
+                        CanDragItems="True"
                         ReorderMode="Enabled"
                         DragItemsCompleted="PagesReordered"
                         >
@@ -169,17 +169,6 @@
                                     />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
-                        <GridView.ItemContainerStyle>
-                            <Style 
-                                TargetType="GridViewItem"
-                                >
-                                <Setter Property="Width" Value="176" />
-                                <Setter Property="Height" Value="264" />
-                                <Setter Property="Margin" Value="10" />
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
-                        </GridView.ItemContainerStyle>
                     </GridView>
                 </Grid>
             </SplitView.Pane>

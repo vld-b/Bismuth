@@ -271,12 +271,7 @@ namespace WID
             foreach (NotebookPage page in spPageView.Children)
             {
                 NotebookPage pageThumb = new NotebookPage(page.id, page.Width, page.Height);
-                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-                //{
-                //    await page.SaveToStream(stream);
-                //    stream.Seek(0);
-                //    await pageThumb.LoadFromStream(stream);
-                //}
+                //pageThumb.SetupAsThumbnail();
                 pageThumb.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.RenderTransform = new ScaleTransform
@@ -286,8 +281,15 @@ namespace WID
                     CenterX = 0,
                     CenterY = 0,
                 };
-                gvThumbnails.Items.Add(pageThumb);
-                //gvThumbnails.Items.Add(await RenderThumbnail(page));
+                GridViewItem gvI = new GridViewItem();
+                gvI.Content = pageThumb;
+                gvThumbnails.Items.Add(gvI);
+                GridViewItem pageThumbAsGridViewItem = (GridViewItem)gvThumbnails.Items.Last();
+                pageThumbAsGridViewItem.Width = 176;
+                pageThumbAsGridViewItem.Height = 264;
+                pageThumbAsGridViewItem.Margin = new Thickness(10);
+                pageThumbAsGridViewItem.HorizontalAlignment = HorizontalAlignment.Center;
+                pageThumbAsGridViewItem.VerticalAlignment = VerticalAlignment.Center;
             }
         }
 
@@ -334,10 +336,12 @@ namespace WID
         {
             for (int i = 0; i < gvThumbnails.Items.Count; ++i)
             {
-                if ((gvThumbnails.Items[i] as NotebookPage)!.id != (spPageView.Children[i] as NotebookPage)!.id)
+                int currentPageId = ((NotebookPage)((GridViewItem)gvThumbnails.Items[i]).Content)!.id;
+                if (currentPageId != ((NotebookPage)spPageView.Children[i])!.id)
                 {
-                    uint oldIndex = (uint)spPageView.Children.OfType<NotebookPage>().ToList().FindIndex(n => ((NotebookPage)n).id == ((NotebookPage)gvThumbnails.Items[i])!.id), newIndex = (uint)i;
+                    uint oldIndex = (uint)spPageView.Children.OfType<NotebookPage>().ToList().FindIndex(n => n.id == currentPageId), newIndex = (uint)i;
                     spPageView.Children.Move(oldIndex, newIndex);
+                    tbTest.Text += "Changed " + oldIndex + " with " + newIndex;
                     if (config is not null)
                         config.pageMapping.Move((int)oldIndex, (int)newIndex);
                     break;
