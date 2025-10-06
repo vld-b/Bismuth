@@ -332,7 +332,17 @@ namespace WID
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
         {
-
+            for (int i = 0; i < gvThumbnails.Items.Count; ++i)
+            {
+                if ((gvThumbnails.Items[i] as NotebookPage)!.id != (spPageView.Children[i] as NotebookPage)!.id)
+                {
+                    uint oldIndex = (uint)spPageView.Children.OfType<NotebookPage>().ToList().FindIndex(n => ((NotebookPage)n).id == ((NotebookPage)gvThumbnails.Items[i])!.id), newIndex = (uint)i;
+                    spPageView.Children.Move(oldIndex, newIndex);
+                    if (config is not null)
+                        config.pageMapping.Move((int)oldIndex, (int)newIndex);
+                    break;
+                }
+            }
         }
     }
 }
