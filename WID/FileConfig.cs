@@ -22,6 +22,23 @@ namespace WID
             this.maxID = maxID;
             this.usableIDs = usableIDs;
         }
+
+        public void DeletePageWithId(int id)
+        {
+            if (id == 0)
+                pageMapping.Remove("page.gif");
+            else
+            {
+                for (int i = 0; i < pageMapping.Count; ++i)
+                {
+                    if (pageMapping[i] == ("page ("+id+").gif"))
+                    {
+                        pageMapping.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     [JsonSerializable(typeof(FileConfig))]

@@ -18,7 +18,6 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Preview.Notes;
 using Windows.Devices.Usb;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -125,7 +124,7 @@ namespace WID
                 config = new FileConfig(pages, i, new List<int>());
             else
                 config.pageMapping = pages;
-            configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
         }
@@ -204,6 +203,13 @@ namespace WID
             NotebookPage page = new NotebookPage(++config!.maxID, 1920, 2880);
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
             spPageView.Children.Add(page);
+            BringIntoViewOptions options = new BringIntoViewOptions
+            {
+                AnimationDesired = true,
+                VerticalAlignmentRatio = 0.1d,
+                HorizontalAlignmentRatio = 0.5d,
+            };
+            page.StartBringIntoView(options);
         }
 
         private void InkToolChanged(InkToolbar sender, object args)
@@ -359,7 +365,7 @@ namespace WID
             }
         }
 
-        private void DeletePage(object sender, DeletePageArgs args)
+        private async void DeletePage(object sender, DeletePageArgs args)
         {
             int i = 0;
             foreach (GridViewItem pageThumb in gvThumbnails.Items)
@@ -381,6 +387,15 @@ namespace WID
                     break;
                 }
                 ++i;
+            }
+
+            config!.DeletePageWithId(args.id);
+            if (args.id == 0)
+            {
+                await (await file!.GetFileAsync("page.gif")).DeleteAsync();
+            } else
+            {
+                await (await file!.GetFileAsync("page (" + args.id + ").gif")).DeleteAsync();
             }
         }
     }

@@ -173,6 +173,7 @@
                 </Grid>
             </SplitView.Pane>
             <ScrollViewer
+                x:Name="svPageZoom"
                 ZoomMode="Enabled"
                 MinZoomFactor="0.1"
                 MaxZoomFactor="10"
