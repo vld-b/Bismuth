@@ -32,14 +32,18 @@ namespace WID
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
 
-        public NotebookPage(int id)
+        public NotebookPage()
         {
             this.InitializeComponent();
-            this.id = id;
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+        }
+
+        public NotebookPage(int id) : this()
+        {
+            this.id = id;
         }
 
         public NotebookPage(int id, double width, double height) : this(id)
