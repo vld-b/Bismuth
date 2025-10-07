@@ -12,10 +12,10 @@ namespace WID
         public string fileName { get; private set; }
         public bool IsFolder { get; private set; }
 
-        public NotebookItem(string Name, bool IsFolder)
+        public NotebookItem(string Name, string fileName, bool IsFolder)
         {
-            this.Name = (IsFolder ? "(Folder) " : "") + Name;
-            this.fileName = Name;
+            this.Name = Name;
+            this.fileName = fileName;
             this.IsFolder = IsFolder;
         }
     }

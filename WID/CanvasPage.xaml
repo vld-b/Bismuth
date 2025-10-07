@@ -116,7 +116,7 @@
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
             <Button
-                Click="AddPage"
+                Click="AddPageClicked"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ToolTipService.ToolTip="Add Page"

@@ -167,7 +167,7 @@ namespace WID
             if (file is null)
                 return;
 
-            tbAppTitle.Text += file.DisplayName;
+            tbAppTitle.Text += file.DisplayName[..(file.DisplayName.Length-9)];
 
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
@@ -188,12 +188,21 @@ namespace WID
                     page.Loaded += (s, e) => SetupPage(page);
                     spPageView.Children.Add(page);
                 }
+            } else
+            {
+                config = new FileConfig(new ObservableCollection<string>(), -1, new List<int>());
+                AddPage();
             }
         }
 
-        private void AddPage(object sender, RoutedEventArgs e)
+        private void AddPageClicked(object sender, RoutedEventArgs e)
         {
-            NotebookPage page = new NotebookPage(++config!.maxID);
+            AddPage();
+        }
+
+        private void AddPage()
+        {
+            NotebookPage page = new NotebookPage(++config!.maxID, 1920, 2880);
             SetupPage(page);
             spPageView.Children.Add(page);
         }
@@ -201,7 +210,7 @@ namespace WID
         private void SetupPage(NotebookPage page)
         {
             page.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
-            if ((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked)
+            if ((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!)
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
             page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
@@ -266,7 +275,6 @@ namespace WID
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
-            //ThumbnailGridViewLoaded(null, null);
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -283,13 +291,12 @@ namespace WID
                 };
                 GridViewItem gvI = new GridViewItem();
                 gvI.Content = pageThumb;
+                gvI.Width = 176;
+                gvI.Height = 264;
+                gvI.Margin = new Thickness(10);
+                gvI.HorizontalAlignment = HorizontalAlignment.Center;
+                gvI.VerticalAlignment = VerticalAlignment.Center;
                 gvThumbnails.Items.Add(gvI);
-                GridViewItem pageThumbAsGridViewItem = (GridViewItem)gvThumbnails.Items.Last();
-                pageThumbAsGridViewItem.Width = 176;
-                pageThumbAsGridViewItem.Height = 264;
-                pageThumbAsGridViewItem.Margin = new Thickness(10);
-                pageThumbAsGridViewItem.HorizontalAlignment = HorizontalAlignment.Center;
-                pageThumbAsGridViewItem.VerticalAlignment = VerticalAlignment.Center;
             }
         }
 
@@ -298,12 +305,6 @@ namespace WID
             foreach (NotebookPage page in spPageView.Children)
             {
                 NotebookPage pageThumb = new NotebookPage(page.id);
-                //using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-                //{
-                //    await page.SaveToStream(stream);
-                //    stream.Seek(0);
-                //    await pageThumb.LoadFromStream(stream);
-                //}
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.Width = 200;
                 pageThumb.Height = 200;

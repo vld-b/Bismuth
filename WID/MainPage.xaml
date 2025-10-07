@@ -32,7 +32,7 @@
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE104;" />
                     </Button>
                     <Button
-                        Click="DeleteFolderOrFile"
+                        Click="DeleteFolder"
                         ToolTipService.ToolTip="Delete File"
                         >
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE107;" />
