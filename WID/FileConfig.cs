@@ -38,6 +38,10 @@ namespace WID
                     }
                 }
             }
+            if (id == maxID)
+                --maxID;
+            else
+                usableIDs.Add(id);
         }
     }
 

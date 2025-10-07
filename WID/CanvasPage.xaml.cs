@@ -131,23 +131,23 @@ namespace WID
 
         private void UndoStroke(object sender, RoutedEventArgs e)
         {
-            if (!undoStack.Any()) return;
+            if (undoStack.Count == 0) return;
 
             redoStack.Push(undoStack.Peek().Clone());
             undoStack.Pop().Selected = true;
             //inkPres.StrokeContainer.DeleteSelected();
-            btUndoStroke.IsEnabled = undoStack.Any();
+            btUndoStroke.IsEnabled = undoStack.Count != 0;
             btRedoStroke.IsEnabled = true;
         }
 
         private void RedoStroke(object sender, RoutedEventArgs e)
         {
-            if (!redoStack.Any()) return;
+            if (redoStack.Count != 0) return;
 
             undoStack.Push(redoStack.Pop());
             //inkPres.StrokeContainer.AddStroke(undoStack.Peek());
             btUndoStroke.IsEnabled = true;
-            btRedoStroke.IsEnabled = redoStack.Any();
+            btRedoStroke.IsEnabled = redoStack.Count != 0;
         }
 
         private void PageBack(object sender, RoutedEventArgs e)
@@ -200,7 +200,8 @@ namespace WID
 
         private void AddPage()
         {
-            NotebookPage page = new NotebookPage(++config!.maxID, 1920, 2880);
+            NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
+            config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
