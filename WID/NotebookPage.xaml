@@ -9,7 +9,7 @@
     Background="White"
     Height="Auto"
     Width="Auto"
-    x:Name="grid"
+    Canvas.ZIndex="-1"
     >
     <InkCanvas
         x:Name="inkCanvas"

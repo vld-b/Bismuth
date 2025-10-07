@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -32,24 +33,28 @@ namespace WID
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
 
-        public NotebookPage()
+        public NotebookPage(int id)
         {
             this.InitializeComponent();
+            this.id = id;
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
         }
 
-        public NotebookPage(int id) : this()
-        {
-            this.id = id;
-        }
-
         public NotebookPage(int id, double width, double height) : this(id)
         {
-            grid.Width = width;
-            grid.Height = height;
+            this.Width = width;
+            this.Height = height;
+        }
+
+        public void SetupForDrawing(bool shouldErase, InkDrawingAttributes drawingAttributes, InkToolbar inkToolbar)
+        {
+            inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+            if (shouldErase)
+                inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
+            inkPres.UpdateDefaultDrawingAttributes(drawingAttributes);
         }
 
         public async Task LoadFromStream(IInputStream stream)

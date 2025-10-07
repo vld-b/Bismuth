@@ -22,9 +22,30 @@ namespace WID
     /// </summary>
     public sealed partial class PageThumbnail : Grid
     {
-        public PageThumbnail()
+        public NotebookPage page { get; private set; }
+        public EventHandler<DeletePageArgs> RequestPageDelete;
+
+        public PageThumbnail(int id, double width, double height)
         {
             this.InitializeComponent();
+            page = new NotebookPage(id, width, height);
+            Grid.SetRow(page, 0);
+            this.Children.Insert(0, page);
+        }
+
+        private void DeleteNote(object sender, RoutedEventArgs e)
+        {
+            RequestPageDelete?.Invoke(sender, new DeletePageArgs(this.page.id));
+        }
+    }
+
+    public class DeletePageArgs : EventArgs
+    {
+        public int id { get; private set; }
+
+        public DeletePageArgs(int id)
+        {
+            this.id = id;
         }
     }
 }

@@ -113,10 +113,10 @@ namespace WID
                 return;
 
             ObservableCollection<string> pages = new ObservableCollection<string>();
-            int i = 0;
+            int i = -1;
             foreach (NotebookPage page in spPageView.Children)
             {
-                StorageFile pageFile = await file.CreateFileAsync("page" + (i == 0 ? "" : " ("+i+")") + ".gif", CreationCollisionOption.OpenIfExists);
+                StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
                 pages.Add(pageFile.Name);
                 await page.SaveToFile(pageFile);
                 ++i;
@@ -179,19 +179,18 @@ namespace WID
                     StorageFile ink = await file.GetFileAsync(pageName);
                     NotebookPage page;
                     int firstParanthesis = pageName.IndexOf("(");
-                    int currentPageID = 0;
                     if (firstParanthesis == -1)
                         page = new NotebookPage(0, 1920, 2880);
                     else
                         page = new NotebookPage(int.Parse(pageName[(pageName.IndexOf("(") + 1)..pageName.IndexOf(")")]), 1920, 2880);
                         await page.LoadFromFile(ink);
-                    page.Loaded += (s, e) => SetupPage(page);
+                    this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
                     spPageView.Children.Add(page);
                 }
             } else
             {
                 config = new FileConfig(new ObservableCollection<string>(), -1, new List<int>());
-                AddPage();
+                this.Loaded += (s, e) => AddPage();
             }
         }
 
@@ -203,16 +202,8 @@ namespace WID
         private void AddPage()
         {
             NotebookPage page = new NotebookPage(++config!.maxID, 1920, 2880);
-            SetupPage(page);
+            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
             spPageView.Children.Add(page);
-        }
-
-        private void SetupPage(NotebookPage page)
-        {
-            page.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
-            if ((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!)
-                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
-            page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
 
         private void InkToolChanged(InkToolbar sender, object args)
@@ -278,17 +269,18 @@ namespace WID
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage(page.id, page.Width, page.Height);
+                PageThumbnail pageThumb = new PageThumbnail(page.id, page.Width, page.Height);
                 //pageThumb.SetupAsThumbnail();
-                pageThumb.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
-                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
-                pageThumb.RenderTransform = new ScaleTransform
+                pageThumb.page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+                pageThumb.page.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+                pageThumb.page.RenderTransform = new ScaleTransform
                 {
                     ScaleX = 176 / page.Width,
                     ScaleY = 264 / page.Height,
                     CenterX = 0,
                     CenterY = 0,
                 };
+                pageThumb.RequestPageDelete += (s, e) => DeletePage(s!, e);
                 GridViewItem gvI = new GridViewItem();
                 gvI.Content = pageThumb;
                 gvI.Width = 176;
@@ -335,8 +327,8 @@ namespace WID
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
         {
-            Debug.WriteLine(((NotebookPage)args.Items[0]).id);
-            int movedPageID = ((NotebookPage)args.Items[0]).id;
+            Debug.WriteLine(((PageThumbnail)args.Items[0]).page.id);
+            int movedPageID = ((PageThumbnail)args.Items[0]).page.id;
             int oldIndex = -1, newIndex = -1, i = 0;
 
             foreach (NotebookPage page in spPageView.Children)
@@ -352,7 +344,7 @@ namespace WID
             i = 0;
             foreach (GridViewItem page in sender.Items)
             {
-                if (((NotebookPage)page.Content).id == movedPageID)
+                if (((PageThumbnail)page.Content).page.id == movedPageID)
                 {
                     newIndex = i;
                     break;
@@ -364,6 +356,31 @@ namespace WID
             {
                 spPageView.Children.Move((uint)oldIndex, (uint)newIndex);
                 config!.pageMapping.Move(oldIndex, newIndex);
+            }
+        }
+
+        private void DeletePage(object sender, DeletePageArgs args)
+        {
+            int i = 0;
+            foreach (GridViewItem pageThumb in gvThumbnails.Items)
+            {
+                if (((PageThumbnail)pageThumb.Content).page.id == args.id)
+                {
+                    gvThumbnails.Items.RemoveAt(i);
+                    break;
+                }
+                ++i;
+            }
+
+            i = 0;
+            foreach(NotebookPage page in spPageView.Children)
+            {
+                if (page.id == args.id)
+                {
+                    spPageView.Children.RemoveAt(i);
+                    break;
+                }
+                ++i;
             }
         }
     }
