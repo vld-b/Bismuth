@@ -206,9 +206,9 @@ namespace WID
                             await bgImage.SetSourceAsync(stream);
                         page = new NotebookPage(pageId, bgImage);
                     }
-
+                    
                     await page.LoadFromFile(ink);
-                    this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
+                    this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
                 }
             } else
@@ -229,7 +229,7 @@ namespace WID
             NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
             config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
             config!.bgMapping.Add(string.Empty);
-            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
+            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
             {
@@ -255,7 +255,7 @@ namespace WID
                 page = new NotebookPage(pageId, bmpImage);
             }
 
-            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
+            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
             {

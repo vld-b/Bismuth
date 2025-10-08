@@ -64,12 +64,12 @@ namespace WID
             this.Height = height;
         }
 
-        public void SetupForDrawing(bool shouldErase, InkDrawingAttributes drawingAttributes, InkToolbar inkToolbar)
+        public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
         {
             inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
             if (shouldErase)
                 inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
-            inkPres.UpdateDefaultDrawingAttributes(drawingAttributes);
+            inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
 
         public async Task LoadFromStream(IInputStream stream)
