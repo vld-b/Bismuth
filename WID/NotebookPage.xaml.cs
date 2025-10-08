@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -28,6 +29,7 @@ namespace WID
     public sealed partial class NotebookPage : Grid
     {
         public int id { get; private set; }
+        public bool hasBg { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
@@ -37,10 +39,23 @@ namespace WID
         {
             this.InitializeComponent();
             this.id = id;
+            this.hasBg = false;
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+        }
+
+        public NotebookPage(int id, BitmapImage bg) : this(id)
+        {
+            Image bgImage = new Image();
+            bgImage.HorizontalAlignment = HorizontalAlignment.Stretch;
+            bgImage.VerticalAlignment = VerticalAlignment.Stretch;
+            bgImage.Source = bg;
+            this.Width = bg.PixelWidth;
+            this.Height = bg.PixelHeight;
+            this.Children.Insert(0, bgImage);
+            this.hasBg = true;
         }
 
         public NotebookPage(int id, double width, double height) : this(id)

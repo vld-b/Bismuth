@@ -113,18 +113,26 @@ namespace WID
                 return;
 
             ObservableCollection<string> pages = new ObservableCollection<string>();
+            ObservableCollection<string> bgImages = new ObservableCollection<string>();
             int i = -1;
             foreach (NotebookPage page in spPageView.Children)
             {
                 StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
                 pages.Add(pageFile.Name);
+                if (page.hasBg)
+                    bgImages.Add("bg" + (page.id == 0 ? "" : " (" + page.id + ")") + ".jpg");
+                else
+                    bgImages.Add(string.Empty);
                 await page.SaveToFile(pageFile);
                 ++i;
             }
             if (config is null)
-                config = new FileConfig(pages, i, new List<int>());
+                config = new FileConfig(pages, bgImages, i, new List<int>());
             else
+            {
                 config.pageMapping = pages;
+                config.bgMapping = bgImages;
+            }
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
@@ -174,22 +182,38 @@ namespace WID
             {
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
                     config = JsonSerializer.Deserialize(ipStream, FileConfigJsonContext.Default.FileConfig);
-                foreach (string pageName in config!.pageMapping)
+                for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    StorageFile ink = await file.GetFileAsync(pageName);
+                    StorageFile ink = await file.GetFileAsync(config!.pageMapping[i]);
                     NotebookPage page;
-                    int firstParanthesis = pageName.IndexOf("(");
-                    if (firstParanthesis == -1)
-                        page = new NotebookPage(0, 1920, 2880);
+
+                    bool firstParanthesis = config.pageMapping[i].Contains("(");
+                    int pageId = -1;
+                    if (firstParanthesis)
+                        pageId = int.Parse(config!.pageMapping[i][(config!.pageMapping[i].IndexOf("(") + 1)..config!.pageMapping[i].IndexOf(")")]);
                     else
-                        page = new NotebookPage(int.Parse(pageName[(pageName.IndexOf("(") + 1)..pageName.IndexOf(")")]), 1920, 2880);
-                        await page.LoadFromFile(ink);
+                        pageId = 0;
+
+                    if (config!.bgMapping[i] == string.Empty)
+                    {
+                        page = new NotebookPage(pageId, 1920, 2880);
+                    }
+                    else
+                    {
+                        BitmapImage bgImage = new BitmapImage();
+                        StorageFile bgFile = await file.GetFileAsync(config.bgMapping[i]);
+                        using (IRandomAccessStream stream = (await bgFile.OpenStreamForReadAsync()).AsRandomAccessStream())
+                            await bgImage.SetSourceAsync(stream);
+                        page = new NotebookPage(pageId, bgImage);
+                    }
+
+                    await page.LoadFromFile(ink);
                     this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
                     spPageView.Children.Add(page);
                 }
             } else
             {
-                config = new FileConfig(new ObservableCollection<string>(), -1, new List<int>());
+                config = new FileConfig(new ObservableCollection<string>(), new ObservableCollection<string>(), -1, new List<int>());
                 this.Loaded += (s, e) => AddPage();
             }
         }
@@ -197,12 +221,40 @@ namespace WID
         private void AddPageClicked(object sender, RoutedEventArgs e)
         {
             AddPage();
+            AddItemFlyout.Hide();
         }
 
         private void AddPage()
         {
             NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
             config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
+            config!.bgMapping.Add(string.Empty);
+            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
+            spPageView.Children.Add(page);
+            BringIntoViewOptions options = new BringIntoViewOptions
+            {
+                AnimationDesired = true,
+                VerticalAlignmentRatio = 0.1d,
+                HorizontalAlignmentRatio = 0.5d,
+            };
+            page.StartBringIntoView(options);
+        }
+
+        private async Task AddPage(StorageFile bg)
+        {
+            int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
+            NotebookPage page;
+            config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
+            config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
+            await bg.MoveAsync(file);
+            await bg.RenameAsync(config.bgMapping.Last());
+            using (IRandomAccessStream stream = (await bg.OpenStreamForReadAsync()).AsRandomAccessStream())
+            {
+                BitmapImage bmpImage = new BitmapImage();
+                await bmpImage.SetSourceAsync(stream);
+                page = new NotebookPage(pageId, bmpImage);
+            }
+
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar.InkDrawingAttributes, inkToolbar);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
@@ -395,9 +447,17 @@ namespace WID
             if (args.id == 0)
             {
                 await (await file!.GetFileAsync("page.gif")).DeleteAsync();
+                await (await file!.GetFileAsync("bg.jpg")).DeleteAsync();
             } else
             {
-                await (await file!.GetFileAsync("page (" + args.id + ").gif")).DeleteAsync();
+                try
+                {
+                    await (await file!.GetFileAsync("page (" + args.id + ").gif")).DeleteAsync();
+                    await (await file!.GetFileAsync("bg (" + args.id + ").jpg")).DeleteAsync();
+                } catch
+                {
+
+                }
             }
         }
 
@@ -409,10 +469,12 @@ namespace WID
 
             StorageFile picture = await cap.CaptureFileAsync(CameraCaptureUIMode.Photo);
 
-            if (picture != null)
+            if (picture is not null)
             {
-                //await picture.MoveAsync(file);
+                await AddPage(picture);
             }
+
+            AddItemFlyout.Hide();
         }
     }
 }

@@ -125,6 +125,7 @@
                 </Button.Content>
                 <Button.Flyout>
                     <Flyout
+                        x:Name="AddItemFlyout"
                         Placement="BottomEdgeAlignedLeft"
                         >
                         <StackPanel
@@ -135,10 +136,10 @@
                                 Click="AddPageClicked"
                                 HorizontalAlignment="Stretch"
                                 ToolTipService.ToolTip="Add empty page"
+                                HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Orientation="Horizontal"
-                                    Spacing="10"
+                                    Style="{StaticResource AddItemFlyout}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
                                     <TextBlock>
@@ -148,10 +149,10 @@
                             </Button>
                             <Button
                                 HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Orientation="Horizontal"
-                                    Spacing="10"
+                                    Style="{StaticResource AddItemFlyout}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;" />
                                     <TextBlock>
@@ -162,10 +163,10 @@
                             <Button
                                 Click="OpenCameraForFileImport"
                                 HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Orientation="Horizontal"
-                                    Spacing="10"
+                                    Style="{StaticResource AddItemFlyout}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE722;" />
                                     <TextBlock>
