@@ -21,6 +21,7 @@ using Windows.Devices.Usb;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
+using Windows.Media.Devices;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -33,6 +34,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using static System.Net.WebRequestMethods;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -50,6 +52,10 @@ namespace WID
 
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
+
+        private Stack<string> pendingDeletions = new Stack<string>();
+        private Stack<StorageFile> pendingMoves = new Stack<StorageFile>();
+        private Stack<RenameItem> pendingRenames = new Stack<RenameItem>();
 
         public CanvasPage()
         {
@@ -159,9 +165,12 @@ namespace WID
             btRedoStroke.IsEnabled = redoStack.Count != 0;
         }
 
-        private void PageBack(object sender, RoutedEventArgs e)
+        private async void PageBack(object sender, RoutedEventArgs e)
         {
             SaveFileWithDialog(sender, e);
+            await Utils.DeletePending(pendingDeletions, file!);
+            await Utils.MovePending(pendingMoves, file!);
+            await Utils.RenamePending(pendingRenames);
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
@@ -202,7 +211,7 @@ namespace WID
                     {
                         BitmapImage bgImage = new BitmapImage();
                         StorageFile bgFile = await file.GetFileAsync(config.bgMapping[i]);
-                        using (IRandomAccessStream stream = (await bgFile.OpenStreamForReadAsync()).AsRandomAccessStream())
+                        using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
                             await bgImage.SetSourceAsync(stream);
                         page = new NotebookPage(pageId, bgImage);
                     }
@@ -249,12 +258,14 @@ namespace WID
             NotebookPage page;
             config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
             config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
-            await bg.MoveAsync(file);
-            await bg.RenameAsync(config.bgMapping.Last());
-            using (IRandomAccessStream stream = (await bg.OpenStreamForReadAsync()).AsRandomAccessStream())
+            pendingMoves.Push(bg);
+            pendingRenames.Push(new RenameItem(bg, config.bgMapping.Last()));
+            using (IRandomAccessStream stream = await bg.OpenAsync(FileAccessMode.Read))
             {
                 BitmapImage bmpImage = new BitmapImage();
+                bmpImage.DecodePixelWidth = 1920;
                 await bmpImage.SetSourceAsync(stream);
+                Debug.WriteLine($"Decoded width: {bmpImage.PixelWidth}, height: {bmpImage.PixelHeight}");
                 page = new NotebookPage(pageId, bmpImage);
             }
 
@@ -328,7 +339,7 @@ namespace WID
         private void OpenPageOverview(object sender, RoutedEventArgs e)
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
-            (sender as ToggleButton).IsChecked = svPageOverview.IsPaneOpen;
+            (sender as ToggleButton)!.IsChecked = svPageOverview.IsPaneOpen;
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -422,7 +433,7 @@ namespace WID
             }
         }
 
-        private async void DeletePage(object sender, DeletePageArgs args)
+        private void DeletePage(object sender, DeletePageArgs args)
         {
             int i = 0;
             foreach (GridViewItem pageThumb in gvThumbnails.Items)
@@ -449,18 +460,12 @@ namespace WID
             config!.DeletePageWithId(args.id);
             if (args.id == 0)
             {
-                await (await file!.GetFileAsync("page.gif")).DeleteAsync();
-                await (await file!.GetFileAsync("bg.jpg")).DeleteAsync();
+                pendingDeletions.Push("page.gif");
+                pendingDeletions.Push("bg.jpg");
             } else
             {
-                try
-                {
-                    await (await file!.GetFileAsync("page (" + args.id + ").gif")).DeleteAsync();
-                    await (await file!.GetFileAsync("bg (" + args.id + ").jpg")).DeleteAsync();
-                } catch
-                {
-
-                }
+                pendingDeletions.Push("page (" + args.id + ").gif");
+                pendingDeletions.Push("bg (" + args.id + ").jpg");
             }
         }
 
