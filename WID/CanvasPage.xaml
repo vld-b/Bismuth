@@ -160,6 +160,7 @@
                                 </StackPanel>
                             </Button>
                             <Button
+                                Click="OpenCameraForFileImport"
                                 HorizontalAlignment="Stretch"
                                 >
                                 <StackPanel

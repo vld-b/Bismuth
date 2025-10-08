@@ -20,6 +20,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Devices.Usb;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
+using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -397,6 +398,20 @@ namespace WID
             } else
             {
                 await (await file!.GetFileAsync("page (" + args.id + ").gif")).DeleteAsync();
+            }
+        }
+
+        private async void OpenCameraForFileImport(object sender, RoutedEventArgs e)
+        {
+            CameraCaptureUI cap = new CameraCaptureUI();
+            cap.PhotoSettings.Format = CameraCaptureUIPhotoFormat.Jpeg;
+            cap.PhotoSettings.AllowCropping = true;
+
+            StorageFile picture = await cap.CaptureFileAsync(CameraCaptureUIMode.Photo);
+
+            if (picture != null)
+            {
+                //await picture.MoveAsync(file);
             }
         }
     }
