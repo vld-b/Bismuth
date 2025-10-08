@@ -68,7 +68,7 @@
                 ToolTipService.ToolTip="File Options"
                 >
                 <muxc:DropDownButton.Content>
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
+                    File
                 </muxc:DropDownButton.Content>
                 <muxc:DropDownButton.Flyout>
                     <MenuFlyout
@@ -116,12 +116,65 @@
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
             <Button
-                Click="AddPageClicked"
                 Background="Transparent"
                 BorderBrush="Transparent"
-                ToolTipService.ToolTip="Add Page"
+                ToolTipService.ToolTip="Add Item"
                 >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE109;" />
+                <Button.Content>
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE109;" />
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout
+                        Placement="BottomEdgeAlignedLeft"
+                        >
+                        <StackPanel
+                            Orientation="Vertical"
+                            Spacing="10"
+                            >
+                            <Button
+                                Click="AddPageClicked"
+                                HorizontalAlignment="Stretch"
+                                ToolTipService.ToolTip="Add empty page"
+                                >
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="10"
+                                    >
+                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
+                                    <TextBlock>
+                                        Add empty page
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                >
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="10"
+                                    >
+                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;" />
+                                    <TextBlock>
+                                        Import file
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                >
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="10"
+                                    >
+                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE722;" />
+                                    <TextBlock>
+                                        Open camera
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
             </Button>
             <ToggleButton
                 Click="OpenPageOverview"
