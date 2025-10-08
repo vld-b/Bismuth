@@ -208,7 +208,10 @@ namespace WID
                     }
                     
                     await page.LoadFromFile(ink);
-                    this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                    if (this.IsLoaded)
+                        page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                    else
+                        this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
                 }
             } else
