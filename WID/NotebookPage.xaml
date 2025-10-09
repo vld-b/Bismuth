@@ -11,6 +11,7 @@
     Width="Auto"
     Canvas.ZIndex="-1"
     >
+
     <InkCanvas
         x:Name="inkCanvas"
         />

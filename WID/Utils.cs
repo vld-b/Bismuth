@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation.Diagnostics;
 using Windows.Storage;
 
 namespace WID
@@ -56,6 +58,15 @@ namespace WID
                 await item.file.RenameAsync(item.to);
             }
             items.Clear();
+        }
+
+        public async static Task ShowPopup(TeachingTip tt, string title, string subtitle, int msDelay)
+        {
+            tt.Title = title;
+            tt.Subtitle = subtitle;
+            tt.IsOpen = true;
+            await Task.Delay(msDelay);
+            tt.IsOpen = false;
         }
     }
 

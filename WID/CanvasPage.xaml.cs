@@ -23,9 +23,11 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -142,6 +144,8 @@ namespace WID
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
+
+            await Utils.ShowPopup(ttInfoPopup, "File saved successfully", "", 3000);
         }
 
         private void UndoStroke(object sender, RoutedEventArgs e)
@@ -483,6 +487,19 @@ namespace WID
             }
 
             AddItemFlyout.Hide();
+        }
+
+        private async void ImportFromFile(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker picker = new FileOpenPicker
+            {
+                FileTypeFilter = { ".pdf", ".jpg", ".png", ".jpeg" },
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.Downloads,
+                CommitButtonText = "Pick file",
+            };
+
+            IReadOnlyList<StorageFile> files = await picker.PickMultipleFilesAsync();
         }
     }
 }
