@@ -60,6 +60,8 @@ namespace WID
         private Stack<StorageFile> pendingMoves = new Stack<StorageFile>();
         private Stack<RenameItem> pendingRenames = new Stack<RenameItem>();
 
+        private Task? savingTask;
+
         public CanvasPage()
         {
             InitializeComponent();
@@ -116,7 +118,21 @@ namespace WID
             //}
         }
 
-        private async void SaveFileWithDialog(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void SaveFile(object sender, RoutedEventArgs e)
+        {
+            SaveFileSafe();
+        }
+
+        private void SaveFileSafe()
+        {
+            if (savingTask == null)
+            {
+                savingTask = SaveFileWithDialog();
+                savingTask.ContinueWith(_ => savingTask = null);
+            }
+        }
+
+        private async Task SaveFileWithDialog()
         {
             if (file is null || configFile is null)
                 return;
@@ -145,6 +161,7 @@ namespace WID
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
+
             await Utils.DeletePending(pendingDeletions, file!);
             await Utils.MovePending(pendingMoves, file!);
             await Utils.RenamePending(pendingRenames);
@@ -175,7 +192,7 @@ namespace WID
 
         private void PageBack(object sender, RoutedEventArgs e)
         {
-            SaveFileWithDialog(sender, e);
+            SaveFileSafe();
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
@@ -288,20 +305,23 @@ namespace WID
 
         private async Task AddPage(PdfDocument bg)
         {
-            for (int i = 0; i < bg.PageCount; ++i)
+            for (uint i = 0; i < bg.PageCount; ++i)
             {
                 int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
                 NotebookPage page;
                 config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
                 config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
-                StorageFile bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
+                StorageFile bgFile;
+                if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.bgMapping.Last()))
+                    bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last());
+                else
+                    bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
                 pendingMoves.Push(bgFile);
-                pendingRenames.Push(new RenameItem(bgFile, config.bgMapping.Last()));
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     BitmapImage bmpImage = new BitmapImage();
                     bmpImage.DecodePixelWidth = 1920;
-                    await bg.GetPage(0).RenderToStreamAsync(stream);
+                    await bg.GetPage(i).RenderToStreamAsync(stream);
                     await bmpImage.SetSourceAsync(stream);
                     page = new NotebookPage(pageId, bmpImage);
 

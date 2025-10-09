@@ -76,7 +76,7 @@
                         >
                         <MenuFlyoutItem
                             Text="Save File"
-                            Click="SaveFileWithDialog"
+                            Click="SaveFile"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="S" Modifiers="Control" />
