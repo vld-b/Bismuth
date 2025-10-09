@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Preview.Notes;
+using Windows.Data.Pdf;
 using Windows.Devices.Usb;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
@@ -172,7 +173,7 @@ namespace WID
             btRedoStroke.IsEnabled = redoStack.Count != 0;
         }
 
-        private async void PageBack(object sender, RoutedEventArgs e)
+        private void PageBack(object sender, RoutedEventArgs e)
         {
             SaveFileWithDialog(sender, e);
 
@@ -270,7 +271,6 @@ namespace WID
                 BitmapImage bmpImage = new BitmapImage();
                 bmpImage.DecodePixelWidth = 1920;
                 await bmpImage.SetSourceAsync(stream);
-                Debug.WriteLine($"Decoded width: {bmpImage.PixelWidth}, height: {bmpImage.PixelHeight}");
                 page = new NotebookPage(pageId, bmpImage);
             }
 
@@ -284,6 +284,49 @@ namespace WID
             };
             page.StartBringIntoView(options);
             page.AnimateIn();
+        }
+
+        private async Task AddPage(PdfDocument bg)
+        {
+            for (int i = 0; i < bg.PageCount; ++i)
+            {
+                int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
+                NotebookPage page;
+                config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
+                config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
+                StorageFile bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
+                pendingMoves.Push(bgFile);
+                pendingRenames.Push(new RenameItem(bgFile, config.bgMapping.Last()));
+                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                {
+                    BitmapImage bmpImage = new BitmapImage();
+                    bmpImage.DecodePixelWidth = 1920;
+                    await bg.GetPage(0).RenderToStreamAsync(stream);
+                    await bmpImage.SetSourceAsync(stream);
+                    page = new NotebookPage(pageId, bmpImage);
+
+                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                    SoftwareBitmap bmp = await decoder.GetSoftwareBitmapAsync();
+                    using (IRandomAccessStream fileStream = await bgFile.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, fileStream);
+                        encoder.SetSoftwareBitmap(bmp);
+                        await encoder.FlushAsync();
+                    }
+                }
+
+                page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                spPageView.Children.Add(page);
+                BringIntoViewOptions options = new BringIntoViewOptions
+                {
+                    AnimationDesired = true,
+                    VerticalAlignmentRatio = 0.1d,
+                    HorizontalAlignmentRatio = 0.5d,
+                };
+                page.StartBringIntoView(options);
+                page.AnimateIn();
+            }
+
         }
 
         private void InkToolChanged(InkToolbar sender, object args)
@@ -502,6 +545,22 @@ namespace WID
             };
 
             IReadOnlyList<StorageFile> files = await picker.PickMultipleFilesAsync();
+
+            foreach (StorageFile file in files)
+            {
+                string newFilePath = ApplicationData.Current.TemporaryFolder.Path + "\\" + file.Name;
+                if (System.IO.File.Exists(newFilePath))
+                {
+                    System.IO.File.Delete(newFilePath);
+                }
+                await file.CopyAsync(ApplicationData.Current.TemporaryFolder);
+                if (file.Name.EndsWith(".pdf"))
+                    await AddPage(await PdfDocument.LoadFromFileAsync(file));
+                else
+                {
+                    await AddPage(file);
+                }
+            }
         }
     }
 }
