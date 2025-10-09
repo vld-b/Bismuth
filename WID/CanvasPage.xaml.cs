@@ -144,6 +144,9 @@ namespace WID
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
+            await Utils.DeletePending(pendingDeletions, file!);
+            await Utils.MovePending(pendingMoves, file!);
+            await Utils.RenamePending(pendingRenames);
 
             await Utils.ShowPopup(ttInfoPopup, "File saved successfully", "", 3000);
         }
@@ -172,9 +175,6 @@ namespace WID
         private async void PageBack(object sender, RoutedEventArgs e)
         {
             SaveFileWithDialog(sender, e);
-            await Utils.DeletePending(pendingDeletions, file!);
-            await Utils.MovePending(pendingMoves, file!);
-            await Utils.RenamePending(pendingRenames);
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
@@ -254,6 +254,7 @@ namespace WID
                 HorizontalAlignmentRatio = 0.5d,
             };
             page.StartBringIntoView(options);
+            page.AnimateIn();
         }
 
         private async Task AddPage(StorageFile bg)
@@ -282,6 +283,7 @@ namespace WID
                 HorizontalAlignmentRatio = 0.5d,
             };
             page.StartBringIntoView(options);
+            page.AnimateIn();
         }
 
         private void InkToolChanged(InkToolbar sender, object args)
