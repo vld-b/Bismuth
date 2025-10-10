@@ -1,0 +1,74 @@
+﻿<Grid
+    x:Class="WID.MenuItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="200"
+    Height="300"
+    >
+
+    <Button
+        Click="OpenItem"
+        x:Name="btClick"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        >
+        <Grid
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid
+                x:Name="grItemPreview"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Grid.Row="0"
+                >
+                <Viewbox
+                    Stretch="Uniform"
+                    >
+                    <FontIcon
+                        FontFamily="Segoe Fluent Icons"
+                        Glyph="&#xE8B7;"
+                        FontSize="24"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        />
+                </Viewbox>
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Height="Auto"
+                    VerticalAlignment="Center"
+                    x:Name="tbItemName"
+                    Text="{x:Bind fileName}"
+                    Grid.Column="0"
+                    />
+                <Button
+                    Grid.Column="1"
+                    >
+                    <FontIcon
+                        FontFamily="Segoe Fluent Icons"
+                        Glyph="&#xE712;"
+                        />
+                </Button>
+            </Grid>
+        </Grid>
+    </Button>
+
+</Grid>

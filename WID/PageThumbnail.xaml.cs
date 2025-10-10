@@ -23,7 +23,7 @@ namespace WID
     public sealed partial class PageThumbnail : Grid
     {
         public NotebookPage page { get; private set; }
-        public EventHandler<DeletePageArgs> RequestPageDelete;
+        public EventHandler<DeletePageArgs>? RequestPageDelete;
 
         public PageThumbnail(int id, double width, double height)
         {

@@ -7,42 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <DataTemplate x:Key="NotebookItem" x:DataType="local:NotebookItem">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    x:Name="tbNotebookTitle"
-                    Text="{x:Bind Name}"
-                    VerticalAlignment="Center"
-                    Grid.Column="0"
-                    />
-                <StackPanel
-                    Grid.Column="1"
-                    Spacing="10"
-                    Orientation="Horizontal"
-                    >
-                    <Button
-                        Click="OpenNote"
-                        ToolTipService.ToolTip="Open File"
-                        >
-                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE104;" />
-                    </Button>
-                    <Button
-                        Click="DeleteFolder"
-                        ToolTipService.ToolTip="Delete File"
-                        >
-                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE107;" />
-                    </Button>
-                </StackPanel>
-
-            </Grid>
-        </DataTemplate>
-    </Page.Resources>
-
     <Page.Background>
         <AcrylicBrush
             BackgroundSource="HostBackdrop"
@@ -74,25 +38,33 @@
         </Grid>
 
         <StackPanel
-        Orientation="Horizontal"
-        Grid.Row="0"
-        >
+            Orientation="Horizontal"
+            Padding="10, 0, 0, 0"
+            Spacing="10"
+            Grid.Row="0"
+            >
             <Button 
-            x:Name="btnNewBook"
-            Content="New notebook"
-            Click="CreateNewNotebook"
-            />
+                x:Name="btnNewBook"
+                Click="CreateNewNotebook"
+                >
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;" />
+            </Button>
             <Button 
-            x:Name="btnNewFolder"
-            Content="New folder"
-            Click="CreateNewFolder"
-            />
+                x:Name="btnNewFolder"
+                Click="CreateNewFolder"
+                >
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8F4;" />
+            </Button>
         </StackPanel>
 
-        <ListView
-        x:Name="lvNotebooks"
-        ItemTemplate="{StaticResource NotebookItem}"
-        Grid.Row="1"
-        />
+        <GridView
+            x:Name="gvNotebooks"
+            IsItemClickEnabled="True"
+            CanDrag="False"
+            ReorderMode="Disabled"
+            CanReorderItems="False"
+            AllowDrop="False"
+            Grid.Row="1"
+            />
     </Grid>
 </Page>

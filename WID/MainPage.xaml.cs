@@ -41,15 +41,19 @@ namespace WID
 
         private async void LoadNotebooks()
         {
-            lvNotebooks.Items.Clear();
+            gvNotebooks.Items.Clear();
 
             IReadOnlyList<StorageFolder> folders = await notes.GetFoldersAsync();
             foreach (StorageFolder folder in folders)
             {
+                MenuItem newItem;
+
                 if (folder.Name.EndsWith(".notebook"))
-                    lvNotebooks.Items.Add(new NotebookItem(folder.DisplayName[..(folder.DisplayName.Length-9)], folder.Name, false));
+                    newItem = new MenuItem(false, folder.Name[0..(folder.Name.Length - 9)], folder.Name, Frame);
                 else
-                    lvNotebooks.Items.Add(new NotebookItem(folder.DisplayName, folder.Name, true));
+                    newItem = new MenuItem(true, folder.Name, folder.Name, Frame);
+
+                gvNotebooks.Items.Add(newItem);
             }
         }
 
@@ -90,7 +94,7 @@ namespace WID
             try
             {
                 StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
-                lvNotebooks.Items.Add(new NotebookItem(newNotebook.DisplayName[..(newNotebook.DisplayName.Length-9)], newNotebook.Name, false));
+                gvNotebooks.Items.Add(new MenuItem(false, newNotebook.DisplayName[..(newNotebook.DisplayName.Length-9)], newNotebook.Name, Frame));
             }
             catch
             {
@@ -109,22 +113,15 @@ namespace WID
         {
             StorageFolder newFolder = await notes.CreateFolderAsync("Test", CreationCollisionOption.GenerateUniqueName);
             int index = (await notes.GetFoldersAsync()).Count - 1;
-            lvNotebooks.Items.Insert(index, new NotebookItem(newFolder.DisplayName, newFolder.Name, true));
+            gvNotebooks.Items.Insert(index, new MenuItem(true, newFolder.Name, newFolder.Name, Frame));
         }
 
-        private void DeleteFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
-            if (nbItem == null) return;
-            Directory.Delete(notes.Path + "\\" + nbItem.fileName, true);
-            lvNotebooks.Items.Remove(nbItem);
-        }
-
-        private async void OpenNote(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
-            if (nbItem == null) return;
-            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(nbItem.fileName), new DrillInNavigationTransitionInfo());
-        }
+        //private void DeleteFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        //{
+        //    NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
+        //    if (nbItem == null) return;
+        //    Directory.Delete(notes.Path + "\\" + nbItem.fileName, true);
+        //    gvNotebooks.Items.Remove(nbItem);
+        //}
     }
 }
