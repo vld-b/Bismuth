@@ -68,7 +68,7 @@
                 ToolTipService.ToolTip="File Options"
                 >
                 <muxc:DropDownButton.Content>
-                    File
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
                 </muxc:DropDownButton.Content>
                 <muxc:DropDownButton.Flyout>
                     <MenuFlyout

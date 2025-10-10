@@ -26,15 +26,17 @@ namespace WID
     public sealed partial class MenuItem : Grid
     {
         public bool isFolder { get; private set; }
-        public string fileName { get; private set; }
+        public string itemName { get; private set;  }
+        public StorageFolder folder { get; private set; }
         public Frame mainPage { get; private set; }
         public Button btOpen { get; private set; }
 
-        public MenuItem(bool isFolder, string itemName, string fileName, Frame mainPage)
+        public MenuItem(bool isFolder, string itemName, StorageFolder folder, Frame mainPage)
         {
             this.InitializeComponent();
-            this.fileName = fileName;
             this.isFolder = isFolder;
+            this.itemName = itemName;
+            this.folder = folder;
             this.mainPage = mainPage;
             btOpen = btClick;
             if (!isFolder)
@@ -43,17 +45,17 @@ namespace WID
             }
         }
 
-        private async void OpenItem(object sender, RoutedEventArgs e)
+        private void OpenItem(object sender, RoutedEventArgs e)
         {
             if (isFolder)
             {
 
             } else
             {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    mainPage.Navigate(typeof(CanvasPage), await ApplicationData.Current.LocalFolder.GetFolderAsync(fileName), new DrillInNavigationTransitionInfo());
-                });
+                Debug.WriteLine(Dispatcher.HasThreadAccess);
+                Debug.WriteLine(this.folder.Name);
+                Debug.WriteLine(mainPage.Name);
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => mainPage.Navigate(typeof(CanvasPage), folder, new DrillInNavigationTransitionInfo()));
             }
         }
     }

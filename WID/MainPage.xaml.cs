@@ -39,7 +39,7 @@ namespace WID
             tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
         }
 
-        private async void LoadNotebooks()
+        private async Task LoadNotebooks()
         {
             gvNotebooks.Items.Clear();
 
@@ -49,9 +49,9 @@ namespace WID
                 MenuItem newItem;
 
                 if (folder.Name.EndsWith(".notebook"))
-                    newItem = new MenuItem(false, folder.Name[0..(folder.Name.Length - 9)], folder.Name, Frame);
+                    newItem = new MenuItem(false, folder.Name[0..(folder.Name.Length - 9)], folder, Frame);
                 else
-                    newItem = new MenuItem(true, folder.Name, folder.Name, Frame);
+                    newItem = new MenuItem(true, folder.Name, folder, Frame);
 
                 gvNotebooks.Items.Add(newItem);
             }
@@ -94,7 +94,7 @@ namespace WID
             try
             {
                 StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
-                gvNotebooks.Items.Add(new MenuItem(false, newNotebook.DisplayName[..(newNotebook.DisplayName.Length-9)], newNotebook.Name, Frame));
+                gvNotebooks.Items.Add(new MenuItem(false, newNotebook.DisplayName[..(newNotebook.DisplayName.Length-9)], newNotebook, Frame));
             }
             catch
             {
@@ -113,7 +113,7 @@ namespace WID
         {
             StorageFolder newFolder = await notes.CreateFolderAsync("Test", CreationCollisionOption.GenerateUniqueName);
             int index = (await notes.GetFoldersAsync()).Count - 1;
-            gvNotebooks.Items.Insert(index, new MenuItem(true, newFolder.Name, newFolder.Name, Frame));
+            gvNotebooks.Items.Insert(index, new MenuItem(true, newFolder.Name, newFolder, Frame));
         }
 
         //private void DeleteFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)

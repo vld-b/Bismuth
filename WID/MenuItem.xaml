@@ -55,8 +55,7 @@
                 <TextBlock
                     Height="Auto"
                     VerticalAlignment="Center"
-                    x:Name="tbItemName"
-                    Text="{x:Bind fileName}"
+                    Text="{x:Bind itemName}"
                     Grid.Column="0"
                     />
                 <Button
@@ -66,6 +65,21 @@
                         FontFamily="Segoe Fluent Icons"
                         Glyph="&#xE712;"
                         />
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel
+                                Orientation="Vertical"
+                                Spacing="10"
+                                >
+                                <Button>
+                                    <StackPanel>
+                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+                                        <TextBlock Text="Delete" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
                 </Button>
             </Grid>
         </Grid>
