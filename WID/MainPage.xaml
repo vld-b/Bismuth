@@ -102,6 +102,51 @@
                                 FontFamily="Segoe Fluent Icons"
                                 Glyph="&#xE712;"
                                 />
+                            <Button.Flyout>
+                                <Flyout
+                                    Placement="BottomEdgeAlignedRight"
+                                    >
+                                    <StackPanel
+                                        Orientation="Vertical"
+                                        Spacing="10"
+                                        >
+                                        <Button
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            >
+                                            <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="10"
+                                                >
+                                                <FontIcon
+                                                    FontFamily="Segoe Fluent Icons"
+                                                    Glyph="&#xE70F;"
+                                                          />
+                                                <TextBlock>
+                                                    Rename
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            >
+                                            <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="10"
+                                                >
+                                                <FontIcon
+                                                    FontFamily="Segoe Fluent Icons"
+                                                    Glyph="&#xE74D;"
+                                                          />
+                                                <TextBlock>
+                                                    Delete
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
                         </Button>
                         <Viewbox
                             Stretch="UniformToFill"

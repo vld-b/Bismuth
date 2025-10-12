@@ -47,13 +47,10 @@ namespace WID
                 double maxWidth = 480;
 
                 int columns = Math.Max(1, (int)(e.NewSize.Width / minWidth));
-                Debug.WriteLine("Columns: " + columns);
 
                 double itemWidth = e.NewSize.Width / columns;
-                Debug.WriteLine("ItemWidth: " + itemWidth);
 
                 itemWidth = Math.Max(minWidth, Math.Min(maxWidth, itemWidth));
-                Debug.WriteLine("ItemWidth: " + itemWidth);
 
                 panel.ItemWidth = itemWidth;
                 panel.ItemHeight = double.NaN;
