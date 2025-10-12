@@ -30,6 +30,7 @@
     <Page Remove="AppPackages\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" />
     <PackageReference Include="System.Text.Json" Version="9.0.9" />
   </ItemGroup>

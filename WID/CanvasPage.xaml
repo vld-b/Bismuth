@@ -16,6 +16,7 @@
             TintOpacity="0.6"
             FallbackColor="Black" />
     </Page.Background>
+    
 
     <Grid>
         <Grid.RowDefinitions>
@@ -139,7 +140,7 @@
                                 HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Style="{StaticResource AddItemFlyout}"
+                                    Style="{StaticResource FlyoutButtonStackPanel}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
                                     <TextBlock>
@@ -153,7 +154,7 @@
                                 HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Style="{StaticResource AddItemFlyout}"
+                                    Style="{StaticResource FlyoutButtonStackPanel}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;" />
                                     <TextBlock>
@@ -167,7 +168,7 @@
                                 HorizontalContentAlignment="Left"
                                 >
                                 <StackPanel
-                                    Style="{StaticResource AddItemFlyout}"
+                                    Style="{StaticResource FlyoutButtonStackPanel}"
                                     >
                                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE722;" />
                                     <TextBlock>

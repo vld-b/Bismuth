@@ -8,8 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.UserDataTasks.DataProvider;
 using Windows.Foundation.Diagnostics;
 using Windows.Storage;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace WID
 {
@@ -61,13 +65,22 @@ namespace WID
             items.Clear();
         }
 
-        public async static Task ShowPopup(TeachingTip tt, string title, string subtitle, int msDelay)
+        public async static Task ShowTeachingTip(TeachingTip tt, string title, string subtitle, int msDelay)
         {
             tt.Title = title;
             tt.Subtitle = subtitle;
             tt.IsOpen = true;
             await Task.Delay(msDelay);
             tt.IsOpen = false;
+        }
+
+        public static ContentDialog ShowLoadingPopup(string title)
+        {
+            ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
+            dialog.Opened += (s, e) => ((Windows.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
+            dialog.Content = new Windows.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
+            dialog.ShowAsync();
+            return dialog;
         }
     }
 

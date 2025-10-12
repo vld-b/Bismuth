@@ -6,8 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Width="200"
     Height="300"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
     >
 
     <Button
@@ -55,8 +56,9 @@
                 <TextBlock
                     Height="Auto"
                     VerticalAlignment="Center"
-                    Text="{x:Bind itemName}"
+                    Text="{Binding ItemName, Mode=OneWay}"
                     Grid.Column="0"
+                    ToolTipService.ToolTip="{Binding ItemName, Mode=OneWay}"
                     />
                 <Button
                     Grid.Column="1"
@@ -66,15 +68,45 @@
                         Glyph="&#xE712;"
                         />
                     <Button.Flyout>
-                        <Flyout>
+                        <Flyout
+                            x:Name="flButton"
+                            >
                             <StackPanel
                                 Orientation="Vertical"
                                 Spacing="10"
                                 >
-                                <Button>
-                                    <StackPanel>
-                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
-                                        <TextBlock Text="Delete" />
+                                <Button
+                                    Click="DeleteItem"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    >
+                                    <StackPanel
+                                        Style="{StaticResource FlyoutButtonStackPanel}"
+                                        >
+                                        <FontIcon
+                                            FontFamily="Segoe Fluent Icons"
+                                            Glyph="&#xE74D;"
+                                            />
+                                        <TextBlock
+                                            Text="Delete"
+                                            />
+                                    </StackPanel>
+                                </Button>
+                                <Button
+                                    Click="RenameItem"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    >
+                                    <StackPanel
+                                        Style="{StaticResource FlyoutButtonStackPanel}"
+                                        >
+                                        <FontIcon
+                                            FontFamily="Segoe Fluent Icons"
+                                            Glyph="&#xE8AC;"
+                                            />
+                                        <TextBlock
+                                            Text="Rename"
+                                            />
                                     </StackPanel>
                                 </Button>
                             </StackPanel>

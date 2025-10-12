@@ -13,7 +13,7 @@
             <!-- Other app resources here -->
             <Style
                 TargetType="StackPanel"
-                x:Key="AddItemFlyout"
+                x:Key="FlyoutButtonStackPanel"
                 >
                 <Setter Property="Orientation" Value="Horizontal" />
                 <Setter Property="Spacing" Value="10" />

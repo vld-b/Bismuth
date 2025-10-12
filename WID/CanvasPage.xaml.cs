@@ -137,6 +137,8 @@ namespace WID
             if (file is null || configFile is null)
                 return;
 
+            ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
+
             ObservableCollection<string> pages = new ObservableCollection<string>();
             ObservableCollection<string> bgImages = new ObservableCollection<string>();
             int i = -1;
@@ -166,7 +168,8 @@ namespace WID
             await Utils.MovePending(pendingMoves, file!);
             await Utils.RenamePending(pendingRenames);
 
-            await Utils.ShowPopup(ttInfoPopup, "File saved successfully", "", 3000);
+            popup.Hide();
+            await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully", "", 3000);
         }
 
         private void UndoStroke(object sender, RoutedEventArgs e)
@@ -305,6 +308,7 @@ namespace WID
 
         private async Task AddPage(PdfDocument bg)
         {
+            ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
             for (uint i = 0; i < bg.PageCount; ++i)
             {
                 int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
@@ -346,7 +350,7 @@ namespace WID
                 page.StartBringIntoView(options);
                 page.AnimateIn();
             }
-
+            popup.Hide();
         }
 
         private void InkToolChanged(InkToolbar sender, object args)

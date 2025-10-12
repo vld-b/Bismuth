@@ -39,6 +39,27 @@ namespace WID
             tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
         }
 
+        private void ResizeMenuElements(object sender, SizeChangedEventArgs e)
+        {
+            if (gvNotebooks.ItemsPanelRoot is ItemsWrapGrid panel)
+            {
+                double minWidth = 288;
+                double maxWidth = 480;
+
+                int columns = Math.Max(1, (int)(e.NewSize.Width / minWidth));
+                Debug.WriteLine("Columns: " + columns);
+
+                double itemWidth = e.NewSize.Width / columns;
+                Debug.WriteLine("ItemWidth: " + itemWidth);
+
+                itemWidth = Math.Max(minWidth, Math.Min(maxWidth, itemWidth));
+                Debug.WriteLine("ItemWidth: " + itemWidth);
+
+                panel.ItemWidth = itemWidth;
+                panel.ItemHeight = double.NaN;
+            }
+        }
+
         private async Task LoadNotebooks()
         {
             gvNotebooks.Items.Clear();
@@ -46,12 +67,12 @@ namespace WID
             IReadOnlyList<StorageFolder> folders = await notes.GetFoldersAsync();
             foreach (StorageFolder folder in folders)
             {
-                MenuItem newItem;
+                MenuElement newItem;
 
                 if (folder.Name.EndsWith(".notebook"))
-                    newItem = new MenuItem(false, folder.Name[0..(folder.Name.Length - 9)], folder, Frame);
+                    newItem = new MenuElement(folder.Name[..(folder.Name.Length-9)], false);
                 else
-                    newItem = new MenuItem(true, folder.Name, folder, Frame);
+                    newItem = new MenuElement(folder.Name, true);
 
                 gvNotebooks.Items.Add(newItem);
             }
@@ -111,17 +132,65 @@ namespace WID
 
         private async void CreateNewFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            StorageFolder newFolder = await notes.CreateFolderAsync("Test", CreationCollisionOption.GenerateUniqueName);
-            int index = (await notes.GetFoldersAsync()).Count - 1;
-            gvNotebooks.Items.Insert(index, new MenuItem(true, newFolder.Name, newFolder, Frame));
-        }
+            TextBox txtbox = new TextBox
+            {
+                PlaceholderText = "Enter name for folder",
+                AcceptsReturn = false,
+            };
 
-        //private void DeleteFolder(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        //{
-        //    NotebookItem? nbItem = ((Button)sender).DataContext as NotebookItem;
-        //    if (nbItem == null) return;
-        //    Directory.Delete(notes.Path + "\\" + nbItem.fileName, true);
-        //    gvNotebooks.Items.Remove(nbItem);
-        //}
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Create new folder",
+                Content = txtbox,
+                PrimaryButtonText = "Create",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+
+            ContentDialogResult res = await dialog.ShowAsync();
+
+            if (res == ContentDialogResult.None)
+                return;
+            else if (res == ContentDialogResult.Primary && txtbox.Text == string.Empty)
+            {
+                ContentDialog dialogNoName = new ContentDialog
+                {
+                    Title = "No name entered",
+                    Content = "Empty folder names are not supported",
+                    PrimaryButtonText = "Ok",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+                await dialogNoName.ShowAsync();
+                return;
+            } else if (res == ContentDialogResult.Primary && txtbox.Text.EndsWith(".notebook"))
+            {
+                ContentDialog dialogInvalidEnding = new ContentDialog
+                {
+                    Title = "Invalid ending entered",
+                    Content = "Folders with the ending '.notebook' are considered notebooks",
+                    PrimaryButtonText = "Ok",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+                await dialogInvalidEnding.ShowAsync();
+                return;
+            }
+
+            try
+            {
+                StorageFolder newFolder = await notes.CreateFolderAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
+                gvNotebooks.Items.Add(new MenuItem(true, newFolder.Name, newFolder, Frame));
+            }
+            catch
+            {
+                ContentDialog dialogFailed = new ContentDialog
+                {
+                    Title = "Failed to create notebook",
+                    Content = "A notebook with the same name already exists",
+                    PrimaryButtonText = "Ok",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+                await dialogFailed.ShowAsync();
+            }
+        }
     }
 }
