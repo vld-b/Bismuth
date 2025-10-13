@@ -64,6 +64,7 @@
 
         <GridView
             x:Name="gvNotebooks"
+            ItemClick="OpenNotebook"
             HorizontalAlignment="Center"
             Width="Auto"
             IsItemClickEnabled="True"

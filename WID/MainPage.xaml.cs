@@ -72,6 +72,8 @@ namespace WID
                     newItem = new MenuElement(folder.Name, true);
 
                 gvNotebooks.Items.Add(newItem);
+
+                await Task.Delay(100);
             }
         }
 
@@ -112,7 +114,7 @@ namespace WID
             try
             {
                 StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
-                gvNotebooks.Items.Add(new MenuItem(false, newNotebook.DisplayName[..(newNotebook.DisplayName.Length-9)], newNotebook, Frame));
+                gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
             }
             catch
             {
@@ -175,7 +177,7 @@ namespace WID
             try
             {
                 StorageFolder newFolder = await notes.CreateFolderAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
-                gvNotebooks.Items.Add(new MenuItem(true, newFolder.Name, newFolder, Frame));
+                gvNotebooks.Items.Add(new MenuElement(newFolder.Name, true));
             }
             catch
             {
@@ -188,6 +190,11 @@ namespace WID
                 };
                 await dialogFailed.ShowAsync();
             }
+        }
+
+        private async void OpenNotebook(object sender, ItemClickEventArgs e)
+        {
+            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(((MenuElement)((GridView)sender).DataContext).itemName), new DrillInNavigationTransitionInfo());
         }
     }
 }
