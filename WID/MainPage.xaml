@@ -112,6 +112,8 @@
                                 />
                             <Button.Flyout>
                                 <Flyout
+                                    Opened="FileOptionsFlyoutOpened"
+                                    Closed="FileOptionsFlyoutClosed"
                                     Placement="BottomEdgeAlignedRight"
                                     >
                                     <StackPanel

@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
+using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
@@ -14,6 +15,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Animation;
 using WinRT;
@@ -26,6 +28,7 @@ namespace WID
     public sealed partial class MainPage : Page
     {
         public StorageFolder notes => ApplicationData.Current.LocalFolder;
+        private FlyoutBase? currentFlyout;
         public MainPage()
         {
             InitializeComponent();
@@ -73,6 +76,16 @@ namespace WID
 
                 gvNotebooks.Items.Add(newItem);
             }
+        }
+
+        private void FileOptionsFlyoutOpened(object sender, object e)
+        {
+            currentFlyout = (FlyoutBase)sender;
+        }
+
+        private void FileOptionsFlyoutClosed(object sender, object e)
+        {
+            currentFlyout = null;
         }
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -198,6 +211,8 @@ namespace WID
 
         private async void RenameItem(object sender, RoutedEventArgs e)
         {
+            currentFlyout?.Hide();
+
             Button btSender = (Button)sender;
 
             if (btSender.DataContext is MenuElement element)
@@ -267,6 +282,8 @@ namespace WID
 
         private async void DeleteItem(object sender, RoutedEventArgs e)
         {
+            currentFlyout?.Hide();
+
             Button btSender = (Button)sender;
 
             if (btSender.DataContext is MenuElement element)

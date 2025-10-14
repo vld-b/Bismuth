@@ -251,7 +251,10 @@ namespace WID
             } else
             {
                 config = new FileConfig(new ObservableCollection<string>(), new ObservableCollection<string>(), -1, new List<int>());
-                this.Loaded += (s, e) => AddPage();
+                if (this.IsLoaded)
+                    AddPage();
+                else
+                    this.Loaded += (s, e) => AddPage();
             }
         }
 
