@@ -84,6 +84,7 @@ namespace WID
         }
     }
 
+    // Class for renaming files when saving notebooks
     public class RenameItem
     {
         public StorageFile file { get; private set; }

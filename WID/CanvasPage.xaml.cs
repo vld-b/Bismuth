@@ -474,7 +474,6 @@ namespace WID
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
         {
-            Debug.WriteLine(((PageThumbnail)args.Items[0]).page.id);
             int movedPageID = ((PageThumbnail)args.Items[0]).page.id;
             int oldIndex = -1, newIndex = -1, i = 0;
 

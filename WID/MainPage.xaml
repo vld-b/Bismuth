@@ -74,6 +74,13 @@
             AllowDrop="False"
             Grid.Row="1"
             >
+            <GridView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition
+                        IsStaggeringEnabled="True"
+                        />
+                </TransitionCollection>
+            </GridView.ItemContainerTransitions>
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsWrapGrid
@@ -112,6 +119,7 @@
                                         Spacing="10"
                                         >
                                         <Button
+                                            Click="RenameItem"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
                                             >
@@ -129,6 +137,7 @@
                                             </StackPanel>
                                         </Button>
                                         <Button
+                                            Click="DeleteItem"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
                                             >
@@ -168,9 +177,11 @@
                             </Grid>
                         </Viewbox>
                         <TextBlock
-                            Text="{x:Bind itemName}"
+                            Text="{x:Bind itemName, Mode=OneWay}"
+                            TextWrapping="NoWrap"
+                            TextAlignment="Left"
                             VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Stretch"
                             Margin="10"
                             FontSize="18"
                             Grid.Row="1"

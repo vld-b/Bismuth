@@ -72,8 +72,6 @@ namespace WID
                     newItem = new MenuElement(folder.Name, true);
 
                 gvNotebooks.Items.Add(newItem);
-
-                await Task.Delay(100);
             }
         }
 
@@ -194,7 +192,116 @@ namespace WID
 
         private async void OpenNotebook(object sender, ItemClickEventArgs e)
         {
-            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(((MenuElement)((GridView)sender).DataContext).itemName), new DrillInNavigationTransitionInfo());
+            MenuElement item = (MenuElement)e.ClickedItem;
+            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(item.itemName+".notebook"), new DrillInNavigationTransitionInfo());
+        }
+
+        private async void RenameItem(object sender, RoutedEventArgs e)
+        {
+            Button btSender = (Button)sender;
+
+            if (btSender.DataContext is MenuElement element)
+            {
+                TextBox txtbox = new TextBox
+                {
+                    PlaceholderText = "Enter new name",
+                    AcceptsReturn = false,
+                };
+
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "Rename "+(element.isFolder ? "folder" : "notebook"),
+                    Content = txtbox,
+                    PrimaryButtonText = "Rename",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+
+                ContentDialogResult res = await dialog.ShowAsync();
+
+                if (res == ContentDialogResult.None)
+                    return;
+                else if (res == ContentDialogResult.Primary && txtbox.Text == element.itemName)
+                {
+                    ContentDialog dialogNoName = new ContentDialog
+                    {
+                        Title = "Name equals current name",
+                        Content = "Rename to another name",
+                        PrimaryButtonText = "Ok",
+                        DefaultButton = ContentDialogButton.Primary,
+                    };
+                    await dialogNoName.ShowAsync();
+                    return;
+                }
+                else if (res == ContentDialogResult.Primary && txtbox.Text.EndsWith(".notebook"))
+                {
+                    ContentDialog dialogInvalidEnding = new ContentDialog
+                    {
+                        Title = "Invalid ending entered",
+                        Content = "Folders with the ending '.notebook' are considered notebooks",
+                        PrimaryButtonText = "Ok",
+                        DefaultButton = ContentDialogButton.Primary,
+                    };
+                    await dialogInvalidEnding.ShowAsync();
+                    return;
+                }
+
+                try
+                {
+                    await (await notes.GetFolderAsync(element.itemName+(element.isFolder ? "" : ".notebook"))).RenameAsync(txtbox.Text+(element.isFolder ? "" : ".notebook"));
+                    element.itemName = txtbox.Text;
+                }
+                catch
+                {
+                    ContentDialog dialogFailed = new ContentDialog
+                    {
+                        Title = "Failed to rename "+(element.isFolder ? "folder" : "notebook"),
+                        Content = "A "+(element.isFolder ? "folder" : "notebook")+" with the same name already exists",
+                        PrimaryButtonText = "Ok",
+                        DefaultButton = ContentDialogButton.Primary,
+                    };
+                    await dialogFailed.ShowAsync();
+                }
+            }
+        }
+
+        private async void DeleteItem(object sender, RoutedEventArgs e)
+        {
+            Button btSender = (Button)sender;
+
+            if (btSender.DataContext is MenuElement element)
+            {
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = "Delete " + (element.isFolder ? "folder" : "notebook") + "?",
+                    Content = "This action cannot be undone",
+                    PrimaryButtonText = "Delete",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+
+                ContentDialogResult res = await dialog.ShowAsync();
+
+                if (res == ContentDialogResult.None)
+                    return;
+
+                try
+                {
+                    await(await notes.GetFolderAsync(element.itemName + (element.isFolder ? "" : ".notebook"))).DeleteAsync();
+                    gvNotebooks.Items.Remove(element);
+                }
+                catch
+                {
+                    ContentDialog dialogFailed = new ContentDialog
+                    {
+                        Title = "Failed to delete " + (element.isFolder ? "folder" : "notebook"),
+                        Content = "An error occured",
+                        PrimaryButtonText = "Ok",
+                        DefaultButton = ContentDialogButton.Primary,
+                    };
+                    await dialogFailed.ShowAsync();
+                }
+            }
         }
     }
 }
