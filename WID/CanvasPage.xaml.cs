@@ -588,5 +588,10 @@ namespace WID
                 }
             }
         }
+
+        private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -176,6 +176,20 @@
                                     </TextBlock>
                                 </StackPanel>
                             </Button>
+                            <Button
+                                Click="AddTextToCurrentPage"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                >
+                                <StackPanel
+                                    Style="{StaticResource FlyoutButtonStackPanel}"
+                                    >
+                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D2;" />
+                                    <TextBlock>
+                                        Add text
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
