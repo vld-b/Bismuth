@@ -29,6 +29,8 @@ namespace WID
         {
             this.InitializeComponent();
             page = new NotebookPage(id, width, height);
+            page.canvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.None;
+            page.canvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
             Grid.SetRow(page, 0);
             this.Children.Insert(0, page);
         }

@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,6 +33,7 @@ namespace WID
     {
         public int id { get; private set; }
         public bool hasBg { get; private set; }
+        public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
@@ -40,6 +43,19 @@ namespace WID
         {
             this.InitializeComponent();
             this.hasBg = false;
+            contentCanvas = pageContent;
+            TextBlock txt = new TextBlock
+            {
+                Text = "This is a test TextBlock",
+                Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0)),
+                FontSize = 96,
+                TextWrapping = TextWrapping.WrapWholeWords,
+                Width = 255,
+                Height = 555,
+            };
+            Canvas.SetTop(txt, 200);
+            Canvas.SetLeft(txt, 300);
+            contentCanvas.Children.Add(txt);
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);

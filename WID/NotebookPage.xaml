@@ -12,6 +12,13 @@
     Canvas.ZIndex="-1"
     >
 
+    <Canvas
+        x:Name="pageContent"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Margin="0"
+        />
+
     <InkCanvas
         x:Name="inkCanvas"
         />

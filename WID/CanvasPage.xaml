@@ -264,6 +264,11 @@
                     Orientation="Vertical"
                     Spacing="20"
                     >
+                    <StackPanel.ChildrenTransitions>
+                        <TransitionCollection>
+                            <ReorderThemeTransition />
+                        </TransitionCollection>
+                    </StackPanel.ChildrenTransitions>
                 </StackPanel>
             </ScrollViewer>
         </SplitView>

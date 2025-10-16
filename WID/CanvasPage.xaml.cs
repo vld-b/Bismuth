@@ -432,6 +432,7 @@ namespace WID
                 };
                 pageThumb.RequestPageDelete += (s, e) => DeletePage(s!, e);
                 GridViewItem gvI = new GridViewItem();
+                gvI.Tapped += (s, e) => NavigateToPage(s, e);
                 gvI.Content = pageThumb;
                 gvI.Width = 176;
                 gvI.Height = 264;
@@ -591,7 +592,24 @@ namespace WID
 
         private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
         {
+        }
 
+        private void NavigateToPage(object sender, TappedRoutedEventArgs e)
+        {
+            int pageId = ((PageThumbnail)((GridViewItem)sender).Content).page.id;
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                if (page.id == pageId)
+                {
+                    page.StartBringIntoView(new BringIntoViewOptions
+                    {
+                        AnimationDesired = true,
+                        VerticalAlignmentRatio = 0.1d,
+                        HorizontalAlignmentRatio = 0.5d,
+                    });
+                    break;
+                }
+            }
         }
     }
 }

@@ -12,36 +12,41 @@
         <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Button
+    <StackPanel
+        Orientation="Horizontal"
+        Spacing="10"
         Grid.Row="1"
         >
-        <Button.Content>
-            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
-        </Button.Content>
-        <Button.Flyout>
-            <Flyout>
-                <StackPanel
-                    Orientation="Vertical"
-                    Spacing="10"
-                    >
-                    <TextBlock
-                        Style="{StaticResource BaseTextBlockStyle}"
+        <Button>
+            <Button.Content>
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+            </Button.Content>
+            <Button.Flyout>
+                <Flyout>
+                    <StackPanel
+                        Orientation="Vertical"
+                        Spacing="10"
                         >
-                        Are you sure you want to delete the page?
-                    </TextBlock>
-                    <TextBlock
-                        Style="{StaticResource BaseTextBlockStyle}"
-                        >
-                        This action cannot be undone.
-                    </TextBlock>
-                    <Button
-                        Click="DeleteNote"
-                        >
-                        Yes, delete.
-                    </Button>
-                </StackPanel>
-            </Flyout>
-        </Button.Flyout>
-    </Button>
+                        <TextBlock
+                            Style="{StaticResource BaseTextBlockStyle}"
+                            >
+                            Are you sure you want to delete the page?
+                        </TextBlock>
+                        <TextBlock
+                            Style="{StaticResource BaseTextBlockStyle}"
+                            >
+                            This action cannot be undone.
+                        </TextBlock>
+                        <Button
+                            Click="DeleteNote"
+                            >
+                            Yes, delete.
+                        </Button>
+                    </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </StackPanel>
+
 
 </Grid>
