@@ -154,11 +154,14 @@ namespace WID
                 ++i;
             }
             if (config is null)
-                config = new FileConfig(pages, bgImages, i, new List<int>());
+                config = new FileConfig(pages, bgImages, i, new List<int>(), new LastNotebookState());
             else
             {
                 config.pageMapping = pages;
                 config.bgMapping = bgImages;
+                config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
+                config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
+                config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
             }
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
@@ -248,9 +251,10 @@ namespace WID
                         this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
                 }
+                svPageZoom.ChangeView(horizontalOffset: config.lastNotebookState.horizScrollPos, verticalOffset: config.lastNotebookState.vertScrollPos, zoomFactor: config.lastNotebookState.zoomFactor, disableAnimation: true);
             } else
             {
-                config = new FileConfig(new ObservableCollection<string>(), new ObservableCollection<string>(), -1, new List<int>());
+                config = new FileConfig(new ObservableCollection<string>(), new ObservableCollection<string>(), -1, new List<int>(), new LastNotebookState());
                 if (this.IsLoaded)
                     AddPage();
                 else

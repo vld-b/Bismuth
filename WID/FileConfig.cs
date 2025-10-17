@@ -16,13 +16,15 @@ namespace WID
         public ObservableCollection<string> bgMapping { get; set; }
         public int maxID { get; set; }
         public List<int> usableIDs { get; set; }
+        public LastNotebookState lastNotebookState { get; set; }
 
-        public FileConfig(ObservableCollection<string> pageMapping, ObservableCollection<string> bgMapping, int maxID, List<int> usableIDs)
+        public FileConfig(ObservableCollection<string> pageMapping, ObservableCollection<string> bgMapping, int maxID, List<int> usableIDs, LastNotebookState lastNotebookState)
         {
             this.pageMapping = pageMapping;
             this.bgMapping = bgMapping;
             this.maxID = maxID;
             this.usableIDs = usableIDs;
+            this.lastNotebookState = lastNotebookState;
         }
 
         public void DeletePageWithId(int id)
@@ -54,4 +56,26 @@ namespace WID
     [JsonSerializable(typeof(FileConfig))]
     internal partial class FileConfigJsonContext : JsonSerializerContext
     {}
+
+    class LastNotebookState
+    {
+        public double vertScrollPos { get; set; }
+        public double horizScrollPos { get; set; }
+        public float zoomFactor { get; set; }
+
+        public LastNotebookState()
+        {
+            vertScrollPos = 0d;
+            horizScrollPos = 0d;
+            zoomFactor = 0f;
+
+        }
+
+        public LastNotebookState(double vertScrollPos, double horizScrollPos, float zoomFactor)
+        {
+            this.vertScrollPos = vertScrollPos;
+            this.horizScrollPos = horizScrollPos;
+            this.zoomFactor = zoomFactor;
+        }
+    }
 }
