@@ -44,18 +44,10 @@ namespace WID
             this.InitializeComponent();
             this.hasBg = false;
             contentCanvas = pageContent;
-            TextBlock txt = new TextBlock
-            {
-                Text = "This is a test TextBlock",
-                Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0)),
-                FontSize = 96,
-                TextWrapping = TextWrapping.WrapWholeWords,
-                Width = 255,
-                Height = 555,
-            };
-            Canvas.SetTop(txt, 200);
-            Canvas.SetLeft(txt, 300);
-            contentCanvas.Children.Add(txt);
+            OnPageText test = new OnPageText(500d, 500d);
+            Canvas.SetTop(test, -200);
+            Canvas.SetLeft(test, -300);
+            contentCanvas.Children.Add(test);
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
