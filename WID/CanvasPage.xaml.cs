@@ -270,7 +270,6 @@ namespace WID
 
         private void AddPage()
         {
-            // Make sure that page doesn't get deleted in case it was cued
             NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
             config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
             config!.bgMapping.Add(string.Empty);
@@ -294,6 +293,9 @@ namespace WID
             config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
             pendingMoves.Add(bg);
             pendingRenames.Add(new RenameItem(bg, config.bgMapping.Last()));
+            // Remove background from pending deletions so it doesn't get deleted when it should be present
+            pendingDeletions.Remove(config.bgMapping.Last());
+            pendingDeletions.Remove(config.pageMapping.Last());
             using (IRandomAccessStream stream = await bg.OpenAsync(FileAccessMode.Read))
             {
                 BitmapImage bmpImage = new BitmapImage();
@@ -329,6 +331,9 @@ namespace WID
                 else
                     bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
                 pendingMoves.Add(bgFile);
+                // Remove background from pending deletions so it doesn't get deleted when it should be present
+                pendingDeletions.Remove(config.bgMapping.Last());
+                pendingDeletions.Remove(config.pageMapping.Last());
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     BitmapImage bmpImage = new BitmapImage();
