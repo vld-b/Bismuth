@@ -56,9 +56,9 @@ namespace WID
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
 
-        private Stack<string> pendingDeletions = new Stack<string>();
-        private Stack<StorageFile> pendingMoves = new Stack<StorageFile>();
-        private Stack<RenameItem> pendingRenames = new Stack<RenameItem>();
+        private List<string> pendingDeletions = new List<string>();
+        private List<StorageFile> pendingMoves = new List<StorageFile>();
+        private List<RenameItem> pendingRenames = new List<RenameItem>();
 
         private Task? savingTask;
 
@@ -292,8 +292,8 @@ namespace WID
             NotebookPage page;
             config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
             config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
-            pendingMoves.Push(bg);
-            pendingRenames.Push(new RenameItem(bg, config.bgMapping.Last()));
+            pendingMoves.Add(bg);
+            pendingRenames.Add(new RenameItem(bg, config.bgMapping.Last()));
             using (IRandomAccessStream stream = await bg.OpenAsync(FileAccessMode.Read))
             {
                 BitmapImage bmpImage = new BitmapImage();
@@ -328,7 +328,7 @@ namespace WID
                     bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last());
                 else
                     bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
-                pendingMoves.Push(bgFile);
+                pendingMoves.Add(bgFile);
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     BitmapImage bmpImage = new BitmapImage();
@@ -541,12 +541,12 @@ namespace WID
             config!.DeletePageWithId(args.id);
             if (args.id == 0)
             {
-                pendingDeletions.Push("page.gif");
-                pendingDeletions.Push("bg.jpg");
+                pendingDeletions.Add("page.gif");
+                pendingDeletions.Add("bg.jpg");
             } else
             {
-                pendingDeletions.Push("page (" + args.id + ").gif");
-                pendingDeletions.Push("bg (" + args.id + ").jpg");
+                pendingDeletions.Add("page (" + args.id + ").gif");
+                pendingDeletions.Add("bg (" + args.id + ").jpg");
             }
         }
 

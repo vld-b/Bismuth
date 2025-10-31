@@ -26,7 +26,7 @@ namespace WID
             return val;
         }
 
-        public async static Task DeletePending(Stack<string> items, StorageFolder folder)
+        public async static Task DeletePending(List<string> items, StorageFolder folder)
         {
             foreach (string item in items)
             {
@@ -38,7 +38,7 @@ namespace WID
             items.Clear();
         }
 
-        public async static Task MovePending(Stack<StorageFile> items, StorageFolder folder)
+        public async static Task MovePending(List<StorageFile> items, StorageFolder folder)
         {
             foreach (StorageFile item in items)
             {
@@ -51,7 +51,7 @@ namespace WID
             items.Clear();
         }
 
-        public async static Task RenamePending(Stack<RenameItem> items)
+        public async static Task RenamePending(List<RenameItem> items)
         {
             foreach (RenameItem item in items)
             {
