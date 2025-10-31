@@ -270,6 +270,7 @@ namespace WID
 
         private void AddPage()
         {
+            // Make sure that page doesn't get deleted in case it was cued
             NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
             config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
             config!.bgMapping.Add(string.Empty);
@@ -614,6 +615,12 @@ namespace WID
                     break;
                 }
             }
+        }
+
+        private void ToolPopupLoaded(object sender, RoutedEventArgs e)
+        {
+            Popup popup = (Popup)sender;
+            popup.HorizontalOffset = -((FrameworkElement)popup.Child).ActualWidth / 2;
         }
     }
 }

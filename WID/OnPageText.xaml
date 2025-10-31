@@ -15,8 +15,17 @@
         CornerRadius="4"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
+        GotFocus="ShowToolPopup"
+        LostFocus="HideToolPopup"
         >
         <Grid>
+            <RichEditBox
+                x:Name="reb"
+                TextWrapping="WrapWholeWords"
+                FontSize="36"
+                />
+
+
             <Button
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
@@ -24,14 +33,16 @@
                 <FontIcon
                     FontFamily="Segoe Fluent Icons"
                     Glyph="&#xE7C2;"
-                          />
+                    />
             </Button>
-            <RichEditBox
-                x:Name="reb"
-                TextWrapping="WrapWholeWords"
-                FontSize="36"
-                />
         </Grid>
     </Border>
+
+    <Popup
+        x:Name="ppTools"
+        
+        >
+        
+    </Popup>
     
 </Grid>

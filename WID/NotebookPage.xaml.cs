@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Printing;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -45,8 +46,8 @@ namespace WID
             this.hasBg = false;
             contentCanvas = pageContent;
             OnPageText test = new OnPageText(500d, 500d);
-            Canvas.SetTop(test, -200);
-            Canvas.SetLeft(test, -300);
+            Canvas.SetTop(test, 200);
+            Canvas.SetLeft(test, -500);
             contentCanvas.Children.Add(test);
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;

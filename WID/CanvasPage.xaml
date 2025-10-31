@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
 
     <Page.Background>
         <AcrylicBrush
@@ -39,6 +40,51 @@
                 VerticalAlignment="Center"
                 />
         </Grid>
+
+        <Popup
+            Loaded="ToolPopupLoaded"
+            Height="Auto"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            VerticalOffset="40"
+            IsOpen="True"
+            >
+            <Border
+                BorderThickness="4"
+                CornerRadius="8"
+                >
+                <Border.Background>
+                    <AcrylicBrush
+                        BackgroundSource="HostBackdrop"
+                        TintColor="Black"
+                        TintOpacity="0.6"
+                        FallbackColor="Black"
+                        />
+                </Border.Background>
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Stretch"
+                    Spacing="10"
+                    Margin="10"
+                    >
+                    <Button
+                        Content="B"
+                        FontWeight="Bold"
+                        />
+                    <Button
+                        Content="I"
+                        FontFamily="Calibri"
+                        FontStyle="Italic"
+                        />
+                    <TextBox
+                        Width="200"
+                        PlaceholderText="Search"
+                        HorizontalAlignment="Stretch"
+                        />
+                </StackPanel>
+            </Border>
+        </Popup>
+
 
         <StackPanel
             Grid.Row="0"

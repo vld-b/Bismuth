@@ -31,5 +31,13 @@ namespace WID
             this.Height = height;
             this.textBox = reb;
         }
+
+        private void ShowToolPopup(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void HideToolPopup(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }
