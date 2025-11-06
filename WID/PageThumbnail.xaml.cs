@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -29,6 +30,16 @@ namespace WID
         {
             this.InitializeComponent();
             page = new NotebookPage(id, width, height);
+            page.canvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.None;
+            page.canvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
+            Grid.SetRow(page, 0);
+            this.Children.Insert(0, page);
+        }
+
+        public PageThumbnail(int id, double width, double height, BitmapImage bg)
+        {
+            this.InitializeComponent();
+            page = new NotebookPage(id, bg);
             page.canvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.None;
             page.canvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
             Grid.SetRow(page, 0);
