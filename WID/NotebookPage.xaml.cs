@@ -34,6 +34,7 @@ namespace WID
     {
         public int id { get; private set; }
         public bool hasBg { get; private set; }
+        public BitmapImage? bgImage { get; private set; }
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
@@ -70,6 +71,7 @@ namespace WID
             this.Width = bg.PixelWidth;
             this.Height = bg.PixelHeight;
             this.Children.Insert(0, bgImage);
+            this.bgImage = bg;
             this.hasBg = true;
         }
 

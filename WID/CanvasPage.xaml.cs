@@ -429,7 +429,11 @@ namespace WID
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
-                PageThumbnail pageThumb = new PageThumbnail(page.id, page.Width, page.Height);
+                PageThumbnail pageThumb;
+                if (page.hasBg)
+                    pageThumb = new PageThumbnail(page.id, page.Width, page.Height, page.bgImage!);
+                else
+                    pageThumb = new PageThumbnail(page.id, page.Width, page.Height);
                 //pageThumb.SetupAsThumbnail();
                 pageThumb.page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
                 pageThumb.page.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
