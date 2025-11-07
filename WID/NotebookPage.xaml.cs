@@ -46,7 +46,7 @@ namespace WID
             this.InitializeComponent();
             this.hasBg = false;
             contentCanvas = pageContent;
-            OnPageText test = new OnPageText(500d, 500d);
+            OnPageText test = new OnPageText(500d, 500d, this);
             Canvas.SetTop(test, 200);
             Canvas.SetLeft(test, -500);
             contentCanvas.Children.Add(test);

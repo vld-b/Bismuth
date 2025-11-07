@@ -7,8 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="Transparent"
+    GotFocus="StartWriting"
+    LostFocus="StopWriting"
     >
-
+    
     <Border
         BorderBrush="{StaticResource SystemAccentColor}"
         BorderThickness="4"
@@ -23,16 +25,31 @@
                 x:Name="reb"
                 TextWrapping="WrapWholeWords"
                 FontSize="36"
+                Foreground="Black"
                 />
 
 
             <Button
+                x:Name="btMove"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
+                Foreground="Black"
                 >
                 <FontIcon
                     FontFamily="Segoe Fluent Icons"
                     Glyph="&#xE7C2;"
+                    />
+            </Button>
+
+            <Button
+                x:Name="btResize"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Foreground="Black"
+                >
+                <FontIcon
+                    FontFamily="Segoe Fluent Icons"
+                    Glyph="&#xE788;"
                     />
             </Button>
         </Grid>

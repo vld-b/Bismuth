@@ -101,6 +101,9 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
+                        <Image
+                            Source="{x:Bind itemName}"
+                            />
                         <Button
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
