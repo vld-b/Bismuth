@@ -73,7 +73,6 @@ namespace WID
                     mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
                 }
 
-                    Debug.WriteLine(e.GetCurrentPoint(containingPage).Position.X + "|" + e.GetCurrentPoint(containingPage).Position.Y);
             }
         }
 

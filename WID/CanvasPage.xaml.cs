@@ -62,6 +62,8 @@ namespace WID
 
         private Task? savingTask;
 
+        private NotebookPage? currentPage;
+
         public CanvasPage()
         {
             InitializeComponent();
@@ -470,24 +472,17 @@ namespace WID
             }
         }
 
-        private async Task<SoftwareBitmapSource> RenderThumbnail(NotebookPage page)
+        private void GetCurrentPage()
         {
-            RenderTargetBitmap rtbmp = new RenderTargetBitmap();
-            await rtbmp.RenderAsync(page);
+            int pageIndex = 0;
+            double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor;
 
-            SoftwareBitmap swbmp = SoftwareBitmap.CreateCopyFromBuffer(
-                await rtbmp.GetPixelsAsync(),
-                BitmapPixelFormat.Rgba8,
-                rtbmp.PixelWidth,
-                rtbmp.PixelHeight,
-                BitmapAlphaMode.Premultiplied);
+            do
+            {
+                verticalOffset -= ((NotebookPage)spPageView.Children[pageIndex++]).Height;
+            } while (verticalOffset > 0);
 
-            SoftwareBitmap resized = SoftwareBitmap.Convert(swbmp, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
-
-            SoftwareBitmapSource source = new SoftwareBitmapSource();
-            await source.SetBitmapAsync(resized);
-
-            return source;
+            currentPage = (NotebookPage)spPageView.Children[--pageIndex];
         }
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
@@ -606,6 +601,9 @@ namespace WID
 
         private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
         {
+            GetCurrentPage();
+            currentPage?.contentCanvas.Children.Add(new OnPageText(500d, 500d, currentPage));
+            AddItemFlyout.Hide();
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
