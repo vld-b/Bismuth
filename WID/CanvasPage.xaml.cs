@@ -475,14 +475,18 @@ namespace WID
         private void GetCurrentPage()
         {
             int pageIndex = 0;
-            double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor;
+            double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor + Window.Current.Bounds.Height/(2*svPageZoom.ZoomFactor); // Add half window height because user likely refers to middle page
 
             do
             {
-                verticalOffset -= ((NotebookPage)spPageView.Children[pageIndex++]).Height;
+                verticalOffset -= ((NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, pageIndex++)]).Height;
             } while (verticalOffset > 0);
 
+            if (pageIndex > spPageView.Children.Count)
+                --pageIndex;
             currentPage = (NotebookPage)spPageView.Children[--pageIndex];
+
+            Debug.WriteLine("Added text to page index:" + pageIndex);
         }
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
