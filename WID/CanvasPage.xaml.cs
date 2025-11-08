@@ -482,9 +482,7 @@ namespace WID
                 verticalOffset -= ((NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, pageIndex++)]).Height;
             } while (verticalOffset > 0);
 
-            if (pageIndex > spPageView.Children.Count)
-                --pageIndex;
-            currentPage = (NotebookPage)spPageView.Children[--pageIndex];
+            currentPage = (NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, --pageIndex)];
 
             Debug.WriteLine("Added text to page index:" + pageIndex);
         }
