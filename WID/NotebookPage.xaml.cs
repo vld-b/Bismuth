@@ -46,10 +46,6 @@ namespace WID
             this.InitializeComponent();
             this.hasBg = false;
             contentCanvas = pageContent;
-            OnPageText test = new OnPageText(500d, 500d, this);
-            Canvas.SetTop(test, 200);
-            Canvas.SetLeft(test, -500);
-            contentCanvas.Children.Add(test);
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
@@ -130,6 +126,11 @@ namespace WID
             sb.Children.Add(opacityAnim);
 
             sb.Begin();
+        }
+
+        public void AddTextToPage(OnPageText text)
+        {
+            contentCanvas.Children.Add(text);
         }
 
         public async Task LoadFromStream(IInputStream stream)

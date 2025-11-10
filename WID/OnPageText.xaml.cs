@@ -26,11 +26,13 @@ namespace WID
         private Point? mousePos;
         NotebookPage containingPage;
 
-        public OnPageText(double width, double height, NotebookPage containingPage)
+        public OnPageText(double width, double height, double top, double left, NotebookPage containingPage)
         {
             this.InitializeComponent();
             this.Width = width;
             this.Height = height;
+            Canvas.SetTop(this, top);
+            Canvas.SetLeft(this, left);
             this.containingPage = containingPage;
 
             btMove.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingText), true);

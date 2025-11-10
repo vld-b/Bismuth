@@ -472,7 +472,7 @@ namespace WID
             }
         }
 
-        private void GetCurrentPage()
+        private double GetCurrentPage()
         {
             int pageIndex = 0;
             double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor + Window.Current.Bounds.Height/(2*svPageZoom.ZoomFactor); // Add half window height because user likely refers to middle page
@@ -484,7 +484,7 @@ namespace WID
 
             currentPage = (NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, --pageIndex)];
 
-            Debug.WriteLine("Added text to page index:" + pageIndex);
+            return Math.Min(currentPage.Height, Math.Max(0, verticalOffset + currentPage.Height));
         }
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
@@ -603,8 +603,8 @@ namespace WID
 
         private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
         {
-            GetCurrentPage();
-            currentPage?.contentCanvas.Children.Add(new OnPageText(500d, 500d, currentPage));
+            double pageOffset = GetCurrentPage();
+            currentPage?.AddTextToPage(new OnPageText(500d, 500d, Math.Min(pageOffset, currentPage.Height - 500d), (currentPage.Width - 500d) / 2, currentPage));
             AddItemFlyout.Hide();
         }
 
