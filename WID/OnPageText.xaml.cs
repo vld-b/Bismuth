@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -23,12 +24,14 @@ namespace WID
     /// </summary>
     public sealed partial class OnPageText : Grid
     {
+        public int id { get; private set; }
         private Point? mousePos;
         NotebookPage containingPage;
 
-        public OnPageText(double width, double height, double top, double left, NotebookPage containingPage)
+        public OnPageText(int id, double width, double height, double top, double left, NotebookPage containingPage)
         {
             this.InitializeComponent();
+            this.id = id;
             this.Width = width;
             this.Height = height;
             Canvas.SetTop(this, top);
@@ -42,6 +45,16 @@ namespace WID
             btResize.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartResizeText), true);
             btResize.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueResizeText), true);
             btResize.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopResizeText), true);
+        }
+
+        public void SaveToStream(IRandomAccessStream stream)
+        {
+            reb.Document.SaveToStream(Windows.UI.Text.TextGetOptions.FormatRtf, stream);
+        }
+
+        public void LoadFromStream(IRandomAccessStream stream)
+        {
+            reb.Document.LoadFromStream(Windows.UI.Text.TextSetOptions.FormatRtf, stream);
         }
 
         private void ShowToolPopup(object sender, RoutedEventArgs e)

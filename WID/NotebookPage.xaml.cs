@@ -35,6 +35,7 @@ namespace WID
         public int id { get; private set; }
         public bool hasBg { get; private set; }
         public BitmapImage? bgImage { get; private set; }
+        public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
@@ -130,6 +131,7 @@ namespace WID
 
         public void AddTextToPage(OnPageText text)
         {
+            textBoxes.Add(text);
             contentCanvas.Children.Add(text);
         }
 

@@ -26,6 +26,21 @@ namespace WID
             return val;
         }
 
+        public async static Task CreatePending(List<string> items, StorageFolder folder)
+        {
+            foreach (string item in items)
+            {
+                try
+                {
+                    await folder.CreateFileAsync(item, CreationCollisionOption.FailIfExists);
+                } catch
+                {
+
+                }
+            }
+            items.Clear();
+        }
+
         public async static Task DeletePending(List<string> items, StorageFolder folder)
         {
             foreach (string item in items)

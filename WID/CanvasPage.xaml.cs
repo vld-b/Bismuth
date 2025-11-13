@@ -56,6 +56,7 @@ namespace WID
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
 
+        private List<string> pendingCreations = new List<string>();
         private List<string> pendingDeletions = new List<string>();
         private List<StorageFile> pendingMoves = new List<StorageFile>();
         private List<RenameItem> pendingRenames = new List<RenameItem>();
@@ -143,6 +144,10 @@ namespace WID
 
             ObservableCollection<string> pages = new ObservableCollection<string>();
             ObservableCollection<string> bgImages = new ObservableCollection<string>();
+            List<TextData> textBoxes = new List<TextData>();
+
+            await Utils.CreatePending(pendingCreations, file);
+
             int i = -1;
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -153,14 +158,44 @@ namespace WID
                 else
                     bgImages.Add(string.Empty);
                 await page.SaveToFile(pageFile);
+
+                foreach (OnPageText txt in page.textBoxes)
+                {
+                    StorageFile rtfFile = await file.CreateFileAsync(
+                        "text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf",
+                        CreationCollisionOption.ReplaceExisting
+                        );
+                    using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
+                        txt.SaveToStream(stream);
+                    textBoxes.Add(new TextData(
+                        txt.id,
+                        page.id,
+                        txt.Width,
+                        txt.Height,
+                        Canvas.GetTop(txt),
+                        Canvas.GetLeft(txt))
+                        );
+                }
+
                 ++i;
             }
-            if (config is null)
-                config = new FileConfig(pages, bgImages, i, new List<int>(), new LastNotebookState());
+
+            if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
+                config = new FileConfig(
+                    pages,
+                    bgImages,
+                    i,
+                    new List<int>(),
+                    new LastNotebookState(),
+                    new List<TextData>(),
+                    -1,
+                    new List<int>()
+                    );
             else
             {
                 config.pageMapping = pages;
                 config.bgMapping = bgImages;
+                config.textMapping = textBoxes;
                 config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
                 config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
                 config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
@@ -227,9 +262,11 @@ namespace WID
                     NotebookPage page;
 
                     bool firstParanthesis = config.pageMapping[i].Contains("(");
-                    int pageId = -1;
+                    int pageId;
                     if (firstParanthesis)
-                        pageId = int.Parse(config!.pageMapping[i][(config!.pageMapping[i].IndexOf("(") + 1)..config!.pageMapping[i].IndexOf(")")]);
+                        pageId = int.Parse(
+                            config!.pageMapping[i][(config!.pageMapping[i].IndexOf("(") + 1)..config!.pageMapping[i].IndexOf(")")]
+                            );
                     else
                         pageId = 0;
 
@@ -245,6 +282,27 @@ namespace WID
                             await bgImage.SetSourceAsync(stream);
                         page = new NotebookPage(pageId, bgImage);
                     }
+
+                    foreach (TextData textData in config.textMapping)
+                    {
+                        if (textData.containingPageId == page.id)
+                        {
+                            OnPageText txt = new OnPageText(
+                                textData.id,
+                                textData.width,
+                                textData.height,
+                                textData.top,
+                                textData.left,
+                                page);
+                            using (IRandomAccessStream stream = await
+                                (await file.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
+                                .OpenAsync(FileAccessMode.Read))
+                            {
+                                txt.LoadFromStream(stream);
+                            }
+                            page.AddTextToPage(txt);
+                        }
+                    }
                     
                     await page.LoadFromFile(ink);
                     if (this.IsLoaded)
@@ -256,7 +314,15 @@ namespace WID
                 svPageZoom.ChangeView(horizontalOffset: config.lastNotebookState.horizScrollPos, verticalOffset: config.lastNotebookState.vertScrollPos, zoomFactor: config.lastNotebookState.zoomFactor, disableAnimation: true);
             } else
             {
-                config = new FileConfig(new ObservableCollection<string>(), new ObservableCollection<string>(), -1, new List<int>(), new LastNotebookState());
+                config = new FileConfig(
+                    new ObservableCollection<string>(),
+                    new ObservableCollection<string>(),
+                    -1,
+                    new List<int>(),
+                    new LastNotebookState(),
+                    new List<TextData>(),
+                    -1,
+                    new List<int>());
                 if (this.IsLoaded)
                     AddPage();
                 else
@@ -272,7 +338,7 @@ namespace WID
 
         private void AddPage()
         {
-            NotebookPage page = new NotebookPage(config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID, 1920, 2880);
+            NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 1920, 2880);
             config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
             config!.bgMapping.Add(string.Empty);
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
@@ -289,7 +355,7 @@ namespace WID
 
         private async Task AddPage(StorageFile bg)
         {
-            int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
+            int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
             NotebookPage page;
             config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
             config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
@@ -323,7 +389,7 @@ namespace WID
             ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
             for (uint i = 0; i < bg.PageCount; ++i)
             {
-                int pageId = config!.usableIDs.Count != 0 ? config!.usableIDs.Pop(0) : ++config!.maxID;
+                int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
                 NotebookPage page;
                 config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
                 config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
@@ -604,7 +670,16 @@ namespace WID
         private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
         {
             double pageOffset = GetCurrentPage();
-            currentPage?.AddTextToPage(new OnPageText(500d, 500d, Math.Min(pageOffset, currentPage.Height - 500d), (currentPage.Width - 500d) / 2, currentPage));
+            OnPageText txt = new OnPageText(
+                config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs[0],
+                500d,
+                500d,
+                Math.Min(pageOffset, currentPage.Height - 500d),
+                (currentPage.Width - 500d) / 2,
+                currentPage
+                );
+            pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+            currentPage!.AddTextToPage(txt);
             AddItemFlyout.Hide();
         }
 
