@@ -5,6 +5,8 @@
     xmlns:local="using:WID"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     mc:Ignorable="d"
     SizeChanged="ResizeMenuElements"
     >
@@ -43,11 +45,26 @@
         </Grid>
 
         <StackPanel
+            Height="36"
             Orientation="Horizontal"
             Padding="10, 0, 0, 0"
             Spacing="10"
             Grid.Row="0"
             >
+            <Button
+                x:Name="btBack"
+                Click="GoBackFolder"
+                Visibility="Collapsed"
+                >
+                <muxc:AnimatedIcon>
+                    <muxc:AnimatedIcon.Source>
+                        <animatedvisuals:AnimatedBackVisualSource />
+                    </muxc:AnimatedIcon.Source>
+                    <muxc:AnimatedIcon.FallbackIconSource>
+                        <muxc:FontIconSource FontFamily="Segoe Fluent Icons" Glyph="&#xE112;" />
+                    </muxc:AnimatedIcon.FallbackIconSource>
+                </muxc:AnimatedIcon>
+            </Button>
             <Button 
                 x:Name="btnNewBook"
                 Click="CreateNewNotebook"

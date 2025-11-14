@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 using WinRT;
 
 namespace WID
@@ -27,12 +28,23 @@ namespace WID
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public StorageFolder notes => ApplicationData.Current.LocalFolder;
+        public StorageFolder notes = ApplicationData.Current.LocalFolder;
         private FlyoutBase? currentFlyout;
         public MainPage()
         {
             InitializeComponent();
             SetTitlebar();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            notes = e.Parameter as StorageFolder;
+            if (notes != null)
+                btBack.Visibility = Visibility.Visible;
+            else
+                notes = ApplicationData.Current.LocalFolder;
             LoadNotebooks();
         }
 
@@ -65,16 +77,22 @@ namespace WID
             gvNotebooks.Items.Clear();
 
             IReadOnlyList<StorageFolder> folders = await notes.GetFoldersAsync();
+            List<MenuElement> organizationFolders = new List<MenuElement>();
+            List<MenuElement> notebooks = new List<MenuElement>();
             foreach (StorageFolder folder in folders)
             {
-                MenuElement newItem;
-
                 if (folder.Name.EndsWith(".notebook"))
-                    newItem = new MenuElement(folder.Name[..(folder.Name.Length-9)], false);
+                    notebooks.Add(new MenuElement(folder.Name[..(folder.Name.Length - 9)], false));
                 else
-                    newItem = new MenuElement(folder.Name, true);
-
-                gvNotebooks.Items.Add(newItem);
+                    organizationFolders.Add(new MenuElement(folder.Name, true));
+            }
+            for (int i = 0; i < organizationFolders.Count; ++i)
+            {
+                gvNotebooks.Items.Add(organizationFolders[i]);
+            }
+            for (int i = 0; i < notebooks.Count; ++i)
+            {
+                gvNotebooks.Items.Add(notebooks[i]);
             }
         }
 
@@ -125,7 +143,8 @@ namespace WID
             try
             {
                 StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
-                gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
+                LoadNotebooks();
+                //gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
             }
             catch
             {
@@ -188,7 +207,8 @@ namespace WID
             try
             {
                 StorageFolder newFolder = await notes.CreateFolderAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
-                gvNotebooks.Items.Add(new MenuElement(newFolder.Name, true));
+                LoadNotebooks();
+                //gvNotebooks.Items.Add(new MenuElement(newFolder.Name, true));
             }
             catch
             {
@@ -206,7 +226,19 @@ namespace WID
         private async void OpenNotebook(object sender, ItemClickEventArgs e)
         {
             MenuElement item = (MenuElement)e.ClickedItem;
-            Frame.Navigate(typeof(CanvasPage), await notes.GetFolderAsync(item.itemName+".notebook"), new DrillInNavigationTransitionInfo());
+            if (item.isFolder)
+                Frame.Navigate(
+                    typeof(MainPage),
+                    await notes.GetFolderAsync(item.itemName),
+                    new SlideNavigationTransitionInfo
+                    {
+                        Effect = SlideNavigationTransitionEffect.FromRight
+                    }
+                    );
+            else
+                Frame.Navigate(typeof(CanvasPage),
+                    await notes.GetFolderAsync(item.itemName + ".notebook"),
+                    new DrillInNavigationTransitionInfo());
         }
 
         private async void RenameItem(object sender, RoutedEventArgs e)
@@ -264,7 +296,8 @@ namespace WID
                 try
                 {
                     await (await notes.GetFolderAsync(element.itemName+(element.isFolder ? "" : ".notebook"))).RenameAsync(txtbox.Text+(element.isFolder ? "" : ".notebook"));
-                    element.itemName = txtbox.Text;
+                    LoadNotebooks();
+                    //element.itemName = txtbox.Text;
                 }
                 catch
                 {
@@ -305,7 +338,8 @@ namespace WID
                 try
                 {
                     await(await notes.GetFolderAsync(element.itemName + (element.isFolder ? "" : ".notebook"))).DeleteAsync();
-                    gvNotebooks.Items.Remove(element);
+                    LoadNotebooks();
+                    //gvNotebooks.Items.Remove(element);
                 }
                 catch
                 {
@@ -319,6 +353,12 @@ namespace WID
                     await dialogFailed.ShowAsync();
                 }
             }
+        }
+
+        private void GoBackFolder(object sender, RoutedEventArgs e)
+        {
+            if (Frame.CanGoBack)
+                Frame.GoBack();
         }
     }
 }
