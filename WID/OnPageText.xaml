@@ -23,7 +23,7 @@
         <Grid>
             <RichEditBox
                 x:Name="reb"
-                TextWrapping="WrapWholeWords"
+                TextWrapping="Wrap"
                 IsReadOnly="False"
                 FontSize="36"
                 Foreground="Black"

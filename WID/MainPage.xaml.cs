@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
 using Windows.UI.ViewManagement;
@@ -359,6 +361,24 @@ namespace WID
         {
             if (Frame.CanGoBack)
                 Frame.GoBack();
+        }
+
+        private async void LoadPagePreview(object sender, RoutedEventArgs e)
+        {
+            NotebookPage preview = (NotebookPage)sender;
+            try
+            {
+                StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");
+                StorageFile configFile = await configDir.GetFileAsync("config.json");
+                FileConfig? config;
+                using (Stream ipStream = await configFile.OpenStreamForReadAsync())
+                    config = JsonSerializer.Deserialize(ipStream, FileConfigJsonContext.Default.FileConfig);
+                if (config is not null)
+                    preview.LoadLastPageFromConfig(config, configDir);
+            } catch
+            {
+
+            }
         }
     }
 }

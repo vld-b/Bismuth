@@ -182,7 +182,7 @@ namespace WID
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
-                config = new FileConfig(
+                config = new FileConfig( // Would most likely break config, because usableIDs is not being calculated
                     pages,
                     bgImages,
                     i,

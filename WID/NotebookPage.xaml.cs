@@ -86,6 +86,11 @@ namespace WID
             inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
 
+        public void LoadLastPageFromConfig(FileConfig notebookConfig, StorageFolder notebookDir)
+        {
+            notebookDir.GetFileAsync(notebookConfig.pageMapping[notebookConfig.pageMapping.Count - 1]);
+        }
+
         public void AnimateIn()
         {
             this.RenderTransformOrigin = new Point(0.5f, 0f);

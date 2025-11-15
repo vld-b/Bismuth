@@ -195,6 +195,7 @@
                                 <local:NotebookPage
                                     x:Name="npPagePreview"
                                     x:Load="{x:Bind isFolder.Equals(x:False)}"
+                                    Loaded="LoadPagePreview"
                                     />
                             </Grid>
                         </Viewbox>
