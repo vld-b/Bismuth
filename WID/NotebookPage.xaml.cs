@@ -86,9 +86,11 @@ namespace WID
             inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
 
-        public void LoadLastPageFromConfig(FileConfig notebookConfig, StorageFolder notebookDir)
+        internal async Task LoadLastPageFromConfig(FileConfig notebookConfig, StorageFolder notebookDir)
         {
-            notebookDir.GetFileAsync(notebookConfig.pageMapping[notebookConfig.pageMapping.Count - 1]);
+            StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping[notebookConfig.pageMapping.Count - 1]);
+            using (IInputStream ipStream = await ink.OpenAsync(FileAccessMode.Read))
+                this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
         }
 
         public void AnimateIn()

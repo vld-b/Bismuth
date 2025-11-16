@@ -366,6 +366,8 @@ namespace WID
         private async void LoadPagePreview(object sender, RoutedEventArgs e)
         {
             NotebookPage preview = (NotebookPage)sender;
+            preview.Height = 2880;
+            preview.Width = 1920;
             try
             {
                 StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");

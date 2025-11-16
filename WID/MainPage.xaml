@@ -118,9 +118,6 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Image
-                            Source="{x:Bind itemName}"
-                            />
                         <Button
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
@@ -202,7 +199,7 @@
                         <TextBlock
                             Text="{x:Bind itemName, Mode=OneWay}"
                             TextWrapping="NoWrap"
-                            TextAlignment="Left"
+                            TextAlignment="Center"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Stretch"
                             Margin="10"

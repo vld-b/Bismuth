@@ -503,7 +503,6 @@ namespace WID
                     pageThumb = new PageThumbnail(page.id, page.Width, page.Height, page.bgImage!);
                 else
                     pageThumb = new PageThumbnail(page.id, page.Width, page.Height);
-                //pageThumb.SetupAsThumbnail();
                 pageThumb.page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
                 pageThumb.page.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.page.RenderTransform = new ScaleTransform
@@ -601,7 +600,7 @@ namespace WID
             }
 
             i = 0;
-            foreach(NotebookPage page in spPageView.Children)
+            foreach (NotebookPage page in spPageView.Children)
             {
                 if (page.id == args.id)
                 {
