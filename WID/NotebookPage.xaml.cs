@@ -95,49 +95,6 @@ namespace WID
                 this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
         }
 
-        public void AnimateIn()
-        {
-            this.RenderTransformOrigin = new Point(0.5f, 0f);
-            this.RenderTransform = new ScaleTransform { ScaleX = 0.8f, ScaleY = 0.8f };
-            this.Opacity = 0f;
-
-            DoubleAnimation xAnim = new DoubleAnimation
-            {
-                From = 0.8f,
-                To = 1f,
-                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            };
-            DoubleAnimation yAnim = new DoubleAnimation
-            {
-                From = 0.8f,
-                To = 1f,
-                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            };
-            DoubleAnimation opacityAnim = new DoubleAnimation
-            {
-                From = 0f,
-                To = 1f,
-                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            };
-
-            Storyboard sb = new Storyboard();
-            Storyboard.SetTarget(xAnim, this.RenderTransform);
-            Storyboard.SetTargetProperty(xAnim, "ScaleX");
-            Storyboard.SetTarget(yAnim, this.RenderTransform);
-            Storyboard.SetTargetProperty(yAnim, "ScaleY");
-            Storyboard.SetTarget(opacityAnim, this);
-            Storyboard.SetTargetProperty(opacityAnim, "Opacity");
-
-            sb.Children.Add(xAnim);
-            sb.Children.Add(yAnim);
-            sb.Children.Add(opacityAnim);
-
-            sb.Begin();
-        }
-
         public void AddTextToPage(OnPageText text)
         {
             textBoxes.Add(text);

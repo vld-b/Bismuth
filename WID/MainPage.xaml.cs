@@ -229,20 +229,38 @@ namespace WID
         {
             MenuElement item = (MenuElement)e.ClickedItem;
             if (item.isFolder)
-            {
                 Frame.Navigate(
                     typeof(MainPage),
                     await notes.GetFolderAsync(item.itemName),
-                    new SlideNavigationTransitionInfo
+                    new SlideNavigationTransitionInfo()
                     {
                         Effect = SlideNavigationTransitionEffect.FromRight
-                    }
-                    );
-            }
+                    });
             else
+            {
+                //Grid clickedGrid = (Grid)((GridViewItem)((GridView)sender).ContainerFromItem(e.ClickedItem)).Content;
+                //NotebookPage origin = (NotebookPage)( (Grid) ( (Viewbox)clickedGrid.Children[1]).Child).Children[0];
+                //NotebookPage origin;
+                //foreach (GridViewItem gvItem in gvNotebooks.Items)
+                //{
+                //    if (gvItem.DataContext == item)
+                //    {
+                //        origin = 
+                //    }
+                //}
+
+                GridViewItem gvItem = (GridViewItem)((GridView)sender).ContainerFromItem(e.ClickedItem);
+                FrameworkElement root = (FrameworkElement)gvItem.ContentTemplateRoot;
+                NotebookPage origin = (NotebookPage)root.FindName("npPagePreview");
+
+                //ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(new BasicConnectedAnimationConfiguration());
+                ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("OpenNotebook", origin).Configuration = new BasicConnectedAnimationConfiguration();
+
                 Frame.Navigate(typeof(CanvasPage),
                     await notes.GetFolderAsync(item.itemName + ".notebook"),
-                    new DrillInNavigationTransitionInfo());
+                    new SuppressNavigationTransitionInfo()
+                    );
+            }
         }
 
         private async void RenameItem(object sender, RoutedEventArgs e)

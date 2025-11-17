@@ -35,6 +35,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using static System.Net.Mime.MediaTypeNames;
@@ -170,7 +171,6 @@ namespace WID
                 }
 
                 pages.Add(currentConfig);
-                Debug.WriteLine("TextData[0] with id, width: " + pages.Last().textBoxes.Last().id + ":" + pages.Last().textBoxes.Last().width);
                 await page.SaveToFile(pageFile);
             }
 
@@ -290,7 +290,6 @@ namespace WID
                         this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
                 }
-                svPageZoom.ChangeView(horizontalOffset: config.lastNotebookState.horizScrollPos, verticalOffset: config.lastNotebookState.vertScrollPos, zoomFactor: config.lastNotebookState.zoomFactor, disableAnimation: true);
             } else
             {
                 config = new NotebookConfig(
@@ -301,35 +300,51 @@ namespace WID
                     -1,
                     new List<int>());
                 if (this.IsLoaded)
-                    AddPage();
+                    AddPage(false);
                 else
-                    this.Loaded += (s, e) => AddPage();
+                    this.Loaded += (s, e) => AddPage(false);
+            }
+
+            spPageView.Children.Last().StartBringIntoView(
+                new BringIntoViewOptions
+                {
+                    AnimationDesired = false,
+                    VerticalAlignmentRatio = 0d,
+                    HorizontalAlignmentRatio = 0.5d,
+                }
+                );
+            ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
+            if (anim is not null)
+            {
+                anim.TryStart(spPageView.Children.Last());
             }
         }
 
         private void AddPageClicked(object sender, RoutedEventArgs e)
         {
-            AddPage();
+            AddPage(true);
             AddItemFlyout.Hide();
         }
 
-        private void AddPage()
+        private void AddPage(bool animationDesired)
         {
             NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 1920, 2880);
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
-            BringIntoViewOptions options = new BringIntoViewOptions
+            if (animationDesired)
             {
-                AnimationDesired = true,
-                VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
-            };
-            page.StartBringIntoView(options);
-            page.AnimateIn();
+                BringIntoViewOptions options = new BringIntoViewOptions
+                {
+                    AnimationDesired = true,
+                    VerticalAlignmentRatio = 0.1d,
+                    HorizontalAlignmentRatio = 0.5d,
+                };
+                page.StartBringIntoView(options);
+            }
         }
 
-        private async Task AddPage(StorageFile bg)
+        private async Task AddPage(StorageFile bg, bool animationDesired)
         {
             int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
             NotebookPage page;
@@ -352,17 +367,19 @@ namespace WID
             pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
             pendingDeletions.Remove(config.pageMapping.Last().fileName);
 
-            BringIntoViewOptions options = new BringIntoViewOptions
+            if (animationDesired)
             {
-                AnimationDesired = true,
-                VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
-            };
-            page.StartBringIntoView(options);
-            page.AnimateIn();
+                BringIntoViewOptions options = new BringIntoViewOptions
+                {
+                    AnimationDesired = true,
+                    VerticalAlignmentRatio = 0.1d,
+                    HorizontalAlignmentRatio = 0.5d,
+                };
+                page.StartBringIntoView(options);
+            }
         }
 
-        private async Task AddPage(PdfDocument bg)
+        private async Task AddPage(PdfDocument bg, bool animationDesired)
         {
             ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
             for (uint i = 0; i < bg.PageCount; ++i)
@@ -399,19 +416,20 @@ namespace WID
                 page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                 spPageView.Children.Add(page);
 
-
-
                 // Remove background from pending deletions so it doesn't get deleted when it should be present
                 pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
                 pendingDeletions.Remove(config.pageMapping.Last().fileName);
-                BringIntoViewOptions options = new BringIntoViewOptions
+
+                if (animationDesired)
                 {
-                    AnimationDesired = true,
-                    VerticalAlignmentRatio = 0.1d,
-                    HorizontalAlignmentRatio = 0.5d,
-                };
-                page.StartBringIntoView(options);
-                page.AnimateIn();
+                    BringIntoViewOptions options = new BringIntoViewOptions
+                    {
+                        AnimationDesired = true,
+                        VerticalAlignmentRatio = 0.1d,
+                        HorizontalAlignmentRatio = 0.5d,
+                    };
+                    page.StartBringIntoView(options);
+                }
             }
             popup.Hide();
         }
@@ -613,7 +631,7 @@ namespace WID
 
             if (picture is not null)
             {
-                await AddPage(picture);
+                await AddPage(picture, true);
             }
 
             AddItemFlyout.Hide();
@@ -640,10 +658,10 @@ namespace WID
                 }
                 await file.CopyAsync(ApplicationData.Current.TemporaryFolder);
                 if (file.Name.EndsWith(".pdf"))
-                    await AddPage(await PdfDocument.LoadFromFileAsync(file));
+                    await AddPage(await PdfDocument.LoadFromFileAsync(file), true);
                 else
                 {
-                    await AddPage(file);
+                    await AddPage(file, true);
                 }
             }
         }
