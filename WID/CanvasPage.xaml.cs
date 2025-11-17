@@ -51,7 +51,7 @@ namespace WID
         private StorageFolder? file;
         private StorageFile? configFile;
 
-        private FileConfig? config;
+        private NotebookConfig? config;
 
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
@@ -143,8 +143,7 @@ namespace WID
 
             ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
 
-            ObservableCollection<string> pages = new ObservableCollection<string>();
-            ObservableCollection<string> bgImages = new ObservableCollection<string>();
+            ObservableCollection<PageConfig> pages = new ObservableCollection<PageConfig>();
             List<TextData> textBoxes = new List<TextData>();
 
             await Utils.CreatePending(pendingCreations, file);
@@ -153,11 +152,7 @@ namespace WID
             foreach (NotebookPage page in spPageView.Children)
             {
                 StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
-                pages.Add(pageFile.Name);
-                if (page.hasBg)
-                    bgImages.Add("bg" + (page.id == 0 ? "" : " (" + page.id + ")") + ".jpg");
-                else
-                    bgImages.Add(string.Empty);
+                pages.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
                 await page.SaveToFile(pageFile);
 
                 foreach (OnPageText txt in page.textBoxes)
@@ -182,28 +177,24 @@ namespace WID
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
-                config = new FileConfig( // Would most likely break config, because usableIDs is not being calculated
+                config = new NotebookConfig( // Would most likely break config, because usableIDs is not being calculated
                     pages,
-                    bgImages,
                     i,
                     new List<int>(),
                     new LastNotebookState(),
-                    new List<TextData>(),
                     -1,
                     new List<int>()
                     );
             else
             {
                 config.pageMapping = pages;
-                config.bgMapping = bgImages;
-                config.textMapping = textBoxes;
                 config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
                 config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
                 config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
             }
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
-                await JsonSerializer.SerializeAsync(opStream, config, FileConfigJsonContext.Default.FileConfig);
+                await JsonSerializer.SerializeAsync(opStream, config, NotebookConfigJsonContext.Default.NotebookConfig);
 
             await Utils.DeletePending(pendingDeletions, file!);
             await Utils.MovePending(pendingMoves, file!);
@@ -256,52 +247,40 @@ namespace WID
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                    config = JsonSerializer.Deserialize(ipStream, FileConfigJsonContext.Default.FileConfig);
+                    config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    StorageFile ink = await file.GetFileAsync(config!.pageMapping[i]);
+                    StorageFile ink = await file.GetFileAsync(config!.pageMapping[i].fileName);
                     NotebookPage page;
 
-                    bool firstParanthesis = config.pageMapping[i].Contains("(");
-                    int pageId;
-                    if (firstParanthesis)
-                        pageId = int.Parse(
-                            config!.pageMapping[i][(config!.pageMapping[i].IndexOf("(") + 1)..config!.pageMapping[i].IndexOf(")")]
-                            );
-                    else
-                        pageId = 0;
-
-                    if (config!.bgMapping[i] == string.Empty)
-                    {
-                        page = new NotebookPage(pageId, 1920, 2880);
-                    }
-                    else
+                    if (config!.pageMapping[i].hasBg)
                     {
                         BitmapImage bgImage = new BitmapImage();
-                        StorageFile bgFile = await file.GetFileAsync(config.bgMapping[i]);
+                        bgImage.DecodePixelWidth = (int)config!.pageMapping[i].width;
+                        StorageFile bgFile = await file.GetFileAsync(config.pageMapping[i].GetBgName());
                         using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
                             await bgImage.SetSourceAsync(stream);
-                        page = new NotebookPage(pageId, bgImage);
+                        page = new NotebookPage(config!.pageMapping[i].id, bgImage);
+                    }
+                    else
+                    {
+                        page = new NotebookPage(config!.pageMapping[i].id, config!.pageMapping[i].width, config!.pageMapping[i].height);
                     }
 
-                    foreach (TextData textData in config.textMapping)
+                    foreach (TextData textData in config!.pageMapping[i].textBoxes)
                     {
-                        if (textData.containingPageId == page.id)
+                        OnPageText txt = new OnPageText(
+                            textData.id,
+                            textData.width,
+                            textData.height,
+                            textData.top,
+                            textData.left,
+                            page);
+                        using (IRandomAccessStream stream = await
+                            (await file.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
+                            .OpenAsync(FileAccessMode.Read))
                         {
-                            OnPageText txt = new OnPageText(
-                                textData.id,
-                                textData.width,
-                                textData.height,
-                                textData.top,
-                                textData.left,
-                                page);
-                            using (IRandomAccessStream stream = await
-                                (await file.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
-                                .OpenAsync(FileAccessMode.Read))
-                            {
-                                txt.LoadFromStream(stream);
-                            }
-                            page.AddTextToPage(txt);
+                            txt.LoadFromStream(stream);
                         }
                     }
                     
@@ -315,13 +294,11 @@ namespace WID
                 svPageZoom.ChangeView(horizontalOffset: config.lastNotebookState.horizScrollPos, verticalOffset: config.lastNotebookState.vertScrollPos, zoomFactor: config.lastNotebookState.zoomFactor, disableAnimation: true);
             } else
             {
-                config = new FileConfig(
-                    new ObservableCollection<string>(),
-                    new ObservableCollection<string>(),
+                config = new NotebookConfig(
+                    new ObservableCollection<PageConfig>(),
                     -1,
                     new List<int>(),
                     new LastNotebookState(),
-                    new List<TextData>(),
                     -1,
                     new List<int>());
                 if (this.IsLoaded)
@@ -340,8 +317,7 @@ namespace WID
         private void AddPage()
         {
             NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 1920, 2880);
-            config!.pageMapping.Add("page" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".gif");
-            config!.bgMapping.Add(string.Empty);
+            config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
@@ -358,13 +334,6 @@ namespace WID
         {
             int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
             NotebookPage page;
-            config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
-            config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
-            pendingMoves.Add(bg);
-            pendingRenames.Add(new RenameItem(bg, config.bgMapping.Last()));
-            // Remove background from pending deletions so it doesn't get deleted when it should be present
-            pendingDeletions.Remove(config.bgMapping.Last());
-            pendingDeletions.Remove(config.pageMapping.Last());
             using (IRandomAccessStream stream = await bg.OpenAsync(FileAccessMode.Read))
             {
                 BitmapImage bmpImage = new BitmapImage();
@@ -375,6 +344,15 @@ namespace WID
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
+
+            config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
+
+            pendingMoves.Add(bg);
+            pendingRenames.Add(new RenameItem(bg, config.pageMapping.Last().GetBgName()));
+            // Remove background from pending deletions so it doesn't get deleted when it should be present
+            pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
+            pendingDeletions.Remove(config.pageMapping.Last().fileName);
+
             BringIntoViewOptions options = new BringIntoViewOptions
             {
                 AnimationDesired = true,
@@ -392,17 +370,7 @@ namespace WID
             {
                 int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
                 NotebookPage page;
-                config.pageMapping.Add("page" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".gif");
-                config.bgMapping.Add("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".jpg");
                 StorageFile bgFile;
-                if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.bgMapping.Last()))
-                    bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last());
-                else
-                    bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.bgMapping.Last(), CreationCollisionOption.ReplaceExisting);
-                pendingMoves.Add(bgFile);
-                // Remove background from pending deletions so it doesn't get deleted when it should be present
-                pendingDeletions.Remove(config.bgMapping.Last());
-                pendingDeletions.Remove(config.pageMapping.Last());
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     BitmapImage bmpImage = new BitmapImage();
@@ -410,6 +378,14 @@ namespace WID
                     await bg.GetPage(i).RenderToStreamAsync(stream);
                     await bmpImage.SetSourceAsync(stream);
                     page = new NotebookPage(pageId, bmpImage);
+
+                    config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
+
+                    if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.pageMapping.Last().GetBgName()))
+                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().GetBgName());
+                    else
+                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().GetBgName(), CreationCollisionOption.ReplaceExisting);
+                    pendingMoves.Add(bgFile);
 
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
                     SoftwareBitmap bmp = await decoder.GetSoftwareBitmapAsync();
@@ -423,6 +399,12 @@ namespace WID
 
                 page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                 spPageView.Children.Add(page);
+
+
+
+                // Remove background from pending deletions so it doesn't get deleted when it should be present
+                pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
+                pendingDeletions.Remove(config.pageMapping.Last().fileName);
                 BringIntoViewOptions options = new BringIntoViewOptions
                 {
                     AnimationDesired = true,

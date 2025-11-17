@@ -372,9 +372,9 @@ namespace WID
             {
                 StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");
                 StorageFile configFile = await configDir.GetFileAsync("config.json");
-                FileConfig? config;
+                NotebookConfig? config;
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                    config = JsonSerializer.Deserialize(ipStream, FileConfigJsonContext.Default.FileConfig);
+                    config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
                 if (config is not null)
                     preview.LoadLastPageFromConfig(config, configDir);
             } catch
