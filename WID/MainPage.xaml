@@ -82,7 +82,7 @@
         <GridView
             x:Name="gvNotebooks"
             ItemClick="OpenNotebook"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Left"
             Width="Auto"
             IsItemClickEnabled="True"
             CanDrag="False"

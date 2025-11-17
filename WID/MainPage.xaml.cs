@@ -229,6 +229,7 @@ namespace WID
         {
             MenuElement item = (MenuElement)e.ClickedItem;
             if (item.isFolder)
+            {
                 Frame.Navigate(
                     typeof(MainPage),
                     await notes.GetFolderAsync(item.itemName),
@@ -237,6 +238,7 @@ namespace WID
                         Effect = SlideNavigationTransitionEffect.FromRight
                     }
                     );
+            }
             else
                 Frame.Navigate(typeof(CanvasPage),
                     await notes.GetFolderAsync(item.itemName + ".notebook"),
@@ -366,8 +368,6 @@ namespace WID
         private async void LoadPagePreview(object sender, RoutedEventArgs e)
         {
             NotebookPage preview = (NotebookPage)sender;
-            preview.Height = 2880;
-            preview.Width = 1920;
             try
             {
                 StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");

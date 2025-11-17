@@ -88,6 +88,8 @@ namespace WID
 
         internal async Task LoadLastPageFromConfig(NotebookConfig notebookConfig, StorageFolder notebookDir)
         {
+            this.Width = notebookConfig.pageMapping.Last().width;
+            this.Height = notebookConfig.pageMapping.Last().height;
             StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().fileName);
             using (IInputStream ipStream = await ink.OpenAsync(FileAccessMode.Read))
                 this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);

@@ -12,7 +12,7 @@ using Windows.UI.WebUI;
 
 namespace WID
 {
-    class NotebookConfig
+    public class NotebookConfig
     {
         public ObservableCollection<PageConfig> pageMapping { get; set; }
         public int maxPageID { get; set; }
@@ -55,10 +55,9 @@ namespace WID
     }
 
     [JsonSerializable(typeof(NotebookConfig))]
-    internal partial class NotebookConfigJsonContext : JsonSerializerContext
-    {}
+    internal partial class NotebookConfigJsonContext : JsonSerializerContext {}
 
-    class LastNotebookState
+    public class LastNotebookState
     {
         public double vertScrollPos { get; set; }
         public double horizScrollPos { get; set; }
@@ -80,7 +79,7 @@ namespace WID
         }
     }
 
-    class TextData
+    public class TextData
     {
         public int id { get; set; }
         public int containingPageId { get; set; }
@@ -88,6 +87,17 @@ namespace WID
         public double height { get; set; }
         public double top { get; set; }
         public double left { get; set; }
+
+        public TextData()
+        {
+            this.id = -1;
+            this.containingPageId = -1;
+            this.width = 0d;
+            this.height = 0d;
+            this.top = 0d;
+            this.left = 0d;
+        }
+
 
         public TextData(int id, int containingPageId, double width, double height, double top, double left)
         {
@@ -100,14 +110,23 @@ namespace WID
         }
     }
 
-    class PageConfig
+    public class PageConfig
     {
-        public int id { get; private set; }
-        public string fileName { get; private set; }
-        public double width { get; private set; }
-        public double height { get; private set; }
-        public bool hasBg { get; private set; }
-        public List<TextData> textBoxes { get; private set; }
+        public int id { get; set; }
+        public string fileName { get; set; }
+        public double width { get; set; }
+        public double height { get; set; }
+        public bool hasBg { get; set; }
+        public List<TextData> textBoxes { get; set; }
+
+        public PageConfig()
+        {
+            this.id = -1;
+            this.fileName = "";
+            this.width = this.height = 0d;
+            this.hasBg = false;
+            textBoxes = new List<TextData>();
+        }
 
         public PageConfig(int id, double width, double height, bool hasBg)
         {

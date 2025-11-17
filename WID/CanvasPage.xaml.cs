@@ -37,6 +37,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -144,42 +145,39 @@ namespace WID
             ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
 
             ObservableCollection<PageConfig> pages = new ObservableCollection<PageConfig>();
-            List<TextData> textBoxes = new List<TextData>();
 
             await Utils.CreatePending(pendingCreations, file);
 
-            int i = -1;
             foreach (NotebookPage page in spPageView.Children)
             {
                 StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
-                pages.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
-                await page.SaveToFile(pageFile);
+                PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
 
                 foreach (OnPageText txt in page.textBoxes)
                 {
-                    StorageFile rtfFile = await file.CreateFileAsync(
-                        "text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf",
-                        CreationCollisionOption.ReplaceExisting
-                        );
+                    StorageFile rtfFile = await file.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
                     using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
                         txt.SaveToStream(stream);
-                    textBoxes.Add(new TextData(
+
+                    currentConfig.textBoxes.Add(new TextData(
                         txt.id,
                         page.id,
                         txt.Width,
                         txt.Height,
                         Canvas.GetTop(txt),
-                        Canvas.GetLeft(txt))
+                        Canvas.GetLeft(txt) )
                         );
                 }
 
-                ++i;
+                pages.Add(currentConfig);
+                Debug.WriteLine("TextData[0] with id, width: " + pages.Last().textBoxes.Last().id + ":" + pages.Last().textBoxes.Last().width);
+                await page.SaveToFile(pageFile);
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
-                config = new NotebookConfig( // Would most likely break config, because usableIDs is not being calculated
+                config = new NotebookConfig( // Would most likely break config (or at least leave it inconsistent), because usableIDs is not being calculated
                     pages,
-                    i,
+                    spPageView.Children.Count-1,
                     new List<int>(),
                     new LastNotebookState(),
                     -1,
@@ -196,8 +194,8 @@ namespace WID
             using (Stream opStream = await configFile.OpenStreamForWriteAsync())
                 await JsonSerializer.SerializeAsync(opStream, config, NotebookConfigJsonContext.Default.NotebookConfig);
 
-            await Utils.DeletePending(pendingDeletions, file!);
-            await Utils.MovePending(pendingMoves, file!);
+            await Utils.DeletePending(pendingDeletions, file);
+            await Utils.MovePending(pendingMoves, file);
             await Utils.RenamePending(pendingRenames);
 
             popup.Hide();
@@ -282,6 +280,7 @@ namespace WID
                         {
                             txt.LoadFromStream(stream);
                         }
+                        page.AddTextToPage(txt);
                     }
                     
                     await page.LoadFromFile(ink);
@@ -653,7 +652,7 @@ namespace WID
         {
             double pageOffset = GetCurrentPage();
             OnPageText txt = new OnPageText(
-                config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs[0],
+                config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs.Pop(0),
                 500d,
                 500d,
                 Math.Min(pageOffset, currentPage.Height - 500d),
