@@ -64,6 +64,7 @@ namespace WID
         private List<RenameItem> pendingRenames = new List<RenameItem>();
 
         bool focusingTextTools = false;
+        bool focusingTextBox = false;
 
         private Task? savingTask;
 
@@ -74,8 +75,19 @@ namespace WID
             InitializeComponent();
             SetTitlebar();
 
-            ppTextTools.GettingFocus += (s, e) => focusingTextTools = true;
-            ppTextTools.LosingFocus += (s, e) => focusingTextTools = false;
+            ppTextTools.GotFocus += (s, e) => {
+                focusingTextTools = true;
+                ppTextTools.IsHitTestVisible = true;
+                ppTextTools.Opacity = 1d;
+            };
+            ppTextTools.LosingFocus += (s, e) => {
+                if (!(focusingTextTools || focusingTextBox))
+                {
+                    focusingTextTools = false;
+                    ppTextTools.IsHitTestVisible = false;
+                    ppTextTools.Opacity = 0d;
+                }
+            };
         }
 
         private void SetTitlebar()
@@ -726,13 +738,15 @@ namespace WID
 
         private void StartTyping(object? sender, EventArgs e)
         {
+            focusingTextBox = true;
             ppTextTools.Opacity = 1d;
             ppTextTools.IsHitTestVisible = true;
         }
 
         private void StopTyping(object? sender, EventArgs e)
-        {
-            if (!focusingTextTools)
+        { 
+            focusingTextBox = false;
+            if (!(focusingTextBox || focusingTextTools))
             {
                 ppTextTools.IsHitTestVisible = false;
                 ppTextTools.Opacity = 0d;
