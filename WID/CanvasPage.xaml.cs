@@ -286,6 +286,7 @@ namespace WID
                     await page.LoadFromFile(ink);
                     if (this.IsLoaded)
                         page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+
                     else
                         this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
@@ -305,18 +306,24 @@ namespace WID
                     this.Loaded += (s, e) => AddPage(false);
             }
 
-            spPageView.Children.Last().StartBringIntoView(
-                new BringIntoViewOptions
-                {
-                    AnimationDesired = false,
-                    VerticalAlignmentRatio = 0d,
-                    HorizontalAlignmentRatio = 0.5d,
-                }
-                );
-            ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
-            if (anim is not null)
+            if (spPageView.Children.Count > 0)
             {
-                anim.TryStart(spPageView.Children.Last());
+                spPageView.Children[spPageView.Children.Count - 1].StartBringIntoView(
+                    new BringIntoViewOptions
+                    {
+                        AnimationDesired = false,
+                        VerticalAlignmentRatio = 0d,
+                        HorizontalAlignmentRatio = 0.5d,
+                    }
+                    );
+            }
+            if (spPageView.Children.Count > 0)
+            {
+                ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
+                if (anim is not null)
+                {
+                    anim.TryStart(spPageView.Children.Last());
+                }
             }
         }
 

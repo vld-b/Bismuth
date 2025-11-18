@@ -238,17 +238,6 @@ namespace WID
                     });
             else
             {
-                //Grid clickedGrid = (Grid)((GridViewItem)((GridView)sender).ContainerFromItem(e.ClickedItem)).Content;
-                //NotebookPage origin = (NotebookPage)( (Grid) ( (Viewbox)clickedGrid.Children[1]).Child).Children[0];
-                //NotebookPage origin;
-                //foreach (GridViewItem gvItem in gvNotebooks.Items)
-                //{
-                //    if (gvItem.DataContext == item)
-                //    {
-                //        origin = 
-                //    }
-                //}
-
                 GridViewItem gvItem = (GridViewItem)((GridView)sender).ContainerFromItem(e.ClickedItem);
                 FrameworkElement root = (FrameworkElement)gvItem.ContentTemplateRoot;
                 NotebookPage origin = (NotebookPage)root.FindName("npPagePreview");
@@ -258,7 +247,7 @@ namespace WID
 
                 Frame.Navigate(typeof(CanvasPage),
                     await notes.GetFolderAsync(item.itemName + ".notebook"),
-                    new SuppressNavigationTransitionInfo()
+                    new DrillInNavigationTransitionInfo()
                     );
             }
         }
