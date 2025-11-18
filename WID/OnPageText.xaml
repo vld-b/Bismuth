@@ -17,8 +17,6 @@
         CornerRadius="4"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        GotFocus="ShowToolPopup"
-        LostFocus="HideToolPopup"
         >
         <Grid>
             <RichEditBox

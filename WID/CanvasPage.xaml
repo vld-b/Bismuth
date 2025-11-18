@@ -42,13 +42,20 @@
         </Grid>
 
         <Popup
+            x:Name="ppTextTools"
             Loaded="ToolPopupLoaded"
             Height="Auto"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             VerticalOffset="40"
             IsOpen="True"
+            Opacity="0"
+            IsHitTestVisible="False"
             >
+            <Popup.OpacityTransition>
+                <ScalarTransition />
+            </Popup.OpacityTransition>
+            
             <Border
                 BorderThickness="4"
                 CornerRadius="8"
@@ -319,6 +326,7 @@
                     >
                     <StackPanel.ChildrenTransitions>
                         <TransitionCollection>
+                            <EntranceThemeTransition />
                             <ReorderThemeTransition />
                         </TransitionCollection>
                     </StackPanel.ChildrenTransitions>

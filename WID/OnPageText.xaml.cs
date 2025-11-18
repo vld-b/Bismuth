@@ -27,6 +27,8 @@ namespace WID
         public int id { get; private set; }
         private Point? mousePos;
         NotebookPage containingPage;
+        public EventHandler? TextBoxGotFocus;
+        public EventHandler? TextBoxLostFocus;
 
         public OnPageText(int id, double width, double height, double top, double left, NotebookPage containingPage)
         {
@@ -55,14 +57,6 @@ namespace WID
         public void LoadFromStream(IRandomAccessStream stream)
         {
             reb.Document.LoadFromStream(Windows.UI.Text.TextSetOptions.FormatRtf, stream);
-        }
-
-        private void ShowToolPopup(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void HideToolPopup(object sender, RoutedEventArgs e)
-        {
         }
 
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
@@ -132,12 +126,12 @@ namespace WID
 
         private void StartWriting(object sender, RoutedEventArgs e)
         {
-
+            TextBoxGotFocus?.Invoke(this, new EventArgs());
         }
 
         private void StopWriting(object sender, RoutedEventArgs e)
         {
-
+            TextBoxLostFocus?.Invoke(this, new EventArgs());
         }
     }
 }

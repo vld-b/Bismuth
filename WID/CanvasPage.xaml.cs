@@ -63,6 +63,8 @@ namespace WID
         private List<StorageFile> pendingMoves = new List<StorageFile>();
         private List<RenameItem> pendingRenames = new List<RenameItem>();
 
+        bool focusingTextTools = false;
+
         private Task? savingTask;
 
         private NotebookPage? currentPage;
@@ -71,6 +73,9 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
+
+            ppTextTools.GettingFocus += (s, e) => focusingTextTools = true;
+            ppTextTools.LosingFocus += (s, e) => focusingTextTools = false;
         }
 
         private void SetTitlebar()
@@ -281,6 +286,8 @@ namespace WID
                             txt.LoadFromStream(stream);
                         }
                         page.AddTextToPage(txt);
+                        txt.TextBoxGotFocus += (s, e) => StartTyping(s, e);
+                        txt.TextBoxLostFocus += (s, e) => StopTyping(s, e);
                     }
                     
                     await page.LoadFromFile(ink);
@@ -308,14 +315,13 @@ namespace WID
 
             if (spPageView.Children.Count > 0)
             {
-                spPageView.Children[spPageView.Children.Count - 1].StartBringIntoView(
+                spPageView.Children.Last().StartBringIntoView(
                     new BringIntoViewOptions
                     {
                         AnimationDesired = false,
                         VerticalAlignmentRatio = 0d,
                         HorizontalAlignmentRatio = 0.5d,
-                    }
-                    );
+                    });
             }
             if (spPageView.Children.Count > 0)
             {
@@ -337,6 +343,9 @@ namespace WID
         {
             NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 1920, 2880);
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
+
+            pendingDeletions.Remove(config!.pageMapping.Last().fileName);
+
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
             if (animationDesired)
@@ -680,12 +689,14 @@ namespace WID
                 config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs.Pop(0),
                 500d,
                 500d,
-                Math.Min(pageOffset, currentPage.Height - 500d),
+                Math.Min(pageOffset, currentPage!.Height - 500d),
                 (currentPage.Width - 500d) / 2,
                 currentPage
                 );
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
+            txt.TextBoxGotFocus += (s, e) => StartTyping(s, e);
+            txt.TextBoxLostFocus += (s, e) => StopTyping(s, e);
             AddItemFlyout.Hide();
         }
 
@@ -711,6 +722,21 @@ namespace WID
         {
             Popup popup = (Popup)sender;
             popup.HorizontalOffset = -((FrameworkElement)popup.Child).ActualWidth / 2;
+        }
+
+        private void StartTyping(object? sender, EventArgs e)
+        {
+            ppTextTools.Opacity = 1d;
+            ppTextTools.IsHitTestVisible = true;
+        }
+
+        private void StopTyping(object? sender, EventArgs e)
+        {
+            if (!focusingTextTools)
+            {
+                ppTextTools.IsHitTestVisible = false;
+                ppTextTools.Opacity = 0d;
+            }
         }
     }
 }
