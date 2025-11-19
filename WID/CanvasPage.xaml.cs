@@ -10,6 +10,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -29,6 +30,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Notifications;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -63,8 +65,7 @@ namespace WID
         private List<StorageFile> pendingMoves = new List<StorageFile>();
         private List<RenameItem> pendingRenames = new List<RenameItem>();
 
-        bool focusingTextTools = false;
-        bool focusingTextBox = false;
+        OnPageText? lastEditedText;
 
         private Task? savingTask;
 
@@ -75,18 +76,13 @@ namespace WID
             InitializeComponent();
             SetTitlebar();
 
-            ppTextTools.GotFocus += (s, e) => {
-                focusingTextTools = true;
+            bdTextTools.GotFocus += (s, e) => {
                 ppTextTools.IsHitTestVisible = true;
                 ppTextTools.Opacity = 1d;
             };
-            ppTextTools.LosingFocus += (s, e) => {
-                if (!(focusingTextTools || focusingTextBox))
-                {
-                    focusingTextTools = false;
-                    ppTextTools.IsHitTestVisible = false;
-                    ppTextTools.Opacity = 0d;
-                }
+            bdTextTools.LostFocus += (s, e) => {
+                ppTextTools.IsHitTestVisible = false;
+                ppTextTools.Opacity = 0d;
             };
         }
 
@@ -94,6 +90,22 @@ namespace WID
         {
             Window.Current.SetTitleBar(TitleBar);
             tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName+": ";
+        }
+
+        private void ScrollToLastPage(object? sender, object e)
+        {
+            ((NotebookPage)spPageView.Children.Last()).LayoutUpdated -= ScrollToLastPage;
+
+            if (spPageView.Children.Count > 0)
+            {
+                spPageView.Children.Last().StartBringIntoView(
+                    new BringIntoViewOptions
+                    {
+                        AnimationDesired = false,
+                        VerticalAlignmentRatio = 0d,
+                        HorizontalAlignmentRatio = 0.5d,
+                    });
+            }
         }
 
         private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -325,16 +337,8 @@ namespace WID
                     this.Loaded += (s, e) => AddPage(false);
             }
 
-            if (spPageView.Children.Count > 0)
-            {
-                spPageView.Children.Last().StartBringIntoView(
-                    new BringIntoViewOptions
-                    {
-                        AnimationDesired = false,
-                        VerticalAlignmentRatio = 0d,
-                        HorizontalAlignmentRatio = 0.5d,
-                    });
-            }
+            ((NotebookPage)spPageView.Children.Last()).LayoutUpdated += ScrollToLastPage;
+
             if (spPageView.Children.Count > 0)
             {
                 ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
@@ -738,19 +742,39 @@ namespace WID
 
         private void StartTyping(object? sender, EventArgs e)
         {
-            focusingTextBox = true;
+            lastEditedText = (OnPageText?)sender;
             ppTextTools.Opacity = 1d;
             ppTextTools.IsHitTestVisible = true;
         }
 
         private void StopTyping(object? sender, EventArgs e)
-        { 
-            focusingTextBox = false;
-            if (!(focusingTextBox || focusingTextTools))
-            {
-                ppTextTools.IsHitTestVisible = false;
-                ppTextTools.Opacity = 0d;
-            }
+        {
+            ppTextTools.IsHitTestVisible = false;
+            ppTextTools.Opacity = 0d;
+        }
+
+        private void ToggleBoldText(object sender, RoutedEventArgs e)
+        {
+            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
+        }
+
+        private void ToggleItalicText(object sender, RoutedEventArgs e)
+        {
+            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Italic = Windows.UI.Text.FormatEffect.Toggle;
+        }
+
+        private void ToggleUnderlinedText(object sender, RoutedEventArgs e)
+        {
+            ITextCharacterFormat selectionFormat = lastEditedText!.TextContent.Document.Selection.CharacterFormat;
+            if (selectionFormat.Underline == UnderlineType.Undefined)
+                selectionFormat.Underline = Windows.UI.Text.UnderlineType.Single;
+            else
+                selectionFormat.Underline = UnderlineType.Undefined;
+        }
+
+        private void ToggleStrikethroughText(object sender, RoutedEventArgs e)
+        {
+            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
         }
     }
 }

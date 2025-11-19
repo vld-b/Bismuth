@@ -25,6 +25,7 @@ namespace WID
     public sealed partial class OnPageText : Grid
     {
         public int id { get; private set; }
+        public RichEditBox TextContent;
         private Point? mousePos;
         NotebookPage containingPage;
         public EventHandler? TextBoxGotFocus;
@@ -34,6 +35,7 @@ namespace WID
         {
             this.InitializeComponent();
             this.id = id;
+            this.TextContent = reb;
             this.Width = width;
             this.Height = height;
             Canvas.SetTop(this, top);

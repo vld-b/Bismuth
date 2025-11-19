@@ -57,6 +57,7 @@
             </Popup.OpacityTransition>
             
             <Border
+                x:Name="bdTextTools"
                 BorderThickness="4"
                 CornerRadius="8"
                 >
@@ -75,14 +76,33 @@
                     Margin="10"
                     >
                     <Button
+                        Click="ToggleBoldText"
                         Content="B"
                         FontWeight="Bold"
                         />
                     <Button
+                        Click="ToggleItalicText"
                         Content="I"
-                        FontFamily="Calibri"
                         FontStyle="Italic"
                         />
+                    <Button
+                        Click="ToggleUnderlinedText"
+                        >
+                        <TextBlock
+                            Text="U"
+                            TextDecorations="Underline"
+                            />
+                    </Button>
+                    <Button
+                        Click="ToggleStrikethroughText"
+                        >
+                        <TextBlock
+                            Text="S"
+                            TextDecorations="Strikethrough"
+                            />
+                    </Button>
+                    <Button>
+                    </Button>
                     <TextBox
                         Width="200"
                         PlaceholderText="Search"
