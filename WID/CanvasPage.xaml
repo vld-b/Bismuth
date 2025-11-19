@@ -101,10 +101,14 @@
                             TextDecorations="Strikethrough"
                             />
                     </Button>
-                    <Button>
+                    <Button
+                        Click="ToggleSuperscriptText"
+                        >
                         Superscript
                     </Button>
-                    <Button>
+                    <Button
+                        Click="ToggleSubscriptText"
+                        >
                         Subscript
                     </Button>
                     <TextBox

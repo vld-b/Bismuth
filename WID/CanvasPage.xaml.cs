@@ -776,5 +776,15 @@ namespace WID
         {
             lastEditedText!.TextContent.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
         }
+
+        private void ToggleSuperscriptText(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleSubscriptText(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
