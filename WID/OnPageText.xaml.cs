@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,8 +31,9 @@ namespace WID
         NotebookPage containingPage;
         public EventHandler? TextBoxGotFocus;
         public EventHandler? TextBoxLostFocus;
+        public ScrollViewer pageContainer { get; private set; }
 
-        public OnPageText(int id, double width, double height, double top, double left, NotebookPage containingPage)
+        public OnPageText(int id, double width, double height, double top, double left, NotebookPage containingPage, ScrollViewer pageContainer)
         {
             this.InitializeComponent();
             this.id = id;
@@ -41,6 +43,7 @@ namespace WID
             Canvas.SetTop(this, top);
             Canvas.SetLeft(this, left);
             this.containingPage = containingPage;
+            this.pageContainer = pageContainer;
 
             btMove.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingText), true);
             btMove.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingText), true);
@@ -63,6 +66,10 @@ namespace WID
 
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
         {
+            e.Handled = true;
+            pageContainer.HorizontalScrollMode = ScrollMode.Disabled;
+            pageContainer.VerticalScrollMode = ScrollMode.Disabled;
+
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
         }
@@ -71,6 +78,8 @@ namespace WID
         {
             if (mousePos is not null)
             {
+                e.Handled = true;
+
                 double oldY = Canvas.GetTop(this);
 
                 Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height-this.Height, Canvas.GetTop(this) + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
@@ -89,6 +98,9 @@ namespace WID
 
         private void StopDraggingText(object sender, PointerRoutedEventArgs e)
         {
+            e.Handled = true;
+            pageContainer.HorizontalScrollMode = ScrollMode.Enabled;
+            pageContainer.VerticalScrollMode = ScrollMode.Enabled;
             mousePos = null;
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }

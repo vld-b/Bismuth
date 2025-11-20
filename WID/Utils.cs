@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.UserDataTasks.DataProvider;
 using Windows.Foundation.Diagnostics;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace WID
 {
@@ -96,6 +98,15 @@ namespace WID
             dialog.Content = new Windows.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
             dialog.ShowAsync();
             return dialog;
+        }
+
+        public static async Task<BitmapImage> GetBMPFromFileWithWidth(StorageFile bgFile, int desiredWidth)
+        {
+            BitmapImage bmp = new BitmapImage();
+            bmp.DecodePixelWidth = desiredWidth;
+            using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
+                await bmp.SetSourceAsync(stream);
+            return bmp;
         }
     }
 

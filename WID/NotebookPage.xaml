@@ -10,6 +10,7 @@
     Height="400"
     Width="Auto"
     Canvas.ZIndex="-1"
+    CornerRadius="50"
     >
 
     <InkCanvas

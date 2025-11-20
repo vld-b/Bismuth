@@ -282,11 +282,10 @@ namespace WID
 
                     if (config!.pageMapping[i].hasBg)
                     {
-                        BitmapImage bgImage = new BitmapImage();
-                        bgImage.DecodePixelWidth = (int)config!.pageMapping[i].width;
-                        StorageFile bgFile = await file.GetFileAsync(config.pageMapping[i].GetBgName());
-                        using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
-                            await bgImage.SetSourceAsync(stream);
+                        BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
+                            await file.GetFileAsync(config.pageMapping[i].GetBgName()),
+                            (int)config!.pageMapping[i].width
+                            );
                         page = new NotebookPage(config!.pageMapping[i].id, bgImage);
                     }
                     else
@@ -302,7 +301,9 @@ namespace WID
                             textData.height,
                             textData.top,
                             textData.left,
-                            page);
+                            page,
+                            svPageZoom
+                            );
                         using (IRandomAccessStream stream = await
                             (await file.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
                             .OpenAsync(FileAccessMode.Read))
@@ -707,7 +708,8 @@ namespace WID
                 500d,
                 Math.Min(pageOffset, currentPage!.Height - 500d),
                 (currentPage.Width - 500d) / 2,
-                currentPage
+                currentPage,
+                svPageZoom
                 );
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
@@ -778,12 +780,12 @@ namespace WID
 
         private void ToggleSuperscriptText(object sender, RoutedEventArgs e)
         {
-
+            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Superscript = FormatEffect.Toggle;
         }
 
         private void ToggleSubscriptText(object sender, RoutedEventArgs e)
         {
-
+            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
         }
     }
 }

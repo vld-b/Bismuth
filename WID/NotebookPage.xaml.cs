@@ -61,6 +61,17 @@ namespace WID
 
         public NotebookPage(int id, BitmapImage bg) : this(id)
         {
+            LoadBackground(bg);
+        }
+
+        public NotebookPage(int id, double width, double height) : this(id)
+        {
+            this.Width = width;
+            this.Height = height;
+        }
+
+        public void LoadBackground(BitmapImage bg)
+        {
             Image bgImage = new Image();
             bgImage.HorizontalAlignment = HorizontalAlignment.Stretch;
             bgImage.VerticalAlignment = VerticalAlignment.Stretch;
@@ -70,12 +81,6 @@ namespace WID
             this.Children.Insert(0, bgImage);
             this.bgImage = bg;
             this.hasBg = true;
-        }
-
-        public NotebookPage(int id, double width, double height) : this(id)
-        {
-            this.Width = width;
-            this.Height = height;
         }
 
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
@@ -93,6 +98,15 @@ namespace WID
             StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().fileName);
             using (IInputStream ipStream = await ink.OpenAsync(FileAccessMode.Read))
                 this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
+
+            if (notebookConfig.pageMapping.Last().hasBg)
+            {
+                BitmapImage bgImg = await Utils.GetBMPFromFileWithWidth(
+                    await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().GetBgName()),
+                    (int)notebookConfig.pageMapping.Last().width
+                    );
+                this.LoadBackground(bgImg);
+            }
         }
 
         public void AddTextToPage(OnPageText text)
