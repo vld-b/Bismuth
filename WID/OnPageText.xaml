@@ -10,7 +10,7 @@
     GotFocus="StartWriting"
     LostFocus="StopWriting"
     >
-    
+
     <Border
         BorderBrush="{StaticResource SystemAccentColor}"
         BorderThickness="4"
@@ -53,12 +53,4 @@
             </Button>
         </Grid>
     </Border>
-
-    <Popup
-        x:Name="ppTools"
-        
-        >
-        
-    </Popup>
-    
 </Grid>

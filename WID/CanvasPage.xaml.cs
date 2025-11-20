@@ -765,11 +765,10 @@ namespace WID
 
         private void ToggleUnderlinedText(object sender, RoutedEventArgs e)
         {
-            ITextCharacterFormat selectionFormat = lastEditedText!.TextContent.Document.Selection.CharacterFormat;
-            if (selectionFormat.Underline == UnderlineType.Undefined)
-                selectionFormat.Underline = Windows.UI.Text.UnderlineType.Single;
+            if (lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline != UnderlineType.Single)
+                lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline = Windows.UI.Text.UnderlineType.Single;
             else
-                selectionFormat.Underline = UnderlineType.Undefined;
+                lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline = UnderlineType.None;
         }
 
         private void ToggleStrikethroughText(object sender, RoutedEventArgs e)
