@@ -33,7 +33,27 @@ namespace WID
 
         private void ChoosePagePattern(object sender, SelectionChangedEventArgs e)
         {
+            string selectedItem = (string)e.AddedItems[0];
 
+            switch (selectedItem)
+            {
+                case "Empty":
+                    spSpacingOptions.Opacity = 0d;
+                    spSpacingOptions.IsHitTestVisible = false;
+                    return;
+                case "Lines":
+                    tbSpacingLabel.Text = "Line spacing";
+                    break;
+                case "Grid":
+                    tbSpacingLabel.Text = "Grid spacing";
+                    break;
+                case "Dots":
+                    tbSpacingLabel.Text = "Dot spacing";
+                    break;
+            }
+
+            spSpacingOptions.Opacity = 1d;
+            spSpacingOptions.IsHitTestVisible = true;
         }
     }
 

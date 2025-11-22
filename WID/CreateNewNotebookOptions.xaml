@@ -42,6 +42,7 @@
             
 
             <StackPanel
+                x:Name="spTemplateVariables"
                 Orientation="Vertical"
                 Spacing="10"
                 >
@@ -65,11 +66,18 @@
                 </ComboBox>
 
                 <StackPanel
+                    x:Name="spSpacingOptions"
                     Orientation="Vertical"
                     Spacing="0"
+                    IsHitTestVisible="False"
+                    Opacity="0"
                     >
+                    <StackPanel.OpacityTransition>
+                        <ScalarTransition />
+                    </StackPanel.OpacityTransition>
                     
                     <TextBlock
+                        x:Name="tbSpacingLabel"
                         Text="Grid Spacing"
                         />
 
