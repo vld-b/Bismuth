@@ -338,10 +338,10 @@ namespace WID
                     this.Loaded += (s, e) => AddPage(false);
             }
 
-            ((NotebookPage)spPageView.Children.Last()).LayoutUpdated += ScrollToLastPage;
 
             if (spPageView.Children.Count > 0)
             {
+                ((NotebookPage)spPageView.Children.Last()).LayoutUpdated += ScrollToLastPage;
                 ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
                 if (anim is not null)
                 {

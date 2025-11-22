@@ -110,16 +110,12 @@ namespace WID
 
         private async void CreateNewNotebook(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            TextBox txtbox = new TextBox
-            {
-                PlaceholderText = "Enter name for notebook",
-                AcceptsReturn = false,
-            };
+            CreateNewNotebookOptions options = new CreateNewNotebookOptions();
 
             ContentDialog dialog = new ContentDialog
             {
                 Title = "Create new notebook",
-                Content = txtbox,
+                Content = options,
                 PrimaryButtonText = "Create",
                 CloseButtonText = "Cancel",
                 DefaultButton = ContentDialogButton.Primary,
@@ -129,7 +125,7 @@ namespace WID
 
             if (res == ContentDialogResult.None)
                 return;
-            else if (res == ContentDialogResult.Primary && txtbox.Text == string.Empty)
+            else if (res == ContentDialogResult.Primary && options.notebookName == string.Empty)
             {
                 ContentDialog dialogNoName = new ContentDialog
                 {
@@ -144,7 +140,7 @@ namespace WID
 
             try
             {
-                StorageFolder newNotebook = await notes.CreateFolderAsync(txtbox.Text + ".notebook", CreationCollisionOption.FailIfExists);
+                StorageFolder newNotebook = await notes.CreateFolderAsync(options.notebookName + ".notebook", CreationCollisionOption.FailIfExists);
                 LoadNotebooks();
                 //gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
             }

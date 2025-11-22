@@ -382,7 +382,7 @@
                 Checked="RulerChecked"
                 Unchecked="RulerUnchecked"
                 >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xED5E;" />
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xECC6;" />
             </InkToolbarCustomToggleButton>
             <InkToolbarCustomToggleButton
                 Checked="ProtractorChecked"
