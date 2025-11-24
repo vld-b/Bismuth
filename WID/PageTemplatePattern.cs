@@ -22,7 +22,7 @@ namespace WID
     {
         public LinesPagePattern(double pageHeight, double spacing) : base()
         {
-            List<Line> lines = new List<Line>();
+            List<Rectangle> lines = new List<Rectangle>();
             StackLayout layout = new StackLayout()
             {
                 Orientation = Windows.UI.Xaml.Controls.Orientation.Vertical,
@@ -30,7 +30,6 @@ namespace WID
             };
             ItemsRepeater linesContainer = new ItemsRepeater()
             {
-                ItemsSource = lines,
                 Margin = new Windows.UI.Xaml.Thickness(0d, spacing * 2d, 0d, 0d),
                 Layout = layout,
             };

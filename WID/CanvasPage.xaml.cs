@@ -310,8 +310,8 @@ namespace WID
                             txt.LoadFromStream(stream);
                         }
                         page.AddTextToPage(txt);
-                        txt.TextBoxGotFocus += (s, e) => StartTyping(s, e);
-                        txt.TextBoxLostFocus += (s, e) => StopTyping(s, e);
+                        txt.TextBoxGotFocus += StartTyping;
+                        txt.TextBoxLostFocus += StopTyping;
                     }
                     
                     await page.LoadFromFile(ink);
