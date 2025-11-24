@@ -18,6 +18,11 @@
                 <Setter Property="Orientation" Value="Horizontal" />
                 <Setter Property="Spacing" Value="10" />
             </Style>
+
+            <DataTemplate x:Key="Line">
+                
+            </DataTemplate>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
