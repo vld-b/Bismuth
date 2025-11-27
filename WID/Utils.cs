@@ -108,6 +108,15 @@ namespace WID
                 await bmp.SetSourceAsync(stream);
             return bmp;
         }
+
+        public static async Task<WriteableBitmap> GetWBMPFromFileWithWidth(StorageFile bgFile, int desiredWidth)
+        {
+            BitmapImage bmp = await GetBMPFromFileWithWidth(bgFile,desiredWidth);
+            WriteableBitmap wbmp = new WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight);
+            using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
+                await wbmp.SetSourceAsync(stream);
+            return wbmp;
+        }
     }
 
     // Class for renaming files when saving notebooks

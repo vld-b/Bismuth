@@ -82,8 +82,11 @@
                         />
 
                     <Slider
+                        x:Name="slTemplateSpacing"
+                        ValueChanged="TemplateSpacingChanged"
                         Width="170"
                         HorizontalAlignment="Left"
+                        Value="120"
                         Minimum="20"
                         Maximum="200"
                         StepFrequency="10"

@@ -1,42 +1,64 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 namespace WID
 {
     public abstract class PageTemplatePattern
     {
-        public List<ItemsRepeater> patterns { get; private set; }
+        public int desiredSpacing { get; private set; }
 
-        public PageTemplatePattern()
+        public PageTemplatePattern(int spacing)
         {
-            patterns = new List<ItemsRepeater>();
+            desiredSpacing = spacing;
         }
+
+        public abstract void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args);
     }
 
     public class LinesPagePattern : PageTemplatePattern
     {
-        public LinesPagePattern(double pageHeight, double spacing) : base()
-        {
-            List<Rectangle> lines = new List<Rectangle>();
-            StackLayout layout = new StackLayout()
-            {
-                Orientation = Windows.UI.Xaml.Controls.Orientation.Vertical,
-                Spacing = spacing,
-            };
-            ItemsRepeater linesContainer = new ItemsRepeater()
-            {
-                Margin = new Windows.UI.Xaml.Thickness(0d, spacing * 2d, 0d, 0d),
-                Layout = layout,
-            };
+        public LinesPagePattern(int spacing) : base(spacing) { }
 
-            for (int i = 0; i < pageHeight/spacing; ++i)
+        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        {
+            args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
+            Debug.WriteLine("Canvas Height: " + c.Height);
+            int linesToDrawHorizontally = (int)c.Height / desiredSpacing;
+            float lineWidth = (float)c.Height * 0.001f;
+
+            for (int i = 0; i < linesToDrawHorizontally; ++i)
             {
+                float yPos = desiredSpacing * (i + 1);
+                args.DrawingSession.DrawLine(
+                    new System.Numerics.Vector2(0, yPos),
+                    new System.Numerics.Vector2((float)c.Width, yPos),
+                    new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
+                    lineWidth);
+                Debug.WriteLine("Calculated yPos: " + yPos);
             }
+        }
+    }
+
+    public class GridPagePattern : PageTemplatePattern
+    {
+        public GridPagePattern(int spacing): base(spacing) { }
+
+        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        {
+            args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
+            Debug.WriteLine("Canvas Height: " + c.Height);
+            int linesToDrawHorizontally = (int)c.Height / desiredSpacing;
+            float lineWidth = (float)c.Height * 0.001f;
         }
     }
 }

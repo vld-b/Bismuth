@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -34,13 +36,15 @@ namespace WID
     {
         public int id { get; private set; }
         public bool hasBg { get; private set; }
-        public BitmapImage? bgImage { get; private set; }
+        public WriteableBitmap? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
+
+        private PageTemplatePattern? currentPattern;
 
         public NotebookPage()
         {
@@ -59,7 +63,7 @@ namespace WID
         }
 
 
-        public NotebookPage(int id, BitmapImage bg) : this(id)
+        public NotebookPage(int id, WriteableBitmap bg) : this(id)
         {
             LoadBackground(bg);
         }
@@ -70,17 +74,24 @@ namespace WID
             this.Height = height;
         }
 
-        public void LoadBackground(BitmapImage bg)
+        public void LoadBackground(WriteableBitmap bg)
         {
-            Image bgImage = new Image();
-            bgImage.HorizontalAlignment = HorizontalAlignment.Stretch;
-            bgImage.VerticalAlignment = VerticalAlignment.Stretch;
-            bgImage.Source = bg;
+            //Image bgImage = new Image();
+            //bgImage.HorizontalAlignment = HorizontalAlignment.Stretch;
+            //bgImage.VerticalAlignment = VerticalAlignment.Stretch;
+            //bgImage.Source = bg;
+            //this.Width = bg.PixelWidth;
+            //this.Height = bg.PixelHeight;
+            //this.Children.Insert(0, bgImage);
+            //this.bgImage = bg;
+            //this.hasBg = true;
+
             this.Width = bg.PixelWidth;
             this.Height = bg.PixelHeight;
-            this.Children.Insert(0, bgImage);
             this.bgImage = bg;
             this.hasBg = true;
+
+            ccTemplateCanvas.Invalidate();
         }
 
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
@@ -101,7 +112,7 @@ namespace WID
 
             if (notebookConfig.pageMapping.Last().hasBg)
             {
-                BitmapImage bgImg = await Utils.GetBMPFromFileWithWidth(
+                WriteableBitmap bgImg = await Utils.GetWBMPFromFileWithWidth(
                     await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().GetBgName()),
                     (int)notebookConfig.pageMapping.Last().width
                     );
@@ -113,6 +124,14 @@ namespace WID
         {
             textBoxes.Add(text);
             contentCanvas.Children.Add(text);
+        }
+
+        public void ReDrawTemplate(PageTemplatePattern pattern)
+        {
+            Debug.WriteLine("Called pattern redraw with spacing: " + pattern.desiredSpacing);
+            Debug.WriteLine("Whether templateCanvas is null: " + ccTemplateCanvas is null ? "null" : "not null");
+            currentPattern = pattern;
+            ccTemplateCanvas.Invalidate();
         }
 
         public async Task LoadFromStream(IInputStream stream)
@@ -135,6 +154,43 @@ namespace WID
         {
             using (IOutputStream stream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
                 await this.SaveToStream(stream);
+        }
+
+        private async void DrawBg(CanvasControl sender, CanvasDrawEventArgs args)
+        {
+            Debug.WriteLine("Called private void template draw with spacing: " + currentPattern?.desiredSpacing);
+            Debug.WriteLine("Called private coid template draw with hasBg: " + hasBg);
+            //args.DrawingSession.;
+            if (hasBg)
+            {
+                Debug.WriteLine("Created wmpb with sizes: " + bgImage!.PixelWidth + "x" + bgImage!.PixelHeight);
+                Debug.WriteLine("And total pixels: " + bgImage!.PixelWidth*bgImage!.PixelHeight);
+                using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
+                {
+                    byte[] pixels = new byte[pixelStream.Length];
+                    await pixelStream.ReadExactlyAsync(pixels);
+
+                    Debug.WriteLine("Created pixel buffer with length: " + pixels.Length);
+
+                    CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
+                        args.DrawingSession.Device,
+                        pixels,
+                        bgImage!.PixelWidth,
+                        bgImage!.PixelHeight,
+                        Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
+                        );
+
+                    args.DrawingSession.DrawImage(cbmp);
+                }
+            } else
+                currentPattern?.DrawOnCanvas(sender, args);
+        }
+
+        private void SetTemplateCanvasDimensions(object sender, RoutedEventArgs args)
+        {
+            ccTemplateCanvas.Width = this.Width;
+            ccTemplateCanvas.Height = this.Height;
+            Debug.WriteLine("Loaded and set templateCanvas");
         }
     }
 }

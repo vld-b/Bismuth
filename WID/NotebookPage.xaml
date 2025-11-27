@@ -5,6 +5,7 @@
     xmlns:local="using:WID"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:drawing="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d"
     Background="White"
     Height="400"
@@ -12,6 +13,13 @@
     Canvas.ZIndex="-1"
     CornerRadius="40"
     >
+
+    <drawing:CanvasControl
+        x:Name="ccTemplateCanvas"
+        Loaded="SetTemplateCanvasDimensions"
+        Draw="DrawBg"
+        ClearColor="White"
+        />
 
     <InkCanvas
         x:Name="inkCanvas"
