@@ -76,16 +76,6 @@ namespace WID
 
         public void LoadBackground(WriteableBitmap bg)
         {
-            //Image bgImage = new Image();
-            //bgImage.HorizontalAlignment = HorizontalAlignment.Stretch;
-            //bgImage.VerticalAlignment = VerticalAlignment.Stretch;
-            //bgImage.Source = bg;
-            //this.Width = bg.PixelWidth;
-            //this.Height = bg.PixelHeight;
-            //this.Children.Insert(0, bgImage);
-            //this.bgImage = bg;
-            //this.hasBg = true;
-
             this.Width = bg.PixelWidth;
             this.Height = bg.PixelHeight;
             this.bgImage = bg;
@@ -128,10 +118,9 @@ namespace WID
 
         public void ReDrawTemplate(PageTemplatePattern pattern)
         {
-            Debug.WriteLine("Called pattern redraw with spacing: " + pattern.desiredSpacing);
-            Debug.WriteLine("Whether templateCanvas is null: " + ccTemplateCanvas is null ? "null" : "not null");
             currentPattern = pattern;
             ccTemplateCanvas.Invalidate();
+            Debug.WriteLine("Called pattern redraw with spacing: " + pattern.desiredSpacing);
         }
 
         public async Task LoadFromStream(IInputStream stream)
@@ -156,21 +145,22 @@ namespace WID
                 await this.SaveToStream(stream);
         }
 
-        private async void DrawBg(CanvasControl sender, CanvasDrawEventArgs args)
+        private void DrawBg(CanvasControl sender, CanvasDrawEventArgs args)
+        {
+            SetNewBackground(sender, args);
+        }
+
+        private void SetNewBackground(CanvasControl canvas, CanvasDrawEventArgs args)
         {
             Debug.WriteLine("Called private void template draw with spacing: " + currentPattern?.desiredSpacing);
             Debug.WriteLine("Called private coid template draw with hasBg: " + hasBg);
-            //args.DrawingSession.;
+            args.DrawingSession.Clear(Colors.White);
             if (hasBg)
             {
-                Debug.WriteLine("Created wmpb with sizes: " + bgImage!.PixelWidth + "x" + bgImage!.PixelHeight);
-                Debug.WriteLine("And total pixels: " + bgImage!.PixelWidth*bgImage!.PixelHeight);
                 using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
                 {
                     byte[] pixels = new byte[pixelStream.Length];
-                    await pixelStream.ReadExactlyAsync(pixels);
-
-                    Debug.WriteLine("Created pixel buffer with length: " + pixels.Length);
+                    pixelStream.ReadExactly(pixels);
 
                     CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
                         args.DrawingSession.Device,
@@ -182,15 +172,20 @@ namespace WID
 
                     args.DrawingSession.DrawImage(cbmp);
                 }
-            } else
-                currentPattern?.DrawOnCanvas(sender, args);
+                Debug.WriteLine("Drew page BG");
+            }
+            else
+            {
+                currentPattern?.DrawOnCanvas(canvas, args);
+                Debug.WriteLine("Drew page Pattern");
+            }
         }
 
         private void SetTemplateCanvasDimensions(object sender, RoutedEventArgs args)
         {
-            ccTemplateCanvas.Width = this.Width;
-            ccTemplateCanvas.Height = this.Height;
-            Debug.WriteLine("Loaded and set templateCanvas");
+            //ccTemplateCanvas.Width = this.Width;
+            //ccTemplateCanvas.Height = this.Height;
+            Debug.WriteLine("Loaded and set templateCanvas with Width and Height:" + ccTemplateCanvas.ActualWidth + ", " + ccTemplateCanvas.ActualHeight);
         }
     }
 }

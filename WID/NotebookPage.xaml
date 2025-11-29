@@ -19,6 +19,8 @@
         Loaded="SetTemplateCanvasDimensions"
         Draw="DrawBg"
         ClearColor="White"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
         />
 
     <InkCanvas

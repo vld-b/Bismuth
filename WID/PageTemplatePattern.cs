@@ -32,19 +32,19 @@ namespace WID
         public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
-            Debug.WriteLine("Canvas Height: " + c.Height);
-            int linesToDrawHorizontally = (int)c.Height / desiredSpacing;
-            float lineWidth = (float)c.Height * 0.001f;
+            Debug.WriteLine("Canvas Height from template: " + c.ActualHeight);
+            int linesToDrawHorizontally = (int)c.ActualHeight / desiredSpacing;
+            float lineWidth = (float)c.ActualHeight * 0.001f;
 
             for (int i = 0; i < linesToDrawHorizontally; ++i)
             {
                 float yPos = desiredSpacing * (i + 1);
                 args.DrawingSession.DrawLine(
                     new System.Numerics.Vector2(0, yPos),
-                    new System.Numerics.Vector2((float)c.Width, yPos),
+                    new System.Numerics.Vector2((float)c.ActualWidth, yPos),
                     new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
-                    lineWidth);
-                Debug.WriteLine("Calculated yPos: " + yPos);
+                    lineWidth
+                    );
             }
         }
     }
@@ -56,9 +56,9 @@ namespace WID
         public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
-            Debug.WriteLine("Canvas Height: " + c.Height);
-            int linesToDrawHorizontally = (int)c.Height / desiredSpacing;
-            float lineWidth = (float)c.Height * 0.001f;
+            Debug.WriteLine("Canvas Height: " + c.ActualHeight);
+            int linesToDrawHorizontally = (int)c.ActualHeight / desiredSpacing;
+            float lineWidth = (float)c.ActualHeight * 0.001f;
         }
     }
 }
