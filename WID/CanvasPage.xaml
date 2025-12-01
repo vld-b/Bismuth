@@ -237,7 +237,7 @@
                                 <StackPanel
                                     Style="{StaticResource FlyoutButtonStackPanel}"
                                     >
-                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;" />
+                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8B5;" />
                                     <TextBlock>
                                         Import file
                                     </TextBlock>

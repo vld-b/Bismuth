@@ -413,10 +413,16 @@ namespace WID
                 {
                     BitmapImage bmpImage = new BitmapImage();
                     bmpImage.DecodePixelWidth = 2100;
-                    await bg.GetPage(i).RenderToStreamAsync(stream);
+                    await bg.GetPage(i).RenderToStreamAsync(stream, new PdfPageRenderOptions
+                    {
+                        DestinationWidth = 2100,
+                    });
                     await bmpImage.SetSourceAsync(stream);
+
                     WriteableBitmap wbmp = new WriteableBitmap(bmpImage.PixelWidth, bmpImage.PixelHeight);
+                    stream.Seek(0);
                     await wbmp.SetSourceAsync(stream);
+                    stream.Seek(0);
                     page = new NotebookPage(pageId, wbmp);
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
@@ -444,14 +450,14 @@ namespace WID
                 pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
                 pendingDeletions.Remove(config.pageMapping.Last().fileName);
 
-                BringIntoViewOptions options = new BringIntoViewOptions
-                {
-                    AnimationDesired = true,
-                    VerticalAlignmentRatio = 0.1d,
-                    HorizontalAlignmentRatio = 0.5d,
-                };
-                page.StartBringIntoView(options);
             }
+            BringIntoViewOptions options = new BringIntoViewOptions
+            {
+                AnimationDesired = true,
+                VerticalAlignmentRatio = 0.1d,
+                HorizontalAlignmentRatio = 0.5d,
+            };
+            spPageView.Children.Last().StartBringIntoView(options);
             popup.Hide();
         }
 
