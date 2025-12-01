@@ -20,6 +20,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Data.Pdf;
 using Windows.Devices.Usb;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
@@ -412,10 +413,10 @@ namespace WID
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
                 {
                     BitmapImage bmpImage = new BitmapImage();
-                    bmpImage.DecodePixelWidth = 2100;
                     await bg.GetPage(i).RenderToStreamAsync(stream, new PdfPageRenderOptions
                     {
-                        DestinationWidth = 2100,
+                        // Have to divide by the display scale, because it gets multiplied by it
+                        DestinationWidth = (uint)(2100d / DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel),
                     });
                     await bmpImage.SetSourceAsync(stream);
 
