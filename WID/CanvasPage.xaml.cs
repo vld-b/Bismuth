@@ -358,7 +358,7 @@ namespace WID
 
         private void AddPage()
         {
-            NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 1920, 2880);
+            NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 2100, 2970);
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);

@@ -16,7 +16,6 @@
 
     <drawing:CanvasControl
         x:Name="ccTemplateCanvas"
-        Loaded="SetTemplateCanvasDimensions"
         Draw="DrawBg"
         ClearColor="White"
         HorizontalAlignment="Stretch"

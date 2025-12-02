@@ -98,7 +98,7 @@ namespace WID
             this.Height = notebookConfig.pageMapping.Last().height;
             StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().fileName);
             using (IInputStream ipStream = await ink.OpenAsync(FileAccessMode.Read))
-                this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
+                await this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
 
             if (notebookConfig.pageMapping.Last().hasBg)
             {
@@ -120,7 +120,6 @@ namespace WID
         {
             currentPattern = pattern;
             ccTemplateCanvas.Invalidate();
-            Debug.WriteLine("Called pattern redraw with spacing: " + pattern.desiredSpacing);
         }
 
         public async Task LoadFromStream(IInputStream stream)
@@ -152,8 +151,6 @@ namespace WID
 
         private void SetNewBackground(CanvasControl canvas, CanvasDrawEventArgs args)
         {
-            Debug.WriteLine("Called private void template draw with spacing: " + currentPattern?.desiredSpacing);
-            Debug.WriteLine("Called private coid template draw with hasBg: " + hasBg);
             args.DrawingSession.Clear(Colors.White);
             if (hasBg)
             {
@@ -172,20 +169,11 @@ namespace WID
 
                     args.DrawingSession.DrawImage(cbmp);
                 }
-                Debug.WriteLine("Drew page BG");
             }
             else
             {
                 currentPattern?.DrawOnCanvas(canvas, args);
-                Debug.WriteLine("Drew page Pattern");
             }
-        }
-
-        private void SetTemplateCanvasDimensions(object sender, RoutedEventArgs args)
-        {
-            //ccTemplateCanvas.Width = this.Width;
-            //ccTemplateCanvas.Height = this.Height;
-            Debug.WriteLine("Loaded and set templateCanvas with Width and Height:" + ccTemplateCanvas.ActualWidth + ", " + ccTemplateCanvas.ActualHeight);
         }
     }
 }

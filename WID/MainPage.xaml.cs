@@ -379,7 +379,7 @@ namespace WID
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
                     config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
                 if (config is not null)
-                    preview.LoadLastPageFromConfig(config, configDir);
+                    await preview.LoadLastPageFromConfig(config, configDir);
             } catch
             {
 

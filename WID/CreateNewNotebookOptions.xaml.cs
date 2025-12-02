@@ -60,7 +60,6 @@ namespace WID
 
         private void TemplateSpacingChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            Debug.WriteLine("New template spacing: " + e.NewValue);
             npTemplatePreview.ReDrawTemplate(new LinesPagePattern((int)e.NewValue));
         }
     }

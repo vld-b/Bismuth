@@ -32,7 +32,6 @@ namespace WID
         public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
-            Debug.WriteLine("Canvas Height from template: " + c.ActualHeight);
             int linesToDrawHorizontally = (int)c.ActualHeight / desiredSpacing;
             float lineWidth = (float)c.ActualHeight * 0.001f;
 
@@ -56,7 +55,6 @@ namespace WID
         public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
-            Debug.WriteLine("Canvas Height: " + c.ActualHeight);
             int linesToDrawHorizontally = (int)c.ActualHeight / desiredSpacing;
             float lineWidth = (float)c.ActualHeight * 0.001f;
         }
