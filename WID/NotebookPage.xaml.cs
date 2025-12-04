@@ -85,6 +85,24 @@ namespace WID
             ccTemplateCanvas.Invalidate();
         }
 
+        private void MakeCanvasBitmap()
+        {
+            using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
+            {
+                byte[] pixels = new byte[pixelStream.Length];
+                pixelStream.ReadExactly(pixels);
+
+                CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
+                    ccTemplateCanvas.Device,
+                    pixels,
+                    bgImage!.PixelWidth,
+                    bgImage!.PixelHeight,
+                    Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
+                    );
+                this.cbmp = cbmp;
+            }
+        }
+
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
         {
             inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
@@ -103,11 +121,12 @@ namespace WID
 
             if (notebookConfig.pageMapping.Last().hasBg)
             {
-                WriteableBitmap bgImg = await Utils.GetWBMPFromFileWithWidth(
+                bgImage = await Utils.GetWBMPFromFileWithWidth(
                     await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().GetBgName()),
                     (int)notebookConfig.pageMapping.Last().width
                     );
-                this.LoadBackground(bgImg);
+                MakeCanvasBitmap();
+                this.LoadBackground(bgImage);
             }
         }
 
@@ -115,20 +134,8 @@ namespace WID
         {
             if (!hasBg)
                 return;
-            using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
-            {
-                byte[] pixels = new byte[pixelStream.Length];
-                pixelStream.ReadExactly(pixels);
 
-                CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
-                    ccTemplateCanvas.Device,
-                    pixels,
-                    bgImage!.PixelWidth,
-                    bgImage!.PixelHeight,
-                    Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
-                    );
-                this.cbmp = cbmp;
-            }
+            MakeCanvasBitmap();
 
             ccTemplateCanvas.Invalidate();
         }
