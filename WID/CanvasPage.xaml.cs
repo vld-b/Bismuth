@@ -57,6 +57,8 @@ namespace WID
 
         private NotebookConfig? config;
 
+        private bool finishedLoading = false;
+
         private Stack<InkStroke> undoStack = new Stack<InkStroke>();
         private Stack<InkStroke> redoStack = new Stack<InkStroke>();
 
@@ -96,16 +98,15 @@ namespace WID
         {
             ((NotebookPage)spPageView.Children.Last()).LayoutUpdated -= ScrollToLastPage;
 
-            if (spPageView.Children.Count > 0)
-            {
-                spPageView.Children.Last().StartBringIntoView(
-                    new BringIntoViewOptions
-                    {
-                        AnimationDesired = false,
-                        VerticalAlignmentRatio = 0d,
-                        HorizontalAlignmentRatio = 0.5d,
-                    });
-            }
+            spPageView.Children.Last().StartBringIntoView(
+                new BringIntoViewOptions
+                {
+                    AnimationDesired = false,
+                    VerticalAlignmentRatio = 0d,
+                    HorizontalAlignmentRatio = 0.5d,
+                });
+
+            finishedLoading = true;
         }
 
         private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -160,7 +161,7 @@ namespace WID
 
         private void SaveFileSafe()
         {
-            if (savingTask == null)
+            if (savingTask == null && finishedLoading)
             {
                 savingTask = SaveFileWithDialog();
                 savingTask.ContinueWith(_ => savingTask = null);
@@ -347,6 +348,9 @@ namespace WID
                 {
                     anim.TryStart(spPageView.Children.Last());
                 }
+            } else
+            {
+                finishedLoading = true;
             }
         }
 
