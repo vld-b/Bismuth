@@ -37,6 +37,7 @@ namespace WID
         public int id { get; private set; }
         public bool hasBg { get; private set; }
         public WriteableBitmap? bgImage { get; private set; }
+        private CanvasBitmap? cbmp { get; set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -110,6 +111,28 @@ namespace WID
             }
         }
 
+        private void CreateBgImage(CanvasVirtualControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        {
+            if (!hasBg)
+                return;
+            using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
+            {
+                byte[] pixels = new byte[pixelStream.Length];
+                pixelStream.ReadExactly(pixels);
+
+                CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
+                    ccTemplateCanvas.Device,
+                    pixels,
+                    bgImage!.PixelWidth,
+                    bgImage!.PixelHeight,
+                    Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
+                    );
+                this.cbmp = cbmp;
+            }
+
+            ccTemplateCanvas.Invalidate();
+        }
+
         public void AddTextToPage(OnPageText text)
         {
             textBoxes.Add(text);
@@ -144,35 +167,27 @@ namespace WID
                 await this.SaveToStream(stream);
         }
 
-        private void DrawBg(CanvasControl sender, CanvasDrawEventArgs args)
+        private void DrawBg(CanvasVirtualControl sender, CanvasRegionsInvalidatedEventArgs args)
         {
             SetNewBackground(sender, args);
         }
 
-        private void SetNewBackground(CanvasControl canvas, CanvasDrawEventArgs args)
+        private void SetNewBackground(CanvasVirtualControl canvas, CanvasRegionsInvalidatedEventArgs args)
         {
-            args.DrawingSession.Clear(Colors.White);
-            if (hasBg)
+            Debug.WriteLine("Drawing BG with hasBG: " + hasBg + " and cbmp is null: " + cbmp is null);
+            foreach (Rect region in args.InvalidatedRegions)
             {
-                using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
+                CanvasDrawingSession ds = canvas.CreateDrawingSession(region);
+                ds.Clear(Colors.White);
+                if (hasBg && cbmp is not null)
                 {
-                    byte[] pixels = new byte[pixelStream.Length];
-                    pixelStream.ReadExactly(pixels);
-
-                    CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
-                        args.DrawingSession.Device,
-                        pixels,
-                        bgImage!.PixelWidth,
-                        bgImage!.PixelHeight,
-                        Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
-                        );
-
-                    args.DrawingSession.DrawImage(cbmp);
+                    ds.DrawImage(cbmp!);
                 }
-            }
-            else
-            {
-                currentPattern?.DrawOnCanvas(canvas, args);
+                else
+                {
+                    currentPattern?.DrawOnCanvas(canvas, ds);
+                }
+                ds.Dispose();
             }
         }
     }

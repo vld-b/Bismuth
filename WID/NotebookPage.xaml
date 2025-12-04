@@ -14,9 +14,11 @@
     CornerRadius="40"
     >
 
-    <drawing:CanvasControl
+    <drawing:CanvasVirtualControl
         x:Name="ccTemplateCanvas"
-        Draw="DrawBg"
+        RegionsInvalidated="DrawBg"
+        CreateResources="CreateBgImage"
+        UseSharedDevice="True"
         ClearColor="White"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
