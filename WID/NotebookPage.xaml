@@ -14,14 +14,12 @@
     CornerRadius="40"
     >
 
-    <drawing:CanvasVirtualControl
-        x:Name="ccTemplateCanvas"
-        RegionsInvalidated="DrawBg"
-        CreateResources="CreateBgImage"
-        UseSharedDevice="True"
-        ClearColor="White"
+    <Image
+        x:Name="bgImg"
+        IsHitTestVisible="False"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
+        Stretch="Fill"
         />
 
     <InkCanvas

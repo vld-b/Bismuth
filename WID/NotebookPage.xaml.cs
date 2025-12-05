@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -36,8 +37,8 @@ namespace WID
     {
         public int id { get; private set; }
         public bool hasBg { get; private set; }
-        public WriteableBitmap? bgImage { get; private set; }
-        private CanvasBitmap? cbmp { get; set; }
+        public bool initWithTemplate { get; set; } = false;
+        public BitmapImage? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -64,7 +65,7 @@ namespace WID
         }
 
 
-        public NotebookPage(int id, WriteableBitmap bg) : this(id)
+        public NotebookPage(int id, BitmapImage bg) : this(id)
         {
             LoadBackground(bg);
         }
@@ -75,32 +76,13 @@ namespace WID
             this.Height = height;
         }
 
-        public void LoadBackground(WriteableBitmap bg)
+        public void LoadBackground(BitmapImage bg)
         {
             this.Width = bg.PixelWidth;
             this.Height = bg.PixelHeight;
             this.bgImage = bg;
             this.hasBg = true;
-
-            ccTemplateCanvas.Invalidate();
-        }
-
-        private void MakeCanvasBitmap()
-        {
-            using (Stream pixelStream = bgImage!.PixelBuffer.AsStream())
-            {
-                byte[] pixels = new byte[pixelStream.Length];
-                pixelStream.ReadExactly(pixels);
-
-                CanvasBitmap cbmp = CanvasBitmap.CreateFromBytes(
-                    ccTemplateCanvas.Device,
-                    pixels,
-                    bgImage!.PixelWidth,
-                    bgImage!.PixelHeight,
-                    Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized
-                    );
-                this.cbmp = cbmp;
-            }
+            bgImg.Source = bg;
         }
 
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
@@ -121,35 +103,18 @@ namespace WID
 
             if (notebookConfig.pageMapping.Last().hasBg)
             {
-                bgImage = await Utils.GetWBMPFromFileWithWidth(
+                bgImage = await Utils.GetBMPFromFileWithWidth(
                     await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().GetBgName()),
                     (int)notebookConfig.pageMapping.Last().width
                     );
-                MakeCanvasBitmap();
                 this.LoadBackground(bgImage);
             }
-        }
-
-        private void CreateBgImage(CanvasVirtualControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
-        {
-            if (!hasBg)
-                return;
-
-            MakeCanvasBitmap();
-
-            ccTemplateCanvas.Invalidate();
         }
 
         public void AddTextToPage(OnPageText text)
         {
             textBoxes.Add(text);
             contentCanvas.Children.Add(text);
-        }
-
-        public void ReDrawTemplate(PageTemplatePattern pattern)
-        {
-            currentPattern = pattern;
-            ccTemplateCanvas.Invalidate();
         }
 
         public async Task LoadFromStream(IInputStream stream)
@@ -172,30 +137,6 @@ namespace WID
         {
             using (IOutputStream stream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
                 await this.SaveToStream(stream);
-        }
-
-        private void DrawBg(CanvasVirtualControl sender, CanvasRegionsInvalidatedEventArgs args)
-        {
-            SetNewBackground(sender, args);
-        }
-
-        private void SetNewBackground(CanvasVirtualControl canvas, CanvasRegionsInvalidatedEventArgs args)
-        {
-            Debug.WriteLine("Drawing BG with hasBG: " + hasBg + " and cbmp is null: " + cbmp is null);
-            foreach (Rect region in args.InvalidatedRegions)
-            {
-                CanvasDrawingSession ds = canvas.CreateDrawingSession(region);
-                ds.Clear(Colors.White);
-                if (hasBg && cbmp is not null)
-                {
-                    ds.DrawImage(cbmp!);
-                }
-                else
-                {
-                    currentPattern?.DrawOnCanvas(canvas, ds);
-                }
-                ds.Dispose();
-            }
         }
     }
 }

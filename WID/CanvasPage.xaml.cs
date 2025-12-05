@@ -77,6 +77,7 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
 
             bdTextTools.GotFocus += (s, e) => {
                 ppTextTools.IsHitTestVisible = true;
@@ -283,7 +284,7 @@ namespace WID
 
                     if (config!.pageMapping[i].hasBg)
                     {
-                        WriteableBitmap bgImage = await Utils.GetWBMPFromFileWithWidth(
+                        BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
                             await file.GetFileAsync(config.pageMapping[i].GetBgName()),
                             (int)config!.pageMapping[i].width
                             );
@@ -382,8 +383,8 @@ namespace WID
         {
             int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
             NotebookPage page;
-            WriteableBitmap wbmp = await Utils.GetWBMPFromFileWithWidth(bg, 2100);
-            page = new NotebookPage(pageId, wbmp);
+            BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(bg, 2100);
+            page = new NotebookPage(pageId, bmp);
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
@@ -424,11 +425,11 @@ namespace WID
                     });
                     await bmpImage.SetSourceAsync(stream);
 
-                    WriteableBitmap wbmp = new WriteableBitmap(bmpImage.PixelWidth, bmpImage.PixelHeight);
-                    stream.Seek(0);
-                    await wbmp.SetSourceAsync(stream);
-                    stream.Seek(0);
-                    page = new NotebookPage(pageId, wbmp);
+                    //WriteableBitmap wbmp = new WriteableBitmap(bmpImage.PixelWidth, bmpImage.PixelHeight);
+                    //stream.Seek(0);
+                    //await wbmp.SetSourceAsync(stream);
+                    //stream.Seek(0);
+                    page = new NotebookPage(pageId, bmpImage);
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 

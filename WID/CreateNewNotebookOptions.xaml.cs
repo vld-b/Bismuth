@@ -44,7 +44,6 @@ namespace WID
                     return;
                 case "Lines":
                     tbSpacingLabel.Text = "Line spacing";
-                    npTemplatePreview.ReDrawTemplate(new LinesPagePattern((int)slTemplateSpacing.Value));
                     break;
                 case "Grid":
                     tbSpacingLabel.Text = "Grid spacing";
@@ -60,7 +59,6 @@ namespace WID
 
         private void TemplateSpacingChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            npTemplatePreview.ReDrawTemplate(new LinesPagePattern((int)e.NewValue));
         }
     }
 

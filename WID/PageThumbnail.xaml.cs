@@ -36,7 +36,7 @@ namespace WID
             this.Children.Insert(0, page);
         }
 
-        public PageThumbnail(int id, double width, double height, WriteableBitmap bg)
+        public PageThumbnail(int id, double width, double height, BitmapImage bg)
         {
             this.InitializeComponent();
             page = new NotebookPage(id, bg);

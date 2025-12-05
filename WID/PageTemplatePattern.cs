@@ -22,23 +22,23 @@ namespace WID
             desiredSpacing = spacing;
         }
 
-        public abstract void DrawOnCanvas(CanvasVirtualControl c, CanvasDrawingSession ds);
+        public abstract void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args);
     }
 
     public class LinesPagePattern : PageTemplatePattern
     {
         public LinesPagePattern(int spacing) : base(spacing) { }
 
-        public override void DrawOnCanvas(CanvasVirtualControl c, CanvasDrawingSession ds)
+        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
-            ds.Antialiasing = CanvasAntialiasing.Antialiased;
+            args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
             int linesToDrawHorizontally = (int)c.ActualHeight / desiredSpacing;
             float lineWidth = (float)c.ActualHeight * 0.001f;
 
             for (int i = 0; i < linesToDrawHorizontally; ++i)
             {
                 float yPos = desiredSpacing * (i + 1);
-                ds.DrawLine(
+                args.DrawingSession.DrawLine(
                     new System.Numerics.Vector2(0, yPos),
                     new System.Numerics.Vector2((float)c.ActualWidth, yPos),
                     new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
