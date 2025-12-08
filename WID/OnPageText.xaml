@@ -26,6 +26,7 @@
                 IsReadOnly="False"
                 FontSize="36"
                 Foreground="Black"
+                TextChanged="ReceivedTextInput"
                 />
 
 

@@ -28,7 +28,8 @@ namespace WID
         public int id { get; private set; }
         public RichEditBox TextContent;
         private Point? mousePos;
-        NotebookPage containingPage;
+        private NotebookPage containingPage;
+        public bool hasBeenModifiedSinceSave { get; set; } = false;
         public EventHandler? TextBoxGotFocus;
         public EventHandler? TextBoxLostFocus;
         public ScrollViewer pageContainer { get; private set; }
@@ -146,6 +147,12 @@ namespace WID
         private void StopWriting(object sender, RoutedEventArgs e)
         {
             TextBoxLostFocus?.Invoke(this, new EventArgs());
+        }
+
+        private void ReceivedTextInput(object sender, RoutedEventArgs e)
+        {
+            this.hasBeenModifiedSinceSave = true;
+            containingPage.hasBeenModifiedSinceSave = true;
         }
     }
 }

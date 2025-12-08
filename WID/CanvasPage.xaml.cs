@@ -97,17 +97,31 @@ namespace WID
 
         private void ScrollToLastPage(object? sender, object e)
         {
-            ((NotebookPage)spPageView.Children.Last()).LayoutUpdated -= ScrollToLastPage;
+            NotebookPage lastPage = (NotebookPage)spPageView.Children.Last();
+            lastPage.LayoutUpdated -= ScrollToLastPage;
 
-            spPageView.Children.Last().StartBringIntoView(
+            lastPage.StartBringIntoView(
                 new BringIntoViewOptions
                 {
                     AnimationDesired = false,
                     VerticalAlignmentRatio = 0d,
                     HorizontalAlignmentRatio = 0.5d,
                 });
+            svPageZoom.ChangeView(null, null, (float)(Window.Current.CoreWindow.Bounds.Width / lastPage.Width));
 
             finishedLoading = true;
+        }
+
+        private void ShowFileStatus()
+        {
+            tbAppTitle.Visibility = Visibility.Collapsed;
+            pbFileStatus.Visibility = Visibility.Visible;
+        }
+
+        private void HideFileStatus()
+        {
+            tbAppTitle.Visibility = Visibility.Visible;
+            pbFileStatus.Visibility = Visibility.Collapsed;
         }
 
         private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
@@ -182,14 +196,23 @@ namespace WID
 
             foreach (NotebookPage page in spPageView.Children)
             {
-                StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
+                if (page.hasBeenModifiedSinceSave)
+                {
+                    StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
+                    await page.SaveToFile(pageFile);
+                }
+
                 PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
+                pages.Add(currentConfig);
 
                 foreach (OnPageText txt in page.textBoxes)
                 {
-                    StorageFile rtfFile = await file.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
-                    using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
-                        txt.SaveToStream(stream);
+                    if (txt.hasBeenModifiedSinceSave)
+                    {
+                        StorageFile rtfFile = await file.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+                        using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
+                            txt.SaveToStream(stream);
+                    }
 
                     currentConfig.textBoxes.Add(new TextData(
                         txt.id,
@@ -200,9 +223,6 @@ namespace WID
                         Canvas.GetLeft(txt) )
                         );
                 }
-
-                pages.Add(currentConfig);
-                await page.SaveToFile(pageFile);
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
@@ -271,12 +291,16 @@ namespace WID
                 return;
 
             tbAppTitle.Text += file.DisplayName[..(file.DisplayName.Length-9)];
+            ShowFileStatus();
 
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
                     config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+
+                pbFileStatus.Maximum = config!.pageMapping.Count;
+
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
                     StorageFile ink = await file.GetFileAsync(config!.pageMapping[i].fileName);
@@ -324,6 +348,8 @@ namespace WID
                     else
                         this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
                     spPageView.Children.Add(page);
+
+                    pbFileStatus.Value = i + 1;
                 }
             } else
             {
@@ -353,6 +379,7 @@ namespace WID
             {
                 finishedLoading = true;
             }
+            HideFileStatus();
         }
 
         private void AddPageClicked(object sender, RoutedEventArgs e)

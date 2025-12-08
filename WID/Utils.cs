@@ -94,8 +94,8 @@ namespace WID
         public static ContentDialog ShowLoadingPopup(string title)
         {
             ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
-            dialog.Opened += (s, e) => ((Windows.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
-            dialog.Content = new Windows.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
+            dialog.Opened += (s, e) => ((Microsoft.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
+            dialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
             dialog.ShowAsync();
             return dialog;
         }
@@ -107,15 +107,6 @@ namespace WID
             using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
                 await bmp.SetSourceAsync(stream);
             return bmp;
-        }
-
-        public static async Task<WriteableBitmap> GetWBMPFromFileWithWidth(StorageFile bgFile, int desiredWidth)
-        {
-            BitmapImage bmp = await GetBMPFromFileWithWidth(bgFile,desiredWidth);
-            WriteableBitmap wbmp = new WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight);
-            using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
-                await wbmp.SetSourceAsync(stream);
-            return wbmp;
         }
     }
 

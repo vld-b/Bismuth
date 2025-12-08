@@ -37,6 +37,7 @@ namespace WID
     {
         public int id { get; private set; }
         public bool hasBg { get; private set; }
+        public bool hasBeenModifiedSinceSave { get; set; } = false;
         public bool initWithTemplate { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
@@ -57,6 +58,7 @@ namespace WID
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+            inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StartedDrawingInk;
         }
 
         public NotebookPage(int id) :this()
@@ -137,6 +139,11 @@ namespace WID
         {
             using (IOutputStream stream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
                 await this.SaveToStream(stream);
+        }
+
+        private void StartedDrawingInk(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs e)
+        {
+            this.hasBeenModifiedSinceSave = true;
         }
     }
 }
