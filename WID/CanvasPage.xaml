@@ -44,6 +44,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Width="512"
+                Value="0"
                 IsIndeterminate="False"
                 ShowPaused="False"
                 ShowError="False"
