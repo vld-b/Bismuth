@@ -35,20 +35,12 @@
                 Background="Transparent"
                 >
                 <Image
-                    Source="/Assets/icon.svg"
+                    Source="/Assets/icon128x128.png"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
-                    Margin="4"
-                    />
-                <TextBlock
-                    x:Name="tbAppTitle"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    FontSize="28"
-                    FontWeight="Bold"
+                    Margin="10"
                     >
-                    Bismuth
-                </TextBlock>
+                </Image>
             </Grid>
 
 

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" xmlns:bx="https://boxy-svg.com">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64px" height="64px" xmlns:bx="https://boxy-svg.com">
   <defs>
-    <bx:export>
-      <bx:file format="svg"/>
-    </bx:export>
+    <linearGradient id="line" bx:pinned="true">
+      <title>line</title>
+      <stop offset="0" style="stop-color: rgb(255, 255, 255);"/>
+      <stop offset="0.995" style="stop-color: rgb(132, 132, 132);"/>
+    </linearGradient>
+    <linearGradient id="line-0" href="#line" gradientUnits="userSpaceOnUse" x1="23.555" y1="12.482" x2="23.555" y2="54.72"/>
   </defs>
-  <path style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" d="M 20.918 56.665 C 23.405 47.143 25.271 27.972 17.583 14.427"/>
-  <path style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" d="M 13.727 14.069 C 13.727 14.069 16.111 10.324 25.166 9.171 C 32.56 8.231 38.458 10.157 40.667 16.105 C 44.349 26.021 24.174 33.519 24.13 33.888 C 24.041 34.633 45.354 37.292 46.012 49.312 C 46.619 60.4 11.746 62.494 11.483 52.209 C 11.3 45.04 20.633 45.277 20.633 45.277"/>
+  <path style="fill: none; stroke-width: 4; stroke-linecap: round; stroke: url(&quot;#line-0&quot;); paint-order: stroke;" d="M 24.138 54.72 C 26.625 45.198 28.491 26.027 20.803 12.482"/>
+  <path style="fill: none; stroke-width: 4; paint-order: fill; stroke-linecap: round; transform-box: fill-box; transform-origin: 50% 50%; stroke: rgb(255, 255, 255);" d="M 16.947 12.124 C 16.947 12.124 19.331 8.379 28.386 7.226 C 35.78 6.286 41.678 8.212 43.887 14.16 C 47.569 24.076 27.394 31.574 27.35 31.943 C 27.261 32.688 48.574 35.347 49.232 47.367 C 49.839 58.455 14.966 60.549 14.703 50.264 C 14.52 43.095 23.853 43.332 23.853 43.332" id="object-0"/>
 </svg>

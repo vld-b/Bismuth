@@ -53,8 +53,6 @@ namespace WID
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
-            tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName;
-            tbAppTitle.Margin = new Thickness(nvMainNavigation.CompactPaneLength, 0, 0, 0);
         }
 
         private void ResizeMenuElements(object sender, SizeChangedEventArgs e)
