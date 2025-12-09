@@ -25,20 +25,41 @@
         </Grid.RowDefinitions>
 
         <Grid
-            x:Name="TitleBar"
             Grid.Row="0"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="Transparent"
-            Height="36"
+            Height="{x:Bind nvMainNavigation.CompactPaneLength}"
             >
-            <TextBlock
-                x:Name="tbAppTitle"
-                HorizontalAlignment="Left"
+            <Grid
+                x:Name="TitleBar"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                Background="Transparent"
                 >
-                Bismuth
-            </TextBlock>
+                <Image
+                    Source="/Assets/icon.svg"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Margin="4"
+                    />
+                <TextBlock
+                    x:Name="tbAppTitle"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontSize="28"
+                    FontWeight="Bold"
+                    >
+                    Bismuth
+                </TextBlock>
+            </Grid>
+
+
+            <AutoSuggestBox
+                x:Name="SearchBox"
+                QueryIcon="Find"
+                PlaceholderText="Search notes"
+                Width="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                />
         </Grid>
         
 
@@ -82,7 +103,6 @@
                         <Button
                             x:Name="btBack"
                             Click="GoBackFolder"
-                            Margin="2"
                             Visibility="Collapsed"
                             >
                             <muxc:AnimatedIcon>
