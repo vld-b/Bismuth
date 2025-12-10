@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="WID.ExtendedSplashScreen"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:uwplottie="using:CommunityToolkit.WinUI.Lottie"
+    mc:Ignorable="d"
+    >
+
+    <Page.Background>
+        <AcrylicBrush
+            BackgroundSource="HostBackdrop"
+            TintColor="Black"
+            TintOpacity="0.6"
+            FallbackColor="#FF888888" />
+    </Page.Background>
+
+    <StackPanel
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Orientation="Vertical"
+        >
+        <muxc:AnimatedVisualPlayer
+            x:Name="apStartupAnim"
+            AutoPlay="True"
+            >
+            <uwplottie:LottieVisualSource UriSource="ms-appx:///Assets/anim_startup.lottie" />
+        </muxc:AnimatedVisualPlayer>
+        <muxc:ProgressRing
+            IsActive="True"
+            />
+    </StackPanel>
+</Page>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64px" height="64px" xmlns:bx="https://boxy-svg.com">
+  <defs>
+  </defs>
+  <path style="fill: none; stroke-width: 4; stroke-linecap: round; transform-box: fill-box; transform-origin: 50% 50%; stroke: rgb(255, 255, 255);" d="M 24.138 54.72 C 26.625 45.198 28.491 26.027 20.803 12.482"/>
+  <path style="fill: none; stroke-width: 4; stroke-linecap: round; transform-box: fill-box; transform-origin: 50% 50%; stroke: rgb(255, 255, 255);" d="M 16.947 12.124 C 16.947 12.124 19.331 8.379 28.386 7.226 C 35.78 6.286 41.678 8.212 43.887 14.16 C 47.569 24.076 27.394 31.574 27.35 31.943 C 27.261 32.688 48.574 35.347 49.232 47.367 C 49.839 58.455 14.966 60.549 14.703 50.264 C 14.52 43.095 23.853 43.332 23.853 43.332" id="object-0"/>
+</svg>
