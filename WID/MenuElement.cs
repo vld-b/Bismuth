@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WID
 {
-    class MenuElement : INotifyPropertyChanged
+    public class MenuElement : INotifyPropertyChanged
     {
         private string _itemName;
         public string itemName

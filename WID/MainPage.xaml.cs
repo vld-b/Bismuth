@@ -32,6 +32,10 @@ namespace WID
     {
         public StorageFolder notes = ApplicationData.Current.LocalFolder;
         private FlyoutBase? currentFlyout;
+
+        private List<NotebookData>? notebooks;
+        private int numberOfFolders;
+        private int noteCounter = 0;
         public MainPage()
         {
             InitializeComponent();
@@ -42,12 +46,27 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            notes = e.Parameter as StorageFolder;
-            if (notes != null)
-                btBack.Visibility = Visibility.Visible;
-            else
-                notes = ApplicationData.Current.LocalFolder;
-            LoadNotebooks();
+            if (e.Parameter is StorageFolder notes)
+            {
+                if (notes != null)
+                    btBack.Visibility = Visibility.Visible;
+                else
+                    notes = ApplicationData.Current.LocalFolder;
+                LoadNotebooks();
+            } else if (e.Parameter is List<NotebookData> notebooks)
+            {
+                this.notebooks = notebooks;
+                numberOfFolders = 0;
+                while (notebooks[numberOfFolders].notebook.isFolder)
+                    ++numberOfFolders;
+
+                Debug.WriteLine("Amount of folders items: " + this.numberOfFolders);
+
+                foreach(NotebookData data in this.notebooks)
+                {
+                    gvNotebooks.Items.Add(data.notebook);
+                }
+            }
         }
 
         private void SetTitlebar()
@@ -370,18 +389,30 @@ namespace WID
         private async void LoadPagePreview(object sender, RoutedEventArgs e)
         {
             NotebookPage preview = (NotebookPage)sender;
-            try
+            if (notebooks is null)
             {
-                StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");
-                StorageFile configFile = await configDir.GetFileAsync("config.json");
-                NotebookConfig? config;
-                using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                    config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
-                if (config is not null)
-                    await preview.LoadLastPageFromConfig(config, configDir);
-            } catch
+                try
+                {
+                    StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");
+                    StorageFile configFile = await configDir.GetFileAsync("config.json");
+                    NotebookConfig? config;
+                    using (Stream ipStream = await configFile.OpenStreamForReadAsync())
+                        config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                    if (config is not null)
+                        await preview.LoadLastPageFromConfig(config, configDir);
+                } catch { }
+            } else
             {
-
+                int currentIndex = numberOfFolders + noteCounter;
+                preview.inkPres.StrokeContainer = notebooks[currentIndex].ink;
+                if (notebooks[currentIndex].bg is not null)
+                    preview.LoadBackground(notebooks[currentIndex].bg!);
+                else
+                {
+                    preview.Width = notebooks[currentIndex].width;
+                    preview.Height = notebooks[currentIndex].height;
+                }
+                ++noteCounter;
             }
         }
     }

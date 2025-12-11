@@ -18,19 +18,27 @@
             FallbackColor="#FF888888" />
     </Page.Background>
 
-    <StackPanel
+    <Grid
+        Margin="50, 100, 50, 100"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        Orientation="Vertical"
         >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
         <muxc:AnimatedVisualPlayer
             x:Name="apStartupAnim"
+            Grid.Row="0"
             AutoPlay="True"
             >
             <uwplottie:LottieVisualSource UriSource="ms-appx:///Assets/anim_startup.lottie" />
         </muxc:AnimatedVisualPlayer>
+        
         <muxc:ProgressRing
+            Grid.Row="1"
             IsActive="True"
             />
-    </StackPanel>
+    </Grid>
 </Page>
