@@ -60,8 +60,6 @@ namespace WID
                 while (notebooks[numberOfFolders].notebook.isFolder)
                     ++numberOfFolders;
 
-                Debug.WriteLine("Amount of folders items: " + this.numberOfFolders);
-
                 foreach(NotebookData data in this.notebooks)
                 {
                     gvNotebooks.Items.Add(data.notebook);

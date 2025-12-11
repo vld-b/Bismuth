@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Windows.Devices.HumanInterfaceDevice;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -30,15 +31,13 @@ namespace WID
     /// </summary>
     public sealed partial class ExtendedSplashScreen : Page
     {
-        private Task loadingTask;
+        private Task? loadingTask;
         private List<NotebookData>? notebookData;
-        private bool canNavigate = false;
 
         public ExtendedSplashScreen()
         {
             this.InitializeComponent();
-
-            loadingTask = LoadUserData();
+            this.Loaded += StartAnimation;
         }
 
         private async Task LoadUserData()
@@ -78,8 +77,22 @@ namespace WID
             }
 
             this.notebookData = notebooks;
+        }
 
+        private async void StartAnimation(object sender, RoutedEventArgs e)
+        {
+            loadingTask = LoadUserData();
+            await apStartupAnim.PlayAsync(0, 0, false);
+            bool animationHasPlayedOnce = false;
+            while (!(loadingTask.IsCompleted && animationHasPlayedOnce))
+            { // !loadingTask.IsCompleted || !animationHasPlayedOnce becomes
+                //!(loadingTask.IsCompleted && animationHasPlayedOnce) by De Morgan's laws
+                await apStartupAnim.PlayAsync(0, 1, false);
+                animationHasPlayedOnce = true;
+            }
+            await loadingTask;
             Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
+            Frame.BackStack.Clear();
         }
     }
 
