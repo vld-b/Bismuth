@@ -87,8 +87,9 @@ namespace WID
             while (!(loadingTask.IsCompleted && animationHasPlayedOnce))
             { // !loadingTask.IsCompleted || !animationHasPlayedOnce becomes
                 //!(loadingTask.IsCompleted && animationHasPlayedOnce) by De Morgan's laws
-                await apStartupAnim.PlayAsync(0, 1, false);
                 animationHasPlayedOnce = true;
+                await apStartupAnim.PlayAsync(0, 1, false);
+                await Task.Delay(1000);
             }
             await loadingTask;
             Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
