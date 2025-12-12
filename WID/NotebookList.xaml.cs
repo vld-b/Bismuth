@@ -350,7 +350,6 @@ namespace WID
         private async void OpenNotebook(object sender, ItemClickEventArgs e)
         {
             MenuElement item = (MenuElement)e.ClickedItem;
-            System.Diagnostics.Debug.WriteLine("Navigating to folder with path: " + (await notes.GetFolderAsync(item.itemName)).Path);
             if (item.isFolder)
                 Frame.Navigate(
                     typeof(NotebookList),
