@@ -1,0 +1,190 @@
+﻿<Page
+    x:Class="WID.NotebookList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    SizeChanged="ResizeMenuElements"
+    >
+
+    <Grid
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            Height="36"
+            Orientation="Horizontal"
+            Spacing="10"
+            Grid.Row="0"
+            >
+            <Button
+                x:Name="btBack"
+                Click="GoBackFolder"
+                Visibility="Collapsed"
+                >
+                <muxc:AnimatedIcon>
+                    <muxc:AnimatedIcon.Source>
+                        <animatedvisuals:AnimatedBackVisualSource />
+                    </muxc:AnimatedIcon.Source>
+                    <muxc:AnimatedIcon.FallbackIconSource>
+                        <muxc:FontIconSource FontFamily="Segoe Fluent Icons" Glyph="&#xE112;" />
+                    </muxc:AnimatedIcon.FallbackIconSource>
+                </muxc:AnimatedIcon>
+            </Button>
+            <Button 
+                x:Name="btnNewBook"
+                Click="CreateNewNotebook"
+                >
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE70F;" />
+            </Button>
+            <Button 
+                x:Name="btnNewFolder"
+                Click="CreateNewFolder"
+                >
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8F4;" />
+            </Button>
+        </StackPanel>
+
+        <GridView
+            x:Name="gvNotebooks"
+            ItemClick="OpenNotebook"
+            HorizontalAlignment="Left"
+            Width="Auto"
+            IsItemClickEnabled="True"
+            CanDrag="False"
+            ReorderMode="Disabled"
+            CanReorderItems="False"
+            AllowDrop="False"
+            Grid.Row="1"
+            >
+            <GridView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition
+                        IsStaggeringEnabled="True"
+                        />
+                </TransitionCollection>
+            </GridView.ItemContainerTransitions>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid
+                        Orientation="Horizontal"
+                        />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+            <GridView.ItemTemplate>
+                <DataTemplate
+                    x:DataType="local:MenuElement"
+                    >
+                    <Grid
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Margin="10"
+                        >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Button
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="10"
+                            >
+                            <FontIcon
+                                FontFamily="Segoe Fluent Icons"
+                                Glyph="&#xE712;"
+                                />
+                            <Button.Flyout>
+                                <Flyout
+                                    Opened="FileOptionsFlyoutOpened"
+                                    Closed="FileOptionsFlyoutClosed"
+                                    Placement="BottomEdgeAlignedRight"
+                                    >
+                                    <StackPanel
+                                        Orientation="Vertical"
+                                        Spacing="10"
+                                        >
+                                        <Button
+                                            Click="RenameItem"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            >
+                                            <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="10"
+                                                >
+                                                <FontIcon
+                                                    FontFamily="Segoe Fluent Icons"
+                                                    Glyph="&#xE70F;"
+                                                            />
+                                                <TextBlock>
+                                                    Rename
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button
+                                            Click="DeleteItem"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            >
+                                            <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="10"
+                                                >
+                                                <FontIcon
+                                                    FontFamily="Segoe Fluent Icons"
+                                                    Glyph="&#xE74D;"
+                                                            />
+                                                <TextBlock>
+                                                    Delete
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Viewbox
+                            Stretch="UniformToFill"
+                            Margin="50"
+                            Grid.Row="0"
+                            >
+                            <Grid>
+                                <FontIcon
+                                    x:Name="fiFolderIcon"
+                                    x:Load="{x:Bind isFolder.Equals(x:True)}"
+                                    FontFamily="Segoe Fluent Icons"
+                                    Glyph="&#xE8B7;"
+                                    />
+                                <local:NotebookPage
+                                    x:Name="npPagePreview"
+                                    x:Load="{x:Bind isFolder.Equals(x:False)}"
+                                    Loaded="LoadPagePreview"
+                                    />
+                            </Grid>
+                        </Viewbox>
+                        <TextBlock
+                            Text="{x:Bind itemName, Mode=OneWay}"
+                            TextWrapping="NoWrap"
+                            TextAlignment="Center"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Stretch"
+                            Margin="10"
+                            FontSize="18"
+                            Grid.Row="1"
+                            />
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+</Page>

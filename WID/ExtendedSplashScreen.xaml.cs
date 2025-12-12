@@ -32,7 +32,7 @@ namespace WID
     public sealed partial class ExtendedSplashScreen : Page
     {
         private Task? loadingTask;
-        private List<NotebookData>? notebookData;
+        private LoadedNotebooks? notebookData;
 
         public ExtendedSplashScreen()
         {
@@ -42,7 +42,7 @@ namespace WID
 
         private async Task LoadUserData()
         {
-            List<NotebookData> notebooks = new List<NotebookData>();
+            LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder);
 
             List<MenuElement> organizationFolders = new List<MenuElement>();
             List<MenuElement> notebookElements = new List<MenuElement>();
@@ -56,7 +56,7 @@ namespace WID
 
             foreach (MenuElement folder in organizationFolders)
             {
-                notebooks.Add(new NotebookData(folder, null, null));
+                noteData.notebooks.Add(new NotebookData(folder, null, null));
             }
 
             foreach (MenuElement notebook in notebookElements)
@@ -71,12 +71,12 @@ namespace WID
                 await currentPage.LoadLastPageFromConfig(config!, notebookDir);
 
                 if (currentPage.hasBg)
-                    notebooks.Add(new NotebookData(notebook, currentPage.bgImage, currentPage.canvas.InkPresenter.StrokeContainer));
+                    noteData.notebooks.Add(new NotebookData(notebook, currentPage.bgImage, currentPage.canvas.InkPresenter.StrokeContainer));
                 else
-                    notebooks.Add(new NotebookData(notebook, currentPage.canvas.InkPresenter.StrokeContainer, currentPage.Width, currentPage.Height));
+                    noteData.notebooks.Add(new NotebookData(notebook, currentPage.canvas.InkPresenter.StrokeContainer, currentPage.Width, currentPage.Height));
             }
 
-            this.notebookData = notebooks;
+            this.notebookData = noteData;
         }
 
         private async void StartAnimation(object sender, RoutedEventArgs e)
@@ -89,11 +89,26 @@ namespace WID
                 //!(loadingTask.IsCompleted && animationHasPlayedOnce) by De Morgan's laws
                 animationHasPlayedOnce = true;
                 await apStartupAnim.PlayAsync(0, 1, false);
-                await Task.Delay(1000);
+                if (!loadingTask.IsCompleted)
+                    await Task.Delay(1000);
+                else
+                    await Task.Delay(200);
             }
             await loadingTask;
             Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
             Frame.BackStack.Clear();
+        }
+    }
+
+    public class LoadedNotebooks
+    {
+        public List<NotebookData> notebooks { get; private set; }
+        public StorageFolder notesFolder;
+
+        public LoadedNotebooks(StorageFolder notesFolder)
+        {
+            this.notesFolder = notesFolder;
+            notebooks = new List<NotebookData>();
         }
     }
 
