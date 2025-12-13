@@ -42,7 +42,7 @@ namespace WID
 
         private async Task LoadUserData()
         {
-            LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder);
+            LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder, Frame);
 
             List<MenuElement> organizationFolders = new List<MenuElement>();
             List<MenuElement> notebookElements = new List<MenuElement>();
@@ -103,12 +103,14 @@ namespace WID
     public class LoadedNotebooks
     {
         public List<NotebookData> notebooks { get; private set; }
-        public StorageFolder notesFolder;
+        public StorageFolder notesFolder { get; private set; }
+        public Frame mainFrame { get; private set; }
 
-        public LoadedNotebooks(StorageFolder notesFolder)
+        public LoadedNotebooks(StorageFolder notesFolder, Frame mainFrame)
         {
             this.notesFolder = notesFolder;
             notebooks = new List<NotebookData>();
+            this.mainFrame = mainFrame;
         }
     }
 

@@ -28,10 +28,12 @@ namespace WID
     {
         public StorageFolder notes = ApplicationData.Current.LocalFolder;
         private FlyoutBase? currentFlyout;
+        private Frame? mainFrame;
 
         private LoadedNotebooks? userNotebooks;
         private int numberOfFolders;
         private int noteCounter = 0;
+
         public NotebookList()
         {
             InitializeComponent();
@@ -41,12 +43,13 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            if (e.Parameter is StorageFolder notes)
+            if (e.Parameter is FolderNavigation folderInfo)
             {
+                this.mainFrame = folderInfo.mainFrame;
                 if (notes != null)
                 {
                     btBack.Visibility = Visibility.Visible;
-                    this.notes = notes;
+                    this.notes = folderInfo.folder;
                 }
                 else
                     notes = ApplicationData.Current.LocalFolder;
@@ -55,6 +58,7 @@ namespace WID
             else if (e.Parameter is LoadedNotebooks notebookData)
             {
                 this.notes = notebookData.notesFolder;
+                this.mainFrame = notebookData.mainFrame;
                 this.userNotebooks = notebookData;
                 numberOfFolders = 0;
                 while (notebookData.notebooks[numberOfFolders].notebook.isFolder)
@@ -353,7 +357,7 @@ namespace WID
             if (item.isFolder)
                 Frame.Navigate(
                     typeof(NotebookList),
-                    await notes.GetFolderAsync(item.itemName),
+                    new FolderNavigation(await notes.GetFolderAsync(item.itemName), mainFrame!),
                     new SlideNavigationTransitionInfo()
                     {
                         Effect = SlideNavigationTransitionEffect.FromRight
@@ -367,7 +371,7 @@ namespace WID
                 //ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(new BasicConnectedAnimationConfiguration());
                 ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("OpenNotebook", origin).Configuration = new BasicConnectedAnimationConfiguration();
 
-                Frame.Navigate(typeof(CanvasPage),
+                mainFrame!.Navigate(typeof(CanvasPage),
                     await notes.GetFolderAsync(item.itemName + ".notebook"),
                     new DrillInNavigationTransitionInfo()
                     );
@@ -413,4 +417,15 @@ namespace WID
         }
     }
 
+    public class FolderNavigation
+    {
+        public StorageFolder folder { get; private set; }
+        public Frame mainFrame { get; private set; }
+
+        public FolderNavigation(StorageFolder folder, Frame mainFrame)
+        {
+            this.folder = folder;
+            this.mainFrame = mainFrame;
+        }
+    }
 }
