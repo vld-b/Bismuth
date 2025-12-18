@@ -29,6 +29,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
+using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Notifications;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -132,42 +133,6 @@ namespace WID
             }
             btUndoStroke.IsEnabled = true;
         }
-
-        //private async void RecognizeStroke(InkPresenter sender, InkStrokesCollectedEventArgs args)
-        //{
-        //    foreach (InkRecognizer recognizer in inkRec.GetRecognizers())
-        //    {
-        //        if (recognizer.Name.Equals("Microsoft English (US) Handwriting Recognizer"))
-        //        {
-        //            inkRec.SetDefaultRecognizer(recognizer);
-        //            break;
-        //        }
-        //    }
-        //    inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.Recent).Completed = (resAsync, status) =>
-        //    {
-        //        IReadOnlyList<InkRecognitionResult> res = resAsync.GetResults();
-        //        if (res.Count > 0)
-        //        {
-        //            txtTest.Text = string.Empty;
-        //            foreach (InkRecognitionResult result in res)
-        //            {
-        //                txtTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-        //            }
-        //        }
-        //    };
-        //    if (!inkPres.StrokeContainer.GetStrokes().Any())
-        //        return;
-
-        //    IReadOnlyList<InkRecognitionResult> results = await inkRec.RecognizeAsync(inkPres.StrokeContainer, InkRecognitionTarget.All);
-        //    if (results.Count > 0)
-        //    {
-        //        tbTest.Text = string.Empty;
-        //        foreach (InkRecognitionResult result in results)
-        //        {
-        //            tbTest.Text += result.GetTextCandidates().FirstOrDefault() + " ";
-        //        }
-        //    }
-        //}
 
         private void SaveFile(object sender, RoutedEventArgs e)
         {

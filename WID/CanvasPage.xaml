@@ -36,6 +36,7 @@
              >
             <TextBlock
                 x:Name="tbAppTitle"
+                FontFamily="Segoe UI Variable"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 />

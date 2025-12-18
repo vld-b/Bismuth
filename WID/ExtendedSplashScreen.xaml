@@ -31,7 +31,7 @@
         <muxc:AnimatedVisualPlayer
             x:Name="apStartupAnim"
             Grid.Row="0"
-            AnimationOptimization="Resources"
+            AnimationOptimization="Latency"
             AutoPlay="True"
             >
             <uwplottie:LottieVisualSource UriSource="ms-appx:///Assets/anim_startup.lottie" />

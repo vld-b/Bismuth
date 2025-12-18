@@ -31,11 +31,6 @@ namespace WID
     public sealed partial class MainPage : Page
     {
         public StorageFolder notes = ApplicationData.Current.LocalFolder;
-        private FlyoutBase? currentFlyout;
-
-        private List<NotebookData>? notebooks;
-        private int numberOfFolders;
-        private int noteCounter = 0;
         public MainPage()
         {
             InitializeComponent();

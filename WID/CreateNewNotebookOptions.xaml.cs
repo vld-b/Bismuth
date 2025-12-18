@@ -41,15 +41,19 @@ namespace WID
                 case "Empty":
                     spSpacingOptions.Opacity = 0d;
                     spSpacingOptions.IsHitTestVisible = false;
+                    npTemplatePreview.currentPattern = null;
                     return;
                 case "Lines":
                     tbSpacingLabel.Text = "Line spacing";
+                    npTemplatePreview.currentPattern = new LinesPagePattern(slTemplateSpacing.Value);
                     break;
                 case "Grid":
                     tbSpacingLabel.Text = "Grid spacing";
+                    npTemplatePreview.currentPattern = new GridPagePattern(slTemplateSpacing.Value);
                     break;
                 case "Dots":
                     tbSpacingLabel.Text = "Dot spacing";
+                    npTemplatePreview.currentPattern = new DotsPagePattern(slTemplateSpacing.Value);
                     break;
             }
 
@@ -59,6 +63,10 @@ namespace WID
 
         private void TemplateSpacingChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
+            if (npTemplatePreview.currentPattern != null)
+            {
+                npTemplatePreview.currentPattern.desiredSpacing = e.NewValue;
+            }
         }
     }
 

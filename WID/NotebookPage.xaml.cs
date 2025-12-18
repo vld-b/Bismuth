@@ -16,6 +16,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
+using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -46,8 +47,28 @@ namespace WID
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
-
-        private PageTemplatePattern? currentPattern;
+        private CanvasControl? templateCanvas;
+        private PageTemplatePattern? _currPattern;
+        public PageTemplatePattern? currentPattern
+        {
+            get => _currPattern;
+            set
+            {
+                if (_currPattern != value)
+                {
+                    _currPattern = value;
+                    if (_currPattern == null)
+                    {
+                        if (this.Children[0] is CanvasControl)
+                            this.Children.RemoveAt(0);
+                    } else
+                    {
+                        UpdateTemplateBackground();
+                        _currPattern.SpacingChanged += (s, v) => UpdateTemplateBackground();
+                    }
+                }
+            }
+        }
 
         public NotebookPage()
         {
@@ -59,9 +80,10 @@ namespace WID
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StartedDrawingInk;
+            currentPattern = null;
         }
 
-        public NotebookPage(int id) :this()
+        public NotebookPage(int id) : this()
         {
             this.id = id;
         }
@@ -76,6 +98,13 @@ namespace WID
         {
             this.Width = width;
             this.Height = height;
+        }
+
+        public NotebookPage(int id, double width, double height, PageTemplatePattern pattern) : this(id)
+        {
+            this.Width = width;
+            this.Height = height;
+            currentPattern = pattern;
         }
 
         public void LoadBackground(BitmapImage bg)
@@ -95,7 +124,7 @@ namespace WID
             inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
         }
 
-        internal async Task LoadLastPageFromConfig(NotebookConfig notebookConfig, StorageFolder notebookDir)
+        public async Task LoadLastPageFromConfig(NotebookConfig notebookConfig, StorageFolder notebookDir)
         {
             this.Width = notebookConfig.pageMapping.Last().width;
             this.Height = notebookConfig.pageMapping.Last().height;
@@ -111,6 +140,32 @@ namespace WID
                     );
                 this.LoadBackground(bgImage);
             }
+        }
+
+        public async Task CollectText()
+        {
+            InkAnalyzer analyzer = new InkAnalyzer();
+            analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
+            InkAnalysisResult result = await analyzer.AnalyzeAsync();
+
+            if (result.Status != InkAnalysisStatus.Updated)
+                return;
+
+            IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+        }
+
+        private void UpdateTemplateBackground()
+        {
+            if (this.Children[0] is CanvasControl)
+                this.Children.RemoveAt(0);
+            CanvasControl c = new CanvasControl
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+            };
+            c.Draw += _currPattern!.DrawOnCanvas;
+            this.templateCanvas = c;
+            this.Children.Insert(0, templateCanvas);
         }
 
         public void AddTextToPage(OnPageText text)
