@@ -5,6 +5,7 @@
     xmlns:local="using:WID"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="Transparent"
     >
@@ -14,7 +15,7 @@
         Orientation="Vertical"
         Spacing="10"
         >
-        
+
         <TextBox
         x:Name="tbNotebookName"
         Grid.Row="0"
@@ -38,9 +39,9 @@
                     Width="2100"
                     Height="2970"
                     />
-                
+
             </Viewbox>
-            
+
 
             <StackPanel
                 x:Name="spTemplateVariables"
@@ -63,7 +64,7 @@
                     <x:String>Lines</x:String>
                     <x:String>Grid</x:String>
                     <x:String>Dots</x:String>
-                    
+
                 </ComboBox>
 
                 <StackPanel
@@ -76,7 +77,7 @@
                     <StackPanel.OpacityTransition>
                         <ScalarTransition />
                     </StackPanel.OpacityTransition>
-                    
+
                     <TextBlock
                         x:Name="tbSpacingLabel"
                         Text="Grid Spacing"
@@ -94,13 +95,109 @@
                         SmallChange="10"
                         LargeChange="40"
                         />
+                    
+                    <CheckBox
+                        x:Name="cbMargins"
+                        Grid.Column="0"
+                        Content="Margins"
+                        IsChecked="False"
+                        Checked="MarginsChecked"
+                        Unchecked="MarginsUnchecked"
+                        />
 
+                    <StackPanel
+                        x:Name="spMarginOptions"
+                        Orientation="Vertical"
+                        IsHitTestVisible="False"
+                        Opacity="0"
+                        >
+                        <StackPanel.OpacityTransition>
+                            <ScalarTransition />
+                        </StackPanel.OpacityTransition>
+
+                        <Slider
+                            x:Name="slSimpleMargins"
+                            Width="170"
+                            Value="20"
+                            StepFrequency="5"
+                            Minimum="5"
+                            Maximum="50"
+                            />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <StackPanel
+                                Orientation="Vertical"
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                >
+                                <TextBlock
+                                    Text="Top"
+                                    />
+                                <Slider
+                                    Value="20"
+                                    StepFrequency="5"
+                                    Minimum="5"
+                                    Maximum="50"
+                                    />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Vertical"
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                >
+                                <TextBlock
+                                    Text="Bottom"
+                                    />
+                                <Slider
+                                    Value="20"
+                                    StepFrequency="5"
+                                    Minimum="5"
+                                    Maximum="50"
+                                    />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Vertical"
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                >
+                                <TextBlock
+                                    Text="Left"
+                                    />
+                                <Slider
+                                    Value="20"
+                                    StepFrequency="5"
+                                    Minimum="5"
+                                    Maximum="50"
+                                    />
+                            </StackPanel>
+                            <StackPanel
+                                Orientation="Vertical"
+                                Grid.Column="1"
+                                Grid.Row="1"
+                                >
+                                <TextBlock
+                                    Text="Right"
+                                    />
+                                <Slider
+                                    Value="20"
+                                    StepFrequency="5"
+                                    Minimum="5"
+                                    Maximum="50"
+                                    />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
-
             </StackPanel>
-            
         </StackPanel>
-        
     </StackPanel>
-
 </Grid>

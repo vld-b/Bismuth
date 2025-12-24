@@ -13,8 +13,21 @@ using Windows.UI.Xaml.Shapes;
 
 namespace WID
 {
+    public class PageMargin
+    {
+        public float left, top, right, bottom;
+
+        public PageMargin()
+        {
+            left = top = right = bottom = -1f;
+        }
+    }
+
     public abstract class PageTemplatePattern
     {
+        protected Windows.UI.Color objectColor { get; } = Windows.UI.Colors.Gray;
+        public PageMargin margin;
+
         private double _desSpacing;
         public double desiredSpacing
         {
@@ -34,9 +47,16 @@ namespace WID
         public PageTemplatePattern(double spacing)
         {
             desiredSpacing = spacing;
+            margin = new PageMargin();
         }
 
         public abstract void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args);
+
+        protected float CalculateVerticalOffset(double pageHeight, int objectsToDrawHorizontally)
+        {
+            float distanceToMargin = (float)(pageHeight - objectsToDrawHorizontally * desiredSpacing);
+            return distanceToMargin / 2f;
+        }
     }
 
     public class LinesPagePattern : PageTemplatePattern
@@ -50,6 +70,7 @@ namespace WID
             int linesToDrawHorizontally = (int)(c.ActualHeight / desiredSpacing);
 
             float lineWidth = (float)c.ActualHeight * 0.001f;
+            float offset = CalculateVerticalOffset(c.ActualHeight, linesToDrawHorizontally);
 
             float actualWidthFloat = (float)c.ActualWidth;
 
@@ -57,9 +78,9 @@ namespace WID
             {
                 float yPos = (float)(desiredSpacing * (i + 1));
                 args.DrawingSession.DrawLine(
-                    new System.Numerics.Vector2(0, yPos),
-                    new System.Numerics.Vector2(actualWidthFloat, yPos),
-                    new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
+                    new System.Numerics.Vector2(0, yPos + offset),
+                    new System.Numerics.Vector2(actualWidthFloat, yPos + offset),
+                    objectColor,
                     lineWidth
                     );
             }
@@ -78,6 +99,7 @@ namespace WID
             int linesToDrawVertically = (int)(c.ActualWidth / desiredSpacing);
 
             float lineWidth = (float)c.ActualHeight * 0.001f;
+            float yOffset = CalculateVerticalOffset(c.ActualHeight, linesToDrawHorizontally);
 
             float actualWidthFloat = (float)c.ActualWidth;
             float actualHeightFloat = (float)c.ActualHeight;
@@ -86,9 +108,9 @@ namespace WID
             {
                 float yPos = (float)(desiredSpacing * (i + 1));
                 args.DrawingSession.DrawLine(
-                    new System.Numerics.Vector2(0, yPos),
-                    new System.Numerics.Vector2(actualWidthFloat, yPos),
-                    new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
+                    new System.Numerics.Vector2(0, yPos + yOffset),
+                    new System.Numerics.Vector2(actualWidthFloat, yPos + yOffset),
+                    objectColor,
                     lineWidth
                     );
 
@@ -96,7 +118,7 @@ namespace WID
                 args.DrawingSession.DrawLine(
                     new System.Numerics.Vector2(xPos, 0),
                     new System.Numerics.Vector2(xPos, actualHeightFloat),
-                    new CanvasSolidColorBrush(c, Windows.UI.Colors.Black),
+                    objectColor,
                     lineWidth
                     );
             }
@@ -113,22 +135,24 @@ namespace WID
 
             float dotRadius = (float)((c.ActualWidth + c.ActualHeight) * 0.001f);
 
-            int dotsToDrawHorizontally = (int)(c.ActualHeight / desiredSpacing);
-            int dotsToDrawVertically = (int)(c.ActualWidth / desiredSpacing);
+            int dotsToDrawVertically = (int)(c.ActualHeight / desiredSpacing);
+            int dotsToDrawHorizontally = (int)(c.ActualWidth / desiredSpacing);
+
+            float yOffset = CalculateVerticalOffset(c.ActualHeight, dotsToDrawVertically);
 
             float actualHeightFloat = (float)c.ActualHeight;
             float actualWidthFloat = (float)c.ActualWidth;
 
-            for (float i = 0; i < dotsToDrawHorizontally; ++i)
+            for (float i = 0; i < dotsToDrawVertically; ++i)
             {
                 float yPos = i * (float)desiredSpacing;
-                for (float j = 0; j < dotsToDrawVertically; ++j)
+                for (float j = 0; j < dotsToDrawHorizontally; ++j)
                 {
                     float xPos = j * (float)desiredSpacing;
                     args.DrawingSession.DrawCircle(
-                        new System.Numerics.Vector2(xPos, yPos),
+                        new System.Numerics.Vector2(xPos, yPos + yOffset),
                         dotRadius,
-                        new CanvasSolidColorBrush(c, Windows.UI.Colors.Black)
+                        objectColor
                         );
                 }
             }

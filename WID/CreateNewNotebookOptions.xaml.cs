@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WinRT.WIDVtableClasses;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -25,7 +26,7 @@ namespace WID
     {
         public string notebookName => tbNotebookName.Text;
 
-        public NotebookPagePatternTypes chosenPattern;
+        public PageTemplatePattern? chosenPattern;
 
         public CreateNewNotebookOptions()
         {
@@ -41,21 +42,23 @@ namespace WID
                 case "Empty":
                     spSpacingOptions.Opacity = 0d;
                     spSpacingOptions.IsHitTestVisible = false;
+                    chosenPattern = null;
                     npTemplatePreview.currentPattern = null;
                     return;
                 case "Lines":
                     tbSpacingLabel.Text = "Line spacing";
-                    npTemplatePreview.currentPattern = new LinesPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new LinesPagePattern(slTemplateSpacing.Value);
                     break;
                 case "Grid":
                     tbSpacingLabel.Text = "Grid spacing";
-                    npTemplatePreview.currentPattern = new GridPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new GridPagePattern(slTemplateSpacing.Value);
                     break;
                 case "Dots":
                     tbSpacingLabel.Text = "Dot spacing";
-                    npTemplatePreview.currentPattern = new DotsPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new DotsPagePattern(slTemplateSpacing.Value);
                     break;
             }
+            npTemplatePreview.currentPattern = chosenPattern;
 
             spSpacingOptions.Opacity = 1d;
             spSpacingOptions.IsHitTestVisible = true;
@@ -68,13 +71,17 @@ namespace WID
                 npTemplatePreview.currentPattern.desiredSpacing = e.NewValue;
             }
         }
-    }
 
-    public enum NotebookPagePatternTypes
-    {
-        Empty,
-        Lines,
-        Grid,
-        Dots,
+        private void MarginsChecked(object sender, RoutedEventArgs e)
+        {
+            spMarginOptions.Opacity = 1d;
+            spMarginOptions.IsHitTestVisible = true;
+        }
+
+        private void MarginsUnchecked(object sender, RoutedEventArgs e)
+        {
+            spMarginOptions.Opacity = 0d;
+            spMarginOptions.IsHitTestVisible = false;
+        }
     }
 }
