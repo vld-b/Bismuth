@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Gaming.Input.ForceFeedback;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -156,6 +157,17 @@ namespace WID
             try
             {
                 StorageFolder newNotebook = await notes.CreateFolderAsync(options.notebookName + ".notebook", CreationCollisionOption.FailIfExists);
+                StorageFile file = await newNotebook.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
+                NotebookConfig config = new NotebookConfig(
+                    new System.Collections.ObjectModel.ObservableCollection<PageConfig>(),
+                    -1,
+                    new List<int>(),
+                    new LastNotebookState(),
+                    -1,
+                    new List<int>(),
+                    new DefaultTemplate(options.chosenPattern)
+                    );
+                await config.SerializeToFile(file);
                 LoadNotebooks();
                 //gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
             }
@@ -392,10 +404,8 @@ namespace WID
                 try
                 {
                     StorageFolder configDir = await notes.GetFolderAsync(((MenuElement)preview.DataContext).itemName + ".notebook");
-                    StorageFile configFile = await configDir.GetFileAsync("config.json");
                     NotebookConfig? config;
-                    using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                        config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                    config = await NotebookConfig.DeserializeFile(configDir);
                     if (config is not null)
                         await preview.LoadLastPageFromConfig(config, configDir);
                 }
@@ -412,7 +422,11 @@ namespace WID
                     preview.Width = userNotebooks.notebooks[currentIndex].width;
                     preview.Height = userNotebooks.notebooks[currentIndex].height;
                 }
+
                 ++noteCounter;
+
+                if (currentIndex == (await notes.GetFoldersAsync()).Count - 1) // Free userNoteboos so that it's only used once, on load
+                    this.userNotebooks = null;
             }
         }
     }

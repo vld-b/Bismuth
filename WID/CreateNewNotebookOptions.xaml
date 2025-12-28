@@ -35,7 +35,6 @@
 
                 <local:NotebookPage
                     x:Name="npTemplatePreview"
-                    initWithTemplate="True"
                     Width="2100"
                     Height="2970"
                     />
@@ -95,15 +94,64 @@
                         SmallChange="10"
                         LargeChange="40"
                         />
-                    
-                    <CheckBox
-                        x:Name="cbMargins"
-                        Grid.Column="0"
+
+                    <muxc:ToggleSplitButton
+                        IsCheckedChanged="ToggleMargins"
                         Content="Margins"
-                        IsChecked="False"
-                        Checked="MarginsChecked"
-                        Unchecked="MarginsUnchecked"
-                        />
+                        >
+                        <muxc:ToggleSplitButton.Flyout>
+                            <Flyout
+                                Placement="BottomEdgeAlignedLeft"
+                                >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <CheckBox
+                                        x:Name="cbMarginTop"
+                                        Click="TemplateMarginToggled"
+                                        Grid.Column="0"
+                                        Grid.Row="0"
+                                        Content="Top"
+                                        IsChecked="True"
+                                        />
+
+                                    <CheckBox
+                                        x:Name="cbMarginBottom"
+                                        Click="TemplateMarginToggled"
+                                        Grid.Column="0"
+                                        Grid.Row="1"
+                                        Content="Bottom"
+                                        IsChecked="True"
+                                        />
+
+                                    <CheckBox
+                                        x:Name="cbMarginLeft"
+                                        Click="TemplateMarginToggled"
+                                        Grid.Column="1"
+                                        Grid.Row="0"
+                                        Content="Left"
+                                        IsChecked="True"
+                                        />
+
+                                    <CheckBox
+                                        x:Name="cbMarginRight"
+                                        Click="TemplateMarginToggled"
+                                        Grid.Column="1"
+                                        Grid.Row="1"
+                                        Content="Right"
+                                        IsChecked="True"
+                                        />
+                                </Grid>
+                            </Flyout>
+                        </muxc:ToggleSplitButton.Flyout>
+                    </muxc:ToggleSplitButton>
 
                     <StackPanel
                         x:Name="spMarginOptions"
@@ -117,6 +165,7 @@
 
                         <Slider
                             x:Name="slSimpleMargins"
+                            ValueChanged="TemplateMarginsChanged"
                             Width="170"
                             Value="20"
                             StepFrequency="5"
@@ -133,7 +182,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            
+
                             <StackPanel
                                 Orientation="Vertical"
                                 Grid.Column="0"
@@ -143,6 +192,8 @@
                                     Text="Top"
                                     />
                                 <Slider
+                                    x:Name="slMarginTop"
+                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -158,6 +209,8 @@
                                     Text="Bottom"
                                     />
                                 <Slider
+                                    x:Name="slMarginBottom"
+                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -173,6 +226,8 @@
                                     Text="Left"
                                     />
                                 <Slider
+                                    x:Name="slMarginLeft"
+                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -188,6 +243,8 @@
                                     Text="Right"
                                     />
                                 <Slider
+                                    x:Name="slMarginRight"
+                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"

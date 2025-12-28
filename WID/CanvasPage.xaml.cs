@@ -168,6 +168,8 @@ namespace WID
                 }
 
                 PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
+                currentConfig.pagePattern = page.currentPattern;
+                currentConfig.hasTemplate = page.hasPattern;
                 pages.Add(currentConfig);
 
                 foreach (OnPageText txt in page.textBoxes)
@@ -197,7 +199,8 @@ namespace WID
                     new List<int>(),
                     new LastNotebookState(),
                     -1,
-                    new List<int>()
+                    new List<int>(),
+                    new DefaultTemplate(null)
                     );
             else
             {
@@ -207,8 +210,7 @@ namespace WID
                 config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
             }
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
-            using (Stream opStream = await configFile.OpenStreamForWriteAsync())
-                await JsonSerializer.SerializeAsync(opStream, config, NotebookConfigJsonContext.Default.NotebookConfig);
+            await config.SerializeToFile(configFile);
 
             await Utils.DeletePending(pendingDeletions, file);
             await Utils.MovePending(pendingMoves, file);
@@ -261,8 +263,7 @@ namespace WID
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
-                using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                    config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                config = await NotebookConfig.DeserializeFile(configFile);
 
                 pbFileStatus.Maximum = config!.pageMapping.Count;
 
@@ -281,7 +282,13 @@ namespace WID
                     }
                     else
                     {
-                        page = new NotebookPage(config!.pageMapping[i].id, config!.pageMapping[i].width, config!.pageMapping[i].height);
+                        page = new NotebookPage(
+                            config!.pageMapping[i].id,
+                            config!.pageMapping[i].width,
+                            config!.pageMapping[i].height,
+                            config!.pageMapping[i].pagePattern,
+                            config!.pageMapping[i].hasTemplate
+                            );
                     }
 
                     foreach (TextData textData in config!.pageMapping[i].textBoxes)
@@ -324,7 +331,9 @@ namespace WID
                     new List<int>(),
                     new LastNotebookState(),
                     -1,
-                    new List<int>());
+                    new List<int>(),
+                    new DefaultTemplate(null)
+                    );
                 if (this.IsLoaded)
                     AddPage();
                 else
@@ -344,6 +353,8 @@ namespace WID
             {
                 finishedLoading = true;
             }
+            if (config!.defaultTemplate is null)
+                config!.defaultTemplate = new DefaultTemplate(null);
             HideFileStatus();
         }
 
@@ -355,7 +366,16 @@ namespace WID
 
         private void AddPage()
         {
-            NotebookPage page = new NotebookPage(config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID, 2100, 2970);
+            NotebookPage page = new NotebookPage(
+                config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID,
+                2100,
+                2970,
+                config!.defaultTemplate.pattern,
+                config!.defaultTemplate.pattern is not null
+                )
+            {
+                hasBeenModifiedSinceSave = true,
+            };
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -376,7 +396,10 @@ namespace WID
             int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
             NotebookPage page;
             BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(bg, 2100);
-            page = new NotebookPage(pageId, bmp);
+            page = new NotebookPage(pageId, bmp)
+            {
+                hasBeenModifiedSinceSave = true,
+            };
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
@@ -421,7 +444,10 @@ namespace WID
                     //stream.Seek(0);
                     //await wbmp.SetSourceAsync(stream);
                     //stream.Seek(0);
-                    page = new NotebookPage(pageId, bmpImage);
+                    page = new NotebookPage(pageId, bmpImage)
+                    {
+                        hasBeenModifiedSinceSave = true,
+                    };
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 

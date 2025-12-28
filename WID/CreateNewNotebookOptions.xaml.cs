@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -47,15 +48,15 @@ namespace WID
                     return;
                 case "Lines":
                     tbSpacingLabel.Text = "Line spacing";
-                    chosenPattern = new LinesPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new PageTemplatePattern(PatternType.Lines, slTemplateSpacing.Value);
                     break;
                 case "Grid":
                     tbSpacingLabel.Text = "Grid spacing";
-                    chosenPattern = new GridPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new PageTemplatePattern(PatternType.Grid, slTemplateSpacing.Value);
                     break;
                 case "Dots":
                     tbSpacingLabel.Text = "Dot spacing";
-                    chosenPattern = new DotsPagePattern(slTemplateSpacing.Value);
+                    chosenPattern = new PageTemplatePattern(PatternType.Dots, slTemplateSpacing.Value);
                     break;
             }
             npTemplatePreview.currentPattern = chosenPattern;
@@ -72,16 +73,75 @@ namespace WID
             }
         }
 
-        private void MarginsChecked(object sender, RoutedEventArgs e)
+        private void ToggleMargins(Microsoft.UI.Xaml.Controls.ToggleSplitButton sender, Microsoft.UI.Xaml.Controls.ToggleSplitButtonIsCheckedChangedEventArgs args)
         {
-            spMarginOptions.Opacity = 1d;
-            spMarginOptions.IsHitTestVisible = true;
+            if (sender.IsChecked)
+            {
+                spMarginOptions.Opacity = 1d;
+                spMarginOptions.IsHitTestVisible = true;
+            }
+            else
+            {
+                spMarginOptions.Opacity = 0d;
+                spMarginOptions.IsHitTestVisible = false;
+            }
+            npTemplatePreview.currentPattern!.margin = new PageMarginReactive(sender.IsChecked);
         }
 
-        private void MarginsUnchecked(object sender, RoutedEventArgs e)
+        private void TemplateMarginsChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            spMarginOptions.Opacity = 0d;
-            spMarginOptions.IsHitTestVisible = false;
+            if (slMarginTop is not null) // Theoretically any other slider could be null too, but checking one is enough
+            {
+                slMarginLeft.Value = slMarginTop.Value = slMarginRight.Value = slMarginBottom.Value = e.NewValue;
+                float newMargin = (float)e.NewValue / 100f;
+                npTemplatePreview.currentPattern!.margin.left = newMargin;
+                npTemplatePreview.currentPattern!.margin.top = newMargin;
+                npTemplatePreview.currentPattern!.margin.right = newMargin;
+                npTemplatePreview.currentPattern!.margin.bottom = newMargin;
+            }
+        }
+
+        private void TemplateMarginToggled(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+            switch (cb.Content)
+            {
+                case "Left":
+                    npTemplatePreview.currentPattern!.margin.hasLeft = cb.IsChecked ?? true;
+                    break;
+                case "Top":
+                    npTemplatePreview.currentPattern!.margin.hasTop = cb.IsChecked ?? true;
+                    break;
+                case "Right":
+                    npTemplatePreview.currentPattern!.margin.hasRight = cb.IsChecked ?? true;
+                    break;
+                case "Bottom":
+                    npTemplatePreview.currentPattern!.margin.hasBottom = cb.IsChecked ?? true;
+                    break;
+            }
+        }
+
+        private void TemplateMarginChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (!npTemplatePreview.IsLoaded)
+                return;
+            Slider sl = (Slider)sender;
+            float newMargin = (float)e.NewValue / 100f;
+            switch (sl.Name)
+            {
+                case "slMarginLeft":
+                    npTemplatePreview.currentPattern!.margin.left = newMargin;
+                    break;
+                case "slMarginTop":
+                    npTemplatePreview.currentPattern!.margin.top = newMargin;
+                    break;
+                case "slMarginRight":
+                    npTemplatePreview.currentPattern!.margin.right = newMargin;
+                    break;
+                case "slMarginBottom":
+                    npTemplatePreview.currentPattern!.margin.bottom = newMargin;
+                    break;
+            }
         }
     }
 }

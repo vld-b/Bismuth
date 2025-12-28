@@ -39,7 +39,6 @@ namespace WID
         public int id { get; private set; }
         public bool hasBg { get; private set; }
         public bool hasBeenModifiedSinceSave { get; set; } = false;
-        public bool initWithTemplate { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public Canvas contentCanvas { get; private set; }
@@ -64,11 +63,12 @@ namespace WID
                     } else
                     {
                         UpdateTemplateBackground();
-                        _currPattern.SpacingChanged += (s, v) => UpdateTemplateBackground();
+                        _currPattern.TemplatePropertiesChanged += (s, e) => UpdateTemplateBackground();
                     }
                 }
             }
         }
+        public bool hasPattern { get; set; }
 
         public NotebookPage()
         {
@@ -100,11 +100,12 @@ namespace WID
             this.Height = height;
         }
 
-        public NotebookPage(int id, double width, double height, PageTemplatePattern pattern) : this(id)
+        public NotebookPage(int id, double width, double height, PageTemplatePattern? pattern, bool hasPattern) : this(id)
         {
             this.Width = width;
             this.Height = height;
             currentPattern = pattern;
+            this.hasPattern = hasPattern;
         }
 
         public void LoadBackground(BitmapImage bg)
@@ -126,6 +127,8 @@ namespace WID
 
         public async Task LoadLastPageFromConfig(NotebookConfig notebookConfig, StorageFolder notebookDir)
         {
+            if (notebookConfig.pageMapping.Count == 0)
+                return;
             this.Width = notebookConfig.pageMapping.Last().width;
             this.Height = notebookConfig.pageMapping.Last().height;
             StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().fileName);

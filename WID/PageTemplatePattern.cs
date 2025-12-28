@@ -7,26 +7,156 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Windows.Media.Protection;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
 namespace WID
 {
-    public class PageMargin
+    public class PageMarginReactive
     {
-        public float left, top, right, bottom;
+        private float _left, _top, _right, _bottom;
+        private bool _hasLeft, _hasTop, _hasRight, _hasBottom;
 
-        public PageMargin()
+        public float left
         {
-            left = top = right = bottom = -1f;
+            get => _left;
+            set
+            {
+                if (_left != value)
+                {
+                    _left = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public float top
+        {
+            get => _top;
+            set
+            {
+                if (_top != value)
+                {
+                    _top = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public float right
+        {
+            get => _right;
+            set
+            {
+                if (_right != value)
+                {
+                    _right = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public float bottom
+        {
+            get => _bottom;
+            set
+            {
+                if (_bottom != value)
+                {
+                    _bottom = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public bool hasLeft
+        {
+            get => _hasLeft;
+            set
+            {
+                if (_hasLeft != value)
+                {
+                    _hasLeft = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public bool hasTop
+        {
+            get => _hasTop;
+            set
+            {
+                if (_hasTop != value)
+                {
+                    _hasTop = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public bool hasRight
+        {
+            get => _hasRight;
+            set
+            {
+                if (_hasRight != value)
+                {
+                    _hasRight = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+        public bool hasBottom
+        {
+            get => _hasBottom;
+            set
+            {
+                if (_hasBottom != value)
+                {
+                    _hasBottom = value;
+                    MarginChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public EventHandler? MarginChanged;
+
+        public PageMarginReactive()
+        {
+            hasLeft = hasTop = hasRight = hasBottom = false;
+            left = top = right = bottom = 0.2f;
+        }
+
+        public PageMarginReactive(bool hasMargins)
+        {
+            hasLeft = hasTop = hasRight = hasBottom = hasMargins;
+            left = top = right = bottom = 0.2f;
+        }
+
+        public PageMarginReactive(float margin)
+        {
+            hasLeft = hasTop = hasRight = hasBottom = true;
+            left = top = right = bottom = margin;
         }
     }
 
-    public abstract class PageTemplatePattern
+    public class PageTemplatePattern
     {
         protected Windows.UI.Color objectColor { get; } = Windows.UI.Colors.Gray;
-        public PageMargin margin;
+        private PageMarginReactive _margin;
+        public PageMarginReactive margin
+        {
+            get => _margin;
+            set
+            {
+                if (_margin != value)
+                {
+                    _margin = value;
+                    _margin.MarginChanged += (s, e) => TemplatePropertiesChanged?.Invoke(this, EventArgs.Empty);
+                    TemplatePropertiesChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
         private double _desSpacing;
         public double desiredSpacing
@@ -37,33 +167,115 @@ namespace WID
                 if (_desSpacing != value)
                 {
                     _desSpacing = value;
-                    SpacingChanged?.Invoke(this, _desSpacing);
+                    TemplatePropertiesChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        public EventHandler<double>? SpacingChanged { get; set; }
-
-        public PageTemplatePattern(double spacing)
+        private PatternType _type;
+        public PatternType type
         {
-            desiredSpacing = spacing;
-            margin = new PageMargin();
+            get => _type;
+            set
+            {
+                if (_type != value)
+                {
+                    _type = value;
+                    TemplatePropertiesChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
 
-        public abstract void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args);
+        [JsonIgnore]
+        public EventHandler? TemplatePropertiesChanged { get; set; }
+
+        public PageTemplatePattern()
+        {
+            this.type = PatternType.Empty;
+            desiredSpacing = float.PositiveInfinity;
+            margin = new PageMarginReactive(false);
+            _margin = margin;
+        }
+
+        public PageTemplatePattern(PatternType type, double spacing)
+        {
+            this.type = type;
+            desiredSpacing = spacing;
+            margin = new PageMarginReactive(false);
+            _margin = margin;
+        }
+
+        public void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        {
+            switch (_type) {
+                case PatternType.Lines:
+                    DrawLinesOnCanvas(c, args);
+                    break;
+                case PatternType.Grid:
+                    DrawGridOnCanvas(c, args);
+                    break;
+                case PatternType.Dots:
+                    DrawDotsOnCanvas(c, args);
+                    break;
+            }
+            DrawMargins(c, args);
+        }
+
+        protected void DrawMargins(CanvasControl c, CanvasDrawEventArgs args)
+        {
+            float lineWidth = (float)c.ActualHeight * 0.001f;
+
+            float actualWidthFloat = (float)c.ActualWidth;
+            float actualHeightFloat = (float)c.ActualHeight;
+
+            if (margin.hasLeft)
+            {
+                float xPos = actualWidthFloat * margin.left;
+                args.DrawingSession.DrawLine(
+                    new System.Numerics.Vector2(xPos, 0f),
+                    new System.Numerics.Vector2(xPos, actualHeightFloat),
+                    Windows.UI.Colors.Red,
+                    lineWidth
+                    );
+            }
+            if (margin.hasTop)
+            {
+                float yPos = actualHeightFloat * margin.top;
+                args.DrawingSession.DrawLine(
+                    new System.Numerics.Vector2(0f, yPos),
+                    new System.Numerics.Vector2(actualWidthFloat, yPos),
+                    Windows.UI.Colors.Red,
+                    lineWidth
+                    );
+            }
+            if (margin.hasRight)
+            {
+                float xPos = actualWidthFloat * (1f - margin.right);
+                args.DrawingSession.DrawLine(
+                    new System.Numerics.Vector2(xPos, 0f),
+                    new System.Numerics.Vector2(xPos, actualHeightFloat),
+                    Windows.UI.Colors.Red,
+                    lineWidth
+                    );
+            } if (margin.hasBottom)
+            {
+                float yPos = actualHeightFloat * (1f - margin.bottom);
+                args.DrawingSession.DrawLine(
+                    new System.Numerics.Vector2(0f, yPos),
+                    new System.Numerics.Vector2(actualWidthFloat, yPos),
+                    Windows.UI.Colors.Red,
+                    lineWidth
+                    );
+            }
+        }
 
         protected float CalculateVerticalOffset(double pageHeight, int objectsToDrawHorizontally)
         {
             float distanceToMargin = (float)(pageHeight - objectsToDrawHorizontally * desiredSpacing);
             return distanceToMargin / 2f;
         }
-    }
 
-    public class LinesPagePattern : PageTemplatePattern
-    {
-        public LinesPagePattern(double spacing) : base(spacing) { }
-
-        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        public void DrawLinesOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
 
@@ -85,13 +297,8 @@ namespace WID
                     );
             }
         }
-    }
 
-    public class GridPagePattern : PageTemplatePattern
-    {
-        public GridPagePattern(double spacing) : base(spacing) { }
-
-        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        public void DrawGridOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
 
@@ -123,17 +330,12 @@ namespace WID
                     );
             }
         }
-    }
 
-    public class DotsPagePattern : PageTemplatePattern
-    {
-        public DotsPagePattern(double spacing) : base(spacing) { }
-
-        public override void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        public void DrawDotsOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
 
-            float dotRadius = (float)((c.ActualWidth + c.ActualHeight) * 0.001f);
+            float dotRadius = (float)((c.ActualWidth + c.ActualHeight) * 0.0005f);
 
             int dotsToDrawVertically = (int)(c.ActualHeight / desiredSpacing);
             int dotsToDrawHorizontally = (int)(c.ActualWidth / desiredSpacing);
@@ -149,7 +351,7 @@ namespace WID
                 for (float j = 0; j < dotsToDrawHorizontally; ++j)
                 {
                     float xPos = j * (float)desiredSpacing;
-                    args.DrawingSession.DrawCircle(
+                    args.DrawingSession.FillCircle(
                         new System.Numerics.Vector2(xPos, yPos + yOffset),
                         dotRadius,
                         objectColor
@@ -157,5 +359,13 @@ namespace WID
                 }
             }
         }
+    }
+
+    public enum PatternType
+    {
+        Empty,
+        Lines,
+        Grid,
+        Dots,
     }
 }

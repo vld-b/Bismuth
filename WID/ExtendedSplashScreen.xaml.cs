@@ -63,10 +63,8 @@ namespace WID
             {
                 NotebookPage currentPage = new NotebookPage();
                 StorageFolder notebookDir = await ApplicationData.Current.LocalFolder.GetFolderAsync(notebook.itemName + ".notebook");
-                StorageFile configFile = await notebookDir.GetFileAsync("config.json");
                 NotebookConfig? config;
-                using (Stream ipStream = await configFile.OpenStreamForReadAsync())
-                    config = JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                config = await NotebookConfig.DeserializeFile(notebookDir);
 
                 await currentPage.LoadLastPageFromConfig(config!, notebookDir);
 

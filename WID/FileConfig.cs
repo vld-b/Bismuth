@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas.Text;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Media.AppBroadcasting;
+using Windows.Storage;
 using Windows.UI.Composition;
 using Windows.UI.WebUI;
 
@@ -20,6 +24,7 @@ namespace WID
         public LastNotebookState lastNotebookState { get; set; }
         public int maxTextID { get; set; }
         public List<int> usableTextIDs { get; set; }
+        public DefaultTemplate defaultTemplate { get; set; }
 
         public NotebookConfig(
             ObservableCollection<PageConfig> pageMapping,
@@ -27,7 +32,9 @@ namespace WID
             List<int> usablePageIDs,
             LastNotebookState lastNotebookState,
             int maxTextID,
-            List<int> usableTextIDs)
+            List<int> usableTextIDs,
+            DefaultTemplate defaultTemplate
+            )
         {
             this.pageMapping = pageMapping;
             this.maxPageID = maxPageID;
@@ -35,6 +42,7 @@ namespace WID
             this.lastNotebookState = lastNotebookState;
             this.maxTextID = maxTextID;
             this.usableTextIDs = usableTextIDs;
+            this.defaultTemplate = defaultTemplate;
         }
 
         public void DeletePageWithId(int id)
@@ -52,6 +60,30 @@ namespace WID
             else
                 usablePageIDs.Add(id);
         }
+
+        public async Task SerializeToFile(StorageFolder folder)
+        {
+            using (Stream opStream = await (await folder.GetFileAsync("config.json")).OpenStreamForWriteAsync())
+                JsonSerializer.Serialize(opStream, this, NotebookConfigJsonContext.Default.NotebookConfig);
+        }
+
+        public async Task SerializeToFile(StorageFile file)
+        {
+            using (Stream opStream = await file.OpenStreamForWriteAsync())
+                JsonSerializer.Serialize(opStream, this, NotebookConfigJsonContext.Default.NotebookConfig);
+        }
+
+        public static async Task<NotebookConfig?> DeserializeFile(StorageFolder folder)
+        {
+            using (Stream ipStream = await (await folder.GetFileAsync("config.json")).OpenStreamForReadAsync())
+                return JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+        }
+
+        public static async Task<NotebookConfig?> DeserializeFile(StorageFile file)
+        {
+            using (Stream ipStream = await file.OpenStreamForReadAsync())
+                return JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+        }
     }
 
     [JsonSerializable(typeof(NotebookConfig))]
@@ -67,7 +99,7 @@ namespace WID
         {
             vertScrollPos = 0d;
             horizScrollPos = 0d;
-            zoomFactor = 0f;
+            zoomFactor = 1f;
 
         }
 
@@ -76,6 +108,53 @@ namespace WID
             this.vertScrollPos = vertScrollPos;
             this.horizScrollPos = horizScrollPos;
             this.zoomFactor = zoomFactor;
+        }
+    }
+
+    public class PageConfig
+    {
+        public int id { get; set; }
+        public string fileName { get; set; }
+        public double width { get; set; }
+        public double height { get; set; }
+        public bool hasBg { get; set; }
+        public List<TextData> textBoxes { get; set; }
+
+        public bool hasTemplate { get; set; }
+        public PageTemplatePattern? pagePattern { get; set; }
+
+        public PageConfig()
+        {
+            this.id = -1;
+            this.fileName = "";
+            this.width = this.height = 0d;
+            this.hasBg = false;
+            textBoxes = new List<TextData>();
+        }
+
+        public PageConfig(int id, double width, double height, bool hasBg)
+        {
+            this.id = id;
+            this.fileName = "page" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".gif";
+            this.width = width;
+            this.height = height;
+            this.hasBg = hasBg;
+            textBoxes = new List<TextData>();
+        }
+
+        public PageConfig(int id, double width, double height, bool hasBg, List<TextData> textBoxes)
+        {
+            this.id = id;
+            this.fileName = "page" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".gif";
+            this.width = width;
+            this.height = height;
+            this.hasBg = hasBg;
+            this.textBoxes = textBoxes;
+        }
+
+        public string GetBgName()
+        {
+            return "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png";
         }
     }
 
@@ -110,47 +189,13 @@ namespace WID
         }
     }
 
-    public class PageConfig
+    public class DefaultTemplate
     {
-        public int id { get; set; }
-        public string fileName { get; set; }
-        public double width { get; set; }
-        public double height { get; set; }
-        public bool hasBg { get; set; }
-        public List<TextData> textBoxes { get; set; }
+        public PageTemplatePattern? pattern { get; set; }
 
-        public PageConfig()
+        public DefaultTemplate(PageTemplatePattern? pattern)
         {
-            this.id = -1;
-            this.fileName = "";
-            this.width = this.height = 0d;
-            this.hasBg = false;
-            textBoxes = new List<TextData>();
-        }
-
-        public PageConfig(int id, double width, double height, bool hasBg)
-        {
-            this.id = id;
-            this.fileName = "page" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".gif";
-            this.width = width;
-            this.height = height;
-            this.hasBg = hasBg;
-            textBoxes = new List<TextData>();
-        }
-
-        public PageConfig(int id, double width, double height, bool hasBg, List<TextData> textBoxes)
-        {
-            this.id = id;
-            this.fileName = "page" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".gif";
-            this.width = width;
-            this.height = height;
-            this.hasBg = hasBg;
-            this.textBoxes = textBoxes;
-        }
-
-        public string GetBgName()
-        {
-            return "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png";
+            this.pattern = pattern;
         }
     }
 }
