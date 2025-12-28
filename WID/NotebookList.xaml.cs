@@ -421,6 +421,7 @@ namespace WID
                 {
                     preview.Width = userNotebooks.notebooks[currentIndex].width;
                     preview.Height = userNotebooks.notebooks[currentIndex].height;
+                    preview.templateCanvas = userNotebooks.notebooks[currentIndex].pattern;
                 }
 
                 ++noteCounter;

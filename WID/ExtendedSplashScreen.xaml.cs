@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.WinUI.Lottie;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,9 +70,26 @@ namespace WID
                 await currentPage.LoadLastPageFromConfig(config!, notebookDir);
 
                 if (currentPage.hasBg)
-                    noteData.notebooks.Add(new NotebookData(notebook, currentPage.bgImage, currentPage.canvas.InkPresenter.StrokeContainer));
+                    noteData.notebooks.Add(
+                        new NotebookData(
+                            notebook,
+                            currentPage.bgImage,
+                            currentPage.canvas.InkPresenter.StrokeContainer
+                            )
+                        );
                 else
-                    noteData.notebooks.Add(new NotebookData(notebook, currentPage.canvas.InkPresenter.StrokeContainer, currentPage.Width, currentPage.Height));
+                {
+                    noteData.notebooks.Add(
+                        new NotebookData(
+                            notebook,
+                            currentPage.canvas.InkPresenter.StrokeContainer,
+                            currentPage.templateCanvas,
+                            currentPage.Width,
+                            currentPage.Height
+                            )
+                        );
+                    currentPage.templateCanvas = null;
+                }
             }
 
             this.notebookData = noteData;
@@ -117,6 +135,7 @@ namespace WID
         public MenuElement notebook { get; private set; }
         public BitmapImage? bg { get; private set; }
         public InkStrokeContainer? ink { get; private set; }
+        public CanvasControl? pattern { get; private set; }
         public double width { get; private set; }
         public double height { get; private set; }
 
@@ -127,10 +146,11 @@ namespace WID
             this.ink = ink;
         }
 
-        public NotebookData(MenuElement notebook, InkStrokeContainer? ink, double width, double height)
+        public NotebookData(MenuElement notebook, InkStrokeContainer? ink, CanvasControl? pattern, double width, double height)
         {
             this.notebook = notebook;
             this.ink = ink;
+            this.pattern = pattern;
             this.width = width;
             this.height = height;
         }

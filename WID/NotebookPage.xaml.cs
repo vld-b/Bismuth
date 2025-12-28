@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Printing;
 using Windows.Storage;
+using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
@@ -46,7 +47,22 @@ namespace WID
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
-        private CanvasControl? templateCanvas;
+        private CanvasControl? _templateCanvas;
+        public CanvasControl? templateCanvas
+        {
+            get => _templateCanvas;
+            set
+            {
+                if (_templateCanvas != value)
+                {
+                    if (this.Children[0] is CanvasControl)
+                        this.Children.RemoveAt(0);
+                    _templateCanvas = value;
+                    if (_templateCanvas != null)
+                        this.Children.Insert(0, _templateCanvas);
+                }
+            }
+        }
         private PageTemplatePattern? _currPattern;
         public PageTemplatePattern? currentPattern
         {
@@ -131,6 +147,7 @@ namespace WID
                 return;
             this.Width = notebookConfig.pageMapping.Last().width;
             this.Height = notebookConfig.pageMapping.Last().height;
+            this.currentPattern = notebookConfig.pageMapping.Last().pagePattern;
             StorageFile ink = await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().fileName);
             using (IInputStream ipStream = await ink.OpenAsync(FileAccessMode.Read))
                 await this.inkCanvas.InkPresenter.StrokeContainer.LoadAsync(ipStream);
@@ -168,7 +185,6 @@ namespace WID
             };
             c.Draw += _currPattern!.DrawOnCanvas;
             this.templateCanvas = c;
-            this.Children.Insert(0, templateCanvas);
         }
 
         public void AddTextToPage(OnPageText text)
