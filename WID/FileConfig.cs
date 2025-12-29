@@ -18,6 +18,7 @@ namespace WID
 {
     public class NotebookConfig
     {
+        public long configVersion { get; set; }
         public ObservableCollection<PageConfig> pageMapping { get; set; }
         public int maxPageID { get; set; }
         public List<int> usablePageIDs { get; set; }
@@ -27,6 +28,7 @@ namespace WID
         public DefaultTemplate defaultTemplate { get; set; }
 
         public NotebookConfig(
+            long configVersion,
             ObservableCollection<PageConfig> pageMapping,
             int maxPageID,
             List<int> usablePageIDs,
@@ -36,6 +38,7 @@ namespace WID
             DefaultTemplate defaultTemplate
             )
         {
+            this.configVersion = configVersion;
             this.pageMapping = pageMapping;
             this.maxPageID = maxPageID;
             this.usablePageIDs = usablePageIDs;

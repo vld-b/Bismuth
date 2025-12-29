@@ -43,6 +43,11 @@ namespace WID
             InitializeComponent();
         }
 
+        ~NotebookList()
+        {
+            RemoveTemplates();
+        }
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -79,9 +84,13 @@ namespace WID
         {
             base.OnNavigatedFrom(e);
 
+            RemoveTemplates();
+        }
+
+        public void RemoveTemplates()
+        {
             for (int i = 0; i < templates.Count; ++i)
             {
-                Debug.WriteLineIf(templates[i].templateCanvas is not null, "Removing templateCanvas for Reuse");
                 templates[i].templateCanvas = null;
             }
         }
@@ -173,6 +182,7 @@ namespace WID
                 StorageFolder newNotebook = await notes.CreateFolderAsync(options.notebookName + ".notebook", CreationCollisionOption.FailIfExists);
                 StorageFile file = await newNotebook.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
                 NotebookConfig config = new NotebookConfig(
+                    1L,
                     new System.Collections.ObjectModel.ObservableCollection<PageConfig>(),
                     -1,
                     new List<int>(),

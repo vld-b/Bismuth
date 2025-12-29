@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Printing;
+using Windows.Security.EnterpriseData;
 using Windows.Storage;
 using Windows.Storage.Search;
 using Windows.Storage.Streams;

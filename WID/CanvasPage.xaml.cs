@@ -194,6 +194,7 @@ namespace WID
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
                 config = new NotebookConfig( // Would most likely break config (or at least leave it inconsistent), because usableIDs is not being calculated
+                    1L,
                     pages,
                     spPageView.Children.Count-1,
                     new List<int>(),
@@ -211,6 +212,8 @@ namespace WID
             }
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             await config.SerializeToFile(configFile);
+            if ((new FileInfo(configFile.Path)).Length == 0)
+                Debugger.Break();
 
             await Utils.DeletePending(pendingDeletions, file);
             await Utils.MovePending(pendingMoves, file);
@@ -263,7 +266,7 @@ namespace WID
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
-                config = await NotebookConfig.DeserializeFile(configFile);
+                config = NotebookUpgrader.UpgradeToLastVersion((await NotebookConfig.DeserializeFile(configFile))!);
 
                 pbFileStatus.Maximum = config!.pageMapping.Count;
 
@@ -326,6 +329,7 @@ namespace WID
             } else
             {
                 config = new NotebookConfig(
+                    1L,
                     new ObservableCollection<PageConfig>(),
                     -1,
                     new List<int>(),

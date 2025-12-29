@@ -48,6 +48,16 @@ namespace WID
                 );
         }
 
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            if (frMainMenu.Content is NotebookList notebooks)
+            {
+                notebooks.RemoveTemplates();
+            }
+        }
+
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
