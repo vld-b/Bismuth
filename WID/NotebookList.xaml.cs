@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -35,6 +36,7 @@ namespace WID
         private LoadedNotebooks? userNotebooks;
         private int numberOfFolders;
         private int noteCounter = 0;
+        private List<NotebookPage> templates = new List<NotebookPage>();
 
         public NotebookList()
         {
@@ -63,13 +65,24 @@ namespace WID
                 this.mainFrame = notebookData.mainFrame;
                 this.userNotebooks = notebookData;
                 numberOfFolders = 0;
-                while (notebookData.notebooks[numberOfFolders].notebook.isFolder)
+                while (numberOfFolders < notebookData.notebooks.Count && notebookData.notebooks[numberOfFolders].notebook.isFolder)
                     ++numberOfFolders;
 
                 foreach (NotebookData data in this.userNotebooks.notebooks)
                 {
                     gvNotebooks.Items.Add(data.notebook);
                 }
+            }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            for (int i = 0; i < templates.Count; ++i)
+            {
+                Debug.WriteLineIf(templates[i].templateCanvas is not null, "Removing templateCanvas for Reuse");
+                templates[i].templateCanvas = null;
             }
         }
 
@@ -424,6 +437,7 @@ namespace WID
                     preview.Width = currentData.width;
                     preview.Height = currentData.height;
                     preview.templateCanvas = currentData.pattern;
+                    templates.Add(preview);
                 }
 
                 ++noteCounter;
