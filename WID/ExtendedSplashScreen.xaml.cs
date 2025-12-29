@@ -112,6 +112,7 @@ namespace WID
             }
             await loadingTask;
             Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
+            notebookData = null;
             Frame.BackStack.Clear();
         }
     }

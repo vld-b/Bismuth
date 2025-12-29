@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -414,14 +415,15 @@ namespace WID
             else
             {
                 int currentIndex = numberOfFolders + noteCounter;
-                preview.inkPres.StrokeContainer = userNotebooks.notebooks[currentIndex].ink;
-                if (userNotebooks.notebooks[currentIndex].bg is not null)
-                    preview.LoadBackground(userNotebooks.notebooks[currentIndex].bg!);
+                NotebookData currentData = userNotebooks.notebooks[currentIndex];
+                preview.inkPres.StrokeContainer = currentData.ink;
+                if (currentData.bg is not null)
+                    preview.LoadBackground(currentData.bg!);
                 else
                 {
-                    preview.Width = userNotebooks.notebooks[currentIndex].width;
-                    preview.Height = userNotebooks.notebooks[currentIndex].height;
-                    preview.templateCanvas = userNotebooks.notebooks[currentIndex].pattern;
+                    preview.Width = currentData.width;
+                    preview.Height = currentData.height;
+                    preview.templateCanvas = currentData.pattern;
                 }
 
                 ++noteCounter;
