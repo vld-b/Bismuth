@@ -80,21 +80,6 @@ namespace WID
             }
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            RemoveTemplates();
-        }
-
-        public void RemoveTemplates()
-        {
-            for (int i = 0; i < templates.Count; ++i)
-            {
-                templates[i].templateCanvas = null;
-            }
-        }
-
         private void ResizeMenuElements(object sender, SizeChangedEventArgs e)
         {
             if (gvNotebooks.ItemsPanelRoot is ItemsWrapGrid panel)

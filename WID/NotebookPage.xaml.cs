@@ -98,6 +98,8 @@ namespace WID
             protractor = new InkPresenterProtractor(inkPres);
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StartedDrawingInk;
             currentPattern = null;
+
+            this.Unloaded += (s, e) => templateCanvas = null;
         }
 
         public NotebookPage(int id) : this()
