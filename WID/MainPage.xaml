@@ -58,6 +58,7 @@
         <muxc:NavigationView
             x:Name="nvMainNavigation"
             Grid.Row="1"
+            SelectionChanged="SwitchPage"
             IsBackButtonVisible="Collapsed"
             AlwaysShowHeader="False"
             IsTitleBarAutoPaddingEnabled="False"
@@ -68,14 +69,9 @@
             <muxc:NavigationView.MenuItems>
                 <muxc:NavigationViewItem
                     Content="Notebooks"
-                    Tag="NotePage"
+                    Icon="Library"
+                    Tag="notebooksPage"
                     >
-                    <muxc:NavigationViewItem.Icon>
-                        <FontIcon
-                            FontFamily="Segoe Fluent Icons"
-                            Glyph="&#xE70F;"
-                            />
-                    </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
             </muxc:NavigationView.MenuItems>
 

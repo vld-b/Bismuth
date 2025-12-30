@@ -43,19 +43,14 @@ namespace WID
             InitializeComponent();
         }
 
-        ~NotebookList()
-        {
-            RemoveTemplates();
-        }
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            if (e.Parameter is FolderNavigation folderInfo)
+            if (e.Parameter is FolderNavigationData folderInfo)
             {
                 this.mainFrame = folderInfo.mainFrame;
-                if (notes != null)
+                if (folderInfo.folder is not null)
                 {
                     btBack.Visibility = Visibility.Visible;
                     this.notes = folderInfo.folder;
@@ -378,7 +373,7 @@ namespace WID
             if (item.isFolder)
                 Frame.Navigate(
                     typeof(NotebookList),
-                    new FolderNavigation(await notes.GetFolderAsync(item.itemName), mainFrame!),
+                    new FolderNavigationData(await notes.GetFolderAsync(item.itemName), mainFrame!),
                     new SlideNavigationTransitionInfo()
                     {
                         Effect = SlideNavigationTransitionEffect.FromRight
@@ -443,12 +438,12 @@ namespace WID
         }
     }
 
-    public class FolderNavigation
+    public class FolderNavigationData
     {
-        public StorageFolder folder { get; private set; }
+        public StorageFolder? folder { get; private set; }
         public Frame mainFrame { get; private set; }
 
-        public FolderNavigation(StorageFolder folder, Frame mainFrame)
+        public FolderNavigationData(StorageFolder? folder, Frame mainFrame)
         {
             this.folder = folder;
             this.mainFrame = mainFrame;

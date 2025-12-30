@@ -35,6 +35,8 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
+
+            nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -51,6 +53,30 @@ namespace WID
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
+        }
+
+        private void SwitchPage(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.SelectedItem is Microsoft.UI.Xaml.Controls.NavigationViewItem item)
+            {
+                switch (item.Tag)
+                {
+                    case "notebooksPage":
+                        frMainMenu.Navigate(
+                            typeof(NotebookList),
+                            new FolderNavigationData(null, Frame),
+                            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                            );
+                        break;
+                    case "Settings":
+                        frMainMenu.Navigate(
+                            typeof(SettingsPage),
+                            null,
+                            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                            );
+                        break;
+                }
+            }
         }
     }
 }
