@@ -357,8 +357,6 @@ namespace WID
             {
                 finishedLoading = true;
             }
-            if (config!.defaultTemplate is null)
-                config!.defaultTemplate = new DefaultTemplate(null);
             HideFileStatus();
         }
 

@@ -31,10 +31,22 @@ namespace WID
     public sealed partial class MainPage : Page
     {
         public StorageFolder notes = ApplicationData.Current.LocalFolder;
+
+        private readonly Dictionary<string, Type> pages = new Dictionary<string, Type>
+        {
+            ["notebooksPage"] = typeof(NotebookList),
+            ["Settings"] = typeof(SettingsPage),
+        };
+
+        private readonly Dictionary<string, object?> pageParams = new Dictionary<string, object?>
+        {
+            ["Settings"] = null,
+        };
         public MainPage()
         {
             InitializeComponent();
             SetTitlebar();
+            pageParams.Add("notebooksPage", new FolderNavigationData(null, Frame));
 
             nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
         }
@@ -59,23 +71,29 @@ namespace WID
         {
             if (args.SelectedItem is Microsoft.UI.Xaml.Controls.NavigationViewItem item)
             {
-                switch (item.Tag)
-                {
-                    case "notebooksPage":
-                        frMainMenu.Navigate(
-                            typeof(NotebookList),
-                            new FolderNavigationData(null, Frame),
-                            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
-                            );
-                        break;
-                    case "Settings":
-                        frMainMenu.Navigate(
-                            typeof(SettingsPage),
-                            null,
-                            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
-                            );
-                        break;
-                }
+                if (pages.TryGetValue(item.Tag.ToString()!, out Type? page))
+                    frMainMenu.Navigate(
+                        page,
+                        pageParams[item.Tag.ToString()!],
+                        new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                        );
+                //switch (item.Tag)
+                //{
+                //    case "notebooksPage":
+                //        frMainMenu.Navigate(
+                //            typeof(NotebookList),
+                //            new FolderNavigationData(null, Frame),
+                //            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                //            );
+                //        break;
+                //    case "Settings":
+                //        frMainMenu.Navigate(
+                //            typeof(SettingsPage),
+                //            null,
+                //            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                //            );
+                //        break;
+                //}
             }
         }
     }
