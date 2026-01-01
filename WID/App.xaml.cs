@@ -1,7 +1,9 @@
-﻿using System;
+﻿using AppSettings;
+using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -15,9 +17,14 @@ namespace WID
     public sealed partial class App : Application
     {
         /// <summary>
+        /// Global app settings instance
+        /// </summary>
+        public static Settings AppSettings { get; private set; } = new Settings();
+        /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
+        /// 
         public App()
         {
             InitializeComponent();
@@ -26,12 +33,14 @@ namespace WID
         }
 
         /// <inheritdoc/>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active.
             if (Window.Current.Content is not Frame rootFrame)
             {
+                AppSettings = await Settings.LoadSettingsFromFile();
+
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
                 rootFrame.NavigationFailed += OnNavigationFailed;
@@ -82,6 +91,8 @@ namespace WID
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
+
+            AppSettings.SaveSettingsSafe();
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();

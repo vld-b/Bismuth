@@ -5,10 +5,50 @@
     xmlns:local="using:WID"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <ScrollViewer
+        Padding="64, 0, 0, 0"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        VerticalScrollMode="Enabled"
+        HorizontalScrollMode="Disabled"
+        VerticalScrollBarVisibility="Visible"
+        HorizontalScrollBarVisibility="Disabled"
+        >
+        <StackPanel
+            Orientation="Vertical"
+            >
+            <Grid Height="64" />
 
-    </Grid>
+            <TextBlock
+                Text="Input devices"
+                FontSize="32"
+                FontWeight="Bold"
+                />
+            <CheckBox
+                x:Name="cbInputMouse"
+                Content="Mouse"
+                Checked="InputDeviceChecked"
+                Unchecked="InputDeviceUnchecked"
+                />
+            <CheckBox
+                x:Name="cbInputPen"
+                Content="Pen"
+                Checked="InputDeviceChecked"
+                Unchecked="InputDeviceUnchecked"
+                />
+            <CheckBox
+                x:Name="cbInputTouch"
+                Content="Touch"
+                Checked="InputDeviceChecked"
+                Unchecked="InputDeviceUnchecked"
+                />
+
+            <Grid Height="64" />
+        </StackPanel>
+        
+    </ScrollViewer>
 </Page>

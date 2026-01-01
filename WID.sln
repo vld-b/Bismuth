@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WID", "WID\WID.csproj", "{207A88B7-3695-48B8-BF01-5530EDAF9810}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings", "AppSettings\AppSettings.csproj", "{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -33,6 +35,18 @@ Global
 		{207A88B7-3695-48B8-BF01-5530EDAF9810}.Release|x86.ActiveCfg = Release|x86
 		{207A88B7-3695-48B8-BF01-5530EDAF9810}.Release|x86.Build.0 = Release|x86
 		{207A88B7-3695-48B8-BF01-5530EDAF9810}.Release|x86.Deploy.0 = Release|x86
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|arm64.Build.0 = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|arm64.ActiveCfg = Release|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|arm64.Build.0 = Release|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x64.Build.0 = Release|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
