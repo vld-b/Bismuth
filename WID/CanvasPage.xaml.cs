@@ -803,5 +803,10 @@ namespace WID
         {
             lastEditedText!.TextContent.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
         }
+
+        private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
+        {
+            lastEditedText!.RemoveTextFromPage();
+        }
     }
 }

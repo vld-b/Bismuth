@@ -127,6 +127,12 @@
                         PlaceholderText="Search"
                         HorizontalAlignment="Stretch"
                         />
+                    <Button
+                        Click="DeleteCurrentTextBox"
+                        Foreground="Red"
+                        >
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+                    </Button>
                 </StackPanel>
             </Border>
         </Popup>

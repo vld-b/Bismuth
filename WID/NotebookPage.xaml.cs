@@ -196,6 +196,12 @@ namespace WID
             contentCanvas.Children.Add(text);
         }
 
+        public void RemoveTextFromPage(OnPageText text)
+        {
+            textBoxes.Remove(text);
+            contentCanvas.Children.Remove(text);
+        }
+
         public async Task LoadFromStream(IInputStream stream)
         {
             await inkPres.StrokeContainer.LoadAsync(stream);

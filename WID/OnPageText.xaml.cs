@@ -65,6 +65,12 @@ namespace WID
             reb.Document.LoadFromStream(Windows.UI.Text.TextSetOptions.FormatRtf, stream);
         }
 
+        public void RemoveTextFromPage()
+        {
+            containingPage.RemoveTextFromPage(this);
+            containingPage.hasBeenModifiedSinceSave = true;
+        }
+
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
