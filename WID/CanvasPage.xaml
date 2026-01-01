@@ -341,6 +341,7 @@
             </SplitView.Pane>
             <ScrollViewer
                 x:Name="svPageZoom"
+                IsTabStop="True"
                 ZoomMode="Enabled"
                 MinZoomFactor="0.1"
                 MaxZoomFactor="10"
