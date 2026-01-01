@@ -27,7 +27,8 @@ namespace AppSettings
                 if (_inpDev != value)
                 {
                     _inpDev = value;
-                    RequestSave();
+                    if (configHasLoaded)
+                        RequestSave();
                 }
             }
         }
