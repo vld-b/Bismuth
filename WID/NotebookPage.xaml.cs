@@ -138,7 +138,7 @@ namespace WID
 
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
         {
-            inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse;
+            inkPres.InputDeviceTypes = App.AppSettings.inputDevices;
             if (shouldErase)
                 inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
             inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);

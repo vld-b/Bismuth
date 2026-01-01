@@ -77,6 +77,7 @@ namespace AppSettings
             Settings settings;
 
             StorageFile configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            bool configWasPresent = true;
 
             if ((new FileInfo(configFile.Path).Length) > 0)
                 using (Stream ipStream = await configFile.OpenStreamForReadAsync())
@@ -84,13 +85,18 @@ namespace AppSettings
                         JsonSerializer.Deserialize(ipStream, SettingsJsonContext.Default.Settings)!
                         );
             else
+            {
                 settings = new Settings
                 {
                     inputDevices = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen,
                 };
+                configWasPresent = false;
+            }
             
             settings.configFile = configFile;
             settings.configHasLoaded = true;
+            if (!configWasPresent)
+                settings.RequestSave();
 
             return settings;
         }
