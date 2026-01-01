@@ -11,18 +11,6 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
-            <Style
-                TargetType="StackPanel"
-                x:Key="FlyoutButtonStackPanel"
-                >
-                <Setter Property="Orientation" Value="Horizontal" />
-                <Setter Property="Spacing" Value="10" />
-            </Style>
-
-            <DataTemplate x:Key="Line">
-                
-            </DataTemplate>
-            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

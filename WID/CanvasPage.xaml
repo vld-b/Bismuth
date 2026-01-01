@@ -155,7 +155,6 @@
                 </muxc:AnimatedIcon>
             </Button>
             <muxc:DropDownButton
-                AutomationProperties.Name="ddFileOptions"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ToolTipService.ToolTip="File Options"
@@ -208,84 +207,67 @@
                     </MenuFlyout>
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
-            <Button
+            <muxc:DropDownButton
                 Background="Transparent"
                 BorderBrush="Transparent"
-                ToolTipService.ToolTip="Add Item"
+                ToolTipService.ToolTip="Add item"
                 >
-                <Button.Content>
+                <muxc:DropDownButton.Content>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE109;" />
-                </Button.Content>
-                <Button.Flyout>
-                    <Flyout
-                        x:Name="AddItemFlyout"
-                        Placement="BottomEdgeAlignedLeft"
-                        >
-                        <StackPanel
-                            Orientation="Vertical"
-                            Spacing="10"
+                </muxc:DropDownButton.Content>
+                <muxc:DropDownButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem
+                            Click="AddPageClicked"
+                            Text="Add empty page"
+                            ToolTipService.ToolTip="Add empty page (with default template)"
                             >
-                            <Button
-                                Click="AddPageClicked"
-                                HorizontalAlignment="Stretch"
-                                ToolTipService.ToolTip="Add empty page"
-                                HorizontalContentAlignment="Left"
-                                >
-                                <StackPanel
-                                    Style="{StaticResource FlyoutButtonStackPanel}"
-                                    >
-                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
-                                    <TextBlock>
-                                        Add empty page
-                                    </TextBlock>
-                                </StackPanel>
-                            </Button>
-                            <Button
-                                Click="ImportFromFile"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left"
-                                >
-                                <StackPanel
-                                    Style="{StaticResource FlyoutButtonStackPanel}"
-                                    >
-                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8B5;" />
-                                    <TextBlock>
-                                        Import file
-                                    </TextBlock>
-                                </StackPanel>
-                            </Button>
-                            <Button
-                                Click="OpenCameraForFileImport"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left"
-                                >
-                                <StackPanel
-                                    Style="{StaticResource FlyoutButtonStackPanel}"
-                                    >
-                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE722;" />
-                                    <TextBlock>
-                                        Open camera
-                                    </TextBlock>
-                                </StackPanel>
-                            </Button>
-                            <Button
-                                Click="AddTextToCurrentPage"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left"
-                                >
-                                <StackPanel
-                                    Style="{StaticResource FlyoutButtonStackPanel}"
-                                    >
-                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D2;" />
-                                    <TextBlock>
-                                        Add text
-                                    </TextBlock>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="Add" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Click="ImportFromFile"
+                            Text="Import file"
+                            ToolTipService.ToolTip="Import from an image or PDF file"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="I" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8B5;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Click="OpenCameraForFileImport"
+                            Text="Open camera"
+                            ToolTipService.ToolTip="Open the camera to capture a document"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="O" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE722;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Click="AddTextToCurrentPage"
+                            Text="Add text"
+                            ToolTipService.ToolTip="Add an editable text block to the current page"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="T" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D2;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </muxc:DropDownButton.Flyout>
+            </muxc:DropDownButton>
             <ToggleButton
                 Click="OpenPageOverview"
                 Background="Transparent"

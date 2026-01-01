@@ -363,7 +363,6 @@ namespace WID
         private void AddPageClicked(object sender, RoutedEventArgs e)
         {
             AddPage();
-            AddItemFlyout.Hide();
         }
 
         private void AddPage()
@@ -686,8 +685,6 @@ namespace WID
             {
                 await AddPage(picture);
             }
-
-            AddItemFlyout.Hide();
         }
 
         private async void ImportFromFile(object sender, RoutedEventArgs e)
@@ -735,7 +732,6 @@ namespace WID
             currentPage!.AddTextToPage(txt);
             txt.TextBoxGotFocus += (s, e) => StartTyping(s, e);
             txt.TextBoxLostFocus += (s, e) => StopTyping(s, e);
-            AddItemFlyout.Hide();
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
