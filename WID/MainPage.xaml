@@ -45,6 +45,7 @@
 
 
             <AutoSuggestBox
+                Visibility="Collapsed"
                 x:Name="SearchBox"
                 QueryIcon="Find"
                 PlaceholderText="Search notes"
