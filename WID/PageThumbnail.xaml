@@ -30,7 +30,7 @@
                         <TextBlock
                             Style="{StaticResource BaseTextBlockStyle}"
                             >
-                            Are you sure you want to delete the page?
+                            Are you sure you want to delete this page?
                         </TextBlock>
                         <TextBlock
                             Style="{StaticResource BaseTextBlockStyle}"
