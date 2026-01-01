@@ -807,6 +807,8 @@ namespace WID
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
         {
             lastEditedText!.RemoveTextFromPage();
+            ppTextTools.IsHitTestVisible = false;
+            ppTextTools.Opacity = 0d;
         }
     }
 }
