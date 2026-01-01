@@ -345,7 +345,6 @@
                 ZoomMode="Enabled"
                 MinZoomFactor="0.1"
                 MaxZoomFactor="10"
-                IsVerticalScrollChainingEnabled="True"
                 HorizontalScrollMode="Enabled"
                 VerticalScrollMode="Enabled"
                 HorizontalScrollBarVisibility="Hidden"
