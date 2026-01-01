@@ -27,6 +27,7 @@ namespace AppSettings
                 if (_inpDev != value)
                 {
                     _inpDev = value;
+                    RequestSave();
                 }
             }
         }
@@ -36,17 +37,32 @@ namespace AppSettings
         [JsonIgnore]
         public bool configHasLoaded { get; private set; } = false;
 
-        private Task? savingTask;
+        private CancellationTokenSource? _cts;
 
         public Settings() { }
 
-        public void SaveSettingsSafe()
+        public void RequestSave()
         {
-            if (configHasLoaded && savingTask is null)
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
+
+            _ = Task.Run(async () =>
             {
-                savingTask = SaveSettings();
-                savingTask.ContinueWith(_ => savingTask = null);
-            }
+                try
+                {
+                    await Task.Delay(1000, token);
+                    if (!token.IsCancellationRequested)
+                        await SaveSettings();
+                } catch (TaskCanceledException) { }
+            });
+        }
+
+        public void Flush()
+        {
+            _cts?.Cancel();
+            _cts = null;
+            _ = SaveSettings();
         }
 
         private async Task SaveSettings()

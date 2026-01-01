@@ -43,7 +43,7 @@ namespace WID
         {
             base.OnNavigatedFrom(e);
 
-            App.AppSettings.SaveSettingsSafe();
+            App.AppSettings.RequestSave();
         }
 
         private void InputDeviceChecked(object sender, RoutedEventArgs e)

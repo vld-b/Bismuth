@@ -92,7 +92,7 @@ namespace WID
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 
-            AppSettings.SaveSettingsSafe();
+            AppSettings.Flush();
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
