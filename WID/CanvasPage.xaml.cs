@@ -19,6 +19,7 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Preview.Notes;
 using Windows.Data.Pdf;
 using Windows.Devices.Usb;
+using Windows.Devices.WiFiDirect;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
@@ -773,35 +774,35 @@ namespace WID
 
         private void ToggleBoldText(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
         }
 
         private void ToggleItalicText(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Italic = Windows.UI.Text.FormatEffect.Toggle;
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Italic = Windows.UI.Text.FormatEffect.Toggle;
         }
 
         private void ToggleUnderlinedText(object sender, RoutedEventArgs e)
         {
-            if (lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline != UnderlineType.Single)
-                lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline = Windows.UI.Text.UnderlineType.Single;
+            if (lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline != UnderlineType.Single)
+                lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = Windows.UI.Text.UnderlineType.Single;
             else
-                lastEditedText!.TextContent.Document.Selection.CharacterFormat.Underline = UnderlineType.None;
+                lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = UnderlineType.None;
         }
 
         private void ToggleStrikethroughText(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
         }
 
         private void ToggleSuperscriptText(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Superscript = FormatEffect.Toggle;
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Superscript = FormatEffect.Toggle;
         }
 
         private void ToggleSubscriptText(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextContent.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
         }
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
@@ -809,6 +810,38 @@ namespace WID
             lastEditedText!.RemoveTextFromPage();
             ppTextTools.IsHitTestVisible = false;
             ppTextTools.Opacity = 0d;
+        }
+
+        private void SearchTextInCurrentBox()
+        {
+            RemoveSearchedHighlights();
+            RichEditBox current = lastEditedText!.TextBox;
+
+            Windows.UI.Color highlightBg = (Windows.UI.Color)App.Current.Resources["SystemColorHighlightColor"];
+            Windows.UI.Color highlightFg = (Windows.UI.Color)App.Current.Resources["SystemColorHighlightTextColor"];
+
+            if (tbFindText != null)
+            {
+                ITextRange searchRange = current.Document.GetRange(0, 0);
+                while (searchRange.FindText(tbFindText.Text, TextConstants.MaxUnitCount, FindOptions.None) > 0)
+                {
+                    searchRange.CharacterFormat.BackgroundColor = highlightBg;
+                    searchRange.CharacterFormat.ForegroundColor = highlightFg;
+                }
+            }
+        }
+
+        private void RemoveSearchedHighlights()
+        {
+            RichEditBox current = lastEditedText!.TextBox;
+
+            ITextRange docRange = current.Document.GetRange(0, TextConstants.MaxUnitCount);
+            Windows.UI.Color defaultBg = ((SolidColorBrush)current.Background).Color;
+            Windows.UI.Color defaultFg = ((SolidColorBrush)current.Foreground).Color;
+
+            docRange.CharacterFormat.BackgroundColor = defaultBg;
+            docRange.CharacterFormat.ForegroundColor = defaultFg;
+
         }
     }
 }

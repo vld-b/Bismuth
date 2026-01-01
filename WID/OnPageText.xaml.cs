@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,7 +27,7 @@ namespace WID
     public sealed partial class OnPageText : Grid
     {
         public int id { get; private set; }
-        public RichEditBox TextContent;
+        public RichEditBox TextBox;
         private Point? mousePos;
         private NotebookPage containingPage;
         public bool hasBeenModifiedSinceSave { get; set; } = false;
@@ -38,7 +39,7 @@ namespace WID
         {
             this.InitializeComponent();
             this.id = id;
-            this.TextContent = reb;
+            this.TextBox = reb;
             this.Width = width;
             this.Height = height;
             Canvas.SetTop(this, top);

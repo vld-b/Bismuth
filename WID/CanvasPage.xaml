@@ -123,8 +123,12 @@
                         Subscript
                     </Button>
                     <TextBox
+                        x:Name="tbFindText"
                         Width="200"
-                        PlaceholderText="Search"
+                        TextChanged="{x:Bind SearchTextInCurrentBox}"
+                        GotFocus="{x:Bind SearchTextInCurrentBox}"
+                        LostFocus="{x:Bind RemoveSearchedHighlights}"
+                        PlaceholderText="Search current text"
                         HorizontalAlignment="Stretch"
                         />
                     <Button
