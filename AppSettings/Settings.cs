@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -138,8 +139,10 @@ namespace AppSettings
 
         public void LoadColorsIntoStackPanel(StackPanel panel)
         {
+            panel.Children.Clear();
             foreach (Color color in this.drawingColors)
             {
+                panel.Children.Add(new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color)));
             }
         }
     }

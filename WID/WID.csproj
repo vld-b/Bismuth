@@ -41,5 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppSettings\AppSettings.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 </Project>

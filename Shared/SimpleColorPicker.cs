@@ -9,9 +9,9 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
-namespace WID
+namespace Shared
 {
-    internal partial class SimpleColorPicker : StackPanel
+    public partial class SimpleColorPicker : StackPanel
     {
         public SimpleColorPicker()
         {

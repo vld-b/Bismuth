@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -851,6 +852,11 @@ namespace WID
             inkToolbar.InkDrawingAttributes.Color = btn.Fill.Color;
 
             InkToolChanged(inkToolbar, new object());
+        }
+
+        private void LoadColorBar(object sender, RoutedEventArgs e)
+        {
+            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender);
         }
     }
 }

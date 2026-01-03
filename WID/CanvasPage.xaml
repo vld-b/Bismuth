@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WID"
+    xmlns:shared="using:Shared"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -416,24 +417,9 @@
                     VerticalScrollMode="Disabled"
                     HorizontalScrollMode="Enabled"
                     >
-                    <local:SimpleColorPicker>
-                        <local:ColorPickerButton
-                            Click="ChangeInkColor"
-                            Fill="MidnightBlue"
-                            />
-                        <local:ColorPickerButton
-                            Click="ChangeInkColor"
-                            Fill="Green"
-                            />
-                        <local:ColorPickerButton
-                            Click="ChangeInkColor"
-                            Fill="Yellow"
-                            />
-                        <local:ColorPickerButton
-                            Click="ChangeInkColor"
-                            Fill="Red"
-                            />
-                    </local:SimpleColorPicker>
+                    <shared:SimpleColorPicker
+                        Loaded="LoadColorBar"
+                        />
                 </ScrollViewer>
             </Grid>
         </Grid>

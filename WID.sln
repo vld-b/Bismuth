@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WID", "WID\WID.csproj", "{2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings", "AppSettings\AppSettings.csproj", "{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -47,6 +49,18 @@ Global
 		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x64.Build.0 = Release|Any CPU
 		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD8F344B-21D3-4AD7-A411-FC4D63538F7E}.Release|x86.Build.0 = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|arm64.Build.0 = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|arm64.ActiveCfg = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|arm64.Build.0 = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x64.Build.0 = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
