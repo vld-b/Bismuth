@@ -403,6 +403,7 @@ namespace WID
         private async void LoadPagePreview(object sender, RoutedEventArgs e)
         {
             NotebookPage preview = (NotebookPage)sender;
+            preview.inkPres.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
             if (userNotebooks is null)
             {
                 try
