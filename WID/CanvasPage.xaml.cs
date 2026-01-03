@@ -845,18 +845,16 @@ namespace WID
 
         }
 
-        private void ChangeInkColor(object sender, RoutedEventArgs e)
+        private void ChangeInkColor(ColorPickerButton button, Windows.UI.Color color)
         {
-            ColorPickerButton btn = (ColorPickerButton)sender;
-
-            inkToolbar.InkDrawingAttributes.Color = btn.Fill.Color;
+            inkToolbar.InkDrawingAttributes.Color = color;
 
             InkToolChanged(inkToolbar, new object());
         }
 
         private void LoadColorBar(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender);
+            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender, inkToolbar, ChangeInkColor);
         }
     }
 }

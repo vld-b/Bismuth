@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows;
 using Windows.ApplicationModel.Activation;
+using Windows.Devices.Enumeration;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Core;
@@ -48,6 +49,7 @@ namespace AppSettings
                 if (_drawingColors != value)
                 {
                     _drawingColors = value;
+                    _drawingColors.CollectionChanged += (s, e) => RequestSave();
                     if (configHasLoaded)
                         RequestSave();
                 }
@@ -93,6 +95,7 @@ namespace AppSettings
 
         private async Task SaveSettings()
         {
+            configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile!.OpenStreamForWriteAsync())
                 JsonSerializer.Serialize(opStream, this, SettingsJsonContext.Default.Settings);
         }
@@ -137,21 +140,23 @@ namespace AppSettings
             return settings;
         }
 
-        public void LoadColorsIntoStackPanel(StackPanel panel)
+        public void LoadColorsIntoStackPanel(StackPanel panel, InkToolbar inkToolbar, ChangeColorEvent method)
         {
             panel.Children.Clear();
             foreach (Color color in this.drawingColors)
             {
-                panel.Children.Add(new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color)));
+                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), inkToolbar);
+                button.RemoveColor += (s, e) =>
+                {
+                    this.drawingColors.Remove(s.Fill.Color);
+                    panel.Children.Remove(s);
+                };
+                button.ChangeColor += method;
+                panel.Children.Add(button);
             }
         }
     }
 
     [JsonSerializable(typeof(Settings))]
     internal partial class SettingsJsonContext : JsonSerializerContext { }
-
-    public struct AppSettingsData
-    {
-        public CoreInputDeviceTypes inputDevices;
-    }
 }
