@@ -365,34 +365,77 @@
             </ScrollViewer>
         </SplitView>
 
-        <TextBlock x:Name="tbTest" Text="Hello" Grid.Row="2" />
-
-        <InkToolbar
-            x:Name="inkToolbar"
+        <Grid
             Grid.Row="3"
-            ActiveToolChanged="InkToolChanged"
-            InkDrawingAttributesChanged="InkToolChanged"
-            InitialControls="PensOnly"
             HorizontalAlignment="Center"
             >
-            <InkToolbarEraserButton
-                Checked="EraserChecked"
-                Unchecked="EraserUnchecked"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <InkToolbar
+                x:Name="inkToolbar"
+                Grid.Column="0"
+                Margin="0, 0, 8, 0"
+                ActiveToolChanged="InkToolChanged"
+                InkDrawingAttributesChanged="InkToolChanged"
+                InitialControls="PensOnly"
+                HorizontalAlignment="Right"
                 >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
-            </InkToolbarEraserButton>
-            <InkToolbarCustomToggleButton
-                Checked="RulerChecked"
-                Unchecked="RulerUnchecked"
+                <InkToolbarEraserButton
+                    Checked="EraserChecked"
+                    Unchecked="EraserUnchecked"
+                    >
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                </InkToolbarEraserButton>
+                <InkToolbarCustomToggleButton
+                    Checked="RulerChecked"
+                    Unchecked="RulerUnchecked"
+                    >
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xECC6;" />
+                </InkToolbarCustomToggleButton>
+                <InkToolbarCustomToggleButton
+                    Checked="ProtractorChecked"
+                    Unchecked="ProtractorUnchecked"
+                    >
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
+                </InkToolbarCustomToggleButton>
+            </InkToolbar>
+
+            <Grid
+                Grid.Column="1"
+                Margin="8, 0, 0, 0"
+                HorizontalAlignment="Left"
                 >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xECC6;" />
-            </InkToolbarCustomToggleButton>
-            <InkToolbarCustomToggleButton
-                Checked="ProtractorChecked"
-                Unchecked="ProtractorUnchecked"
-                >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
-            </InkToolbarCustomToggleButton>
-        </InkToolbar>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="256" />
+                </Grid.ColumnDefinitions>
+                <ScrollViewer
+                    Grid.Column="0"
+                    VerticalScrollMode="Disabled"
+                    HorizontalScrollMode="Enabled"
+                    >
+                    <local:SimpleColorPicker>
+                        <local:ColorPickerButton
+                            Click="ChangeInkColor"
+                            Fill="MidnightBlue"
+                            />
+                        <local:ColorPickerButton
+                            Click="ChangeInkColor"
+                            Fill="Green"
+                            />
+                        <local:ColorPickerButton
+                            Click="ChangeInkColor"
+                            Fill="Yellow"
+                            />
+                        <local:ColorPickerButton
+                            Click="ChangeInkColor"
+                            Fill="Red"
+                            />
+                    </local:SimpleColorPicker>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

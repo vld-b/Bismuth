@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
@@ -10,12 +12,15 @@ using System.Threading.Tasks;
 using Windows;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
 
 namespace AppSettings
 {
     public class Settings
     {
+        [JsonInclude]
         public long configVersion;
 
         private CoreInputDeviceTypes _inpDev;
@@ -33,6 +38,21 @@ namespace AppSettings
             }
         }
 
+        private ObservableCollection<Color> _drawingColors;
+        public ObservableCollection<Color> drawingColors
+        {
+            get => _drawingColors;
+            set
+            {
+                if (_drawingColors != value)
+                {
+                    _drawingColors = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -40,7 +60,11 @@ namespace AppSettings
 
         private CancellationTokenSource? _cts;
 
-        public Settings() { }
+        public Settings()
+        {
+            inputDevices = CoreInputDeviceTypes.None;
+            _drawingColors = new ObservableCollection<Color>();
+        }
 
         public void RequestSave()
         {
@@ -88,10 +112,21 @@ namespace AppSettings
             {
                 settings = new Settings
                 {
+                    configVersion = 2,
                     inputDevices = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen,
+                    drawingColors = new ObservableCollection<Color>
+                    {
+                        Colors.Black,
+                        Colors.Blue,
+                        Colors.Red,
+                        Colors.Green,
+                        Colors.Yellow,
+                    },
                 };
                 configWasPresent = false;
             }
+
+            settings.drawingColors.CollectionChanged += (s, e) => settings.RequestSave();
             
             settings.configFile = configFile;
             settings.configHasLoaded = true;
@@ -99,6 +134,13 @@ namespace AppSettings
                 settings.RequestSave();
 
             return settings;
+        }
+
+        public void LoadColorsIntoStackPanel(StackPanel panel)
+        {
+            foreach (Color color in this.drawingColors)
+            {
+            }
         }
     }
 

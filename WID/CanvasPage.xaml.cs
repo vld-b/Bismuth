@@ -843,5 +843,14 @@ namespace WID
             docRange.CharacterFormat.ForegroundColor = defaultFg;
 
         }
+
+        private void ChangeInkColor(object sender, RoutedEventArgs e)
+        {
+            ColorPickerButton btn = (ColorPickerButton)sender;
+
+            inkToolbar.InkDrawingAttributes.Color = btn.Fill.Color;
+
+            InkToolChanged(inkToolbar, new object());
+        }
     }
 }
