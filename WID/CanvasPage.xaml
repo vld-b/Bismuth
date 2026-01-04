@@ -416,10 +416,47 @@
                     Grid.Column="0"
                     VerticalScrollMode="Disabled"
                     HorizontalScrollMode="Enabled"
+                    VerticalScrollBarVisibility="Disabled"
+                    HorizontalScrollBarVisibility="Hidden"
                     >
-                    <shared:SimpleColorPicker
-                        Loaded="LoadColorBar"
-                        />
+                    <StackPanel
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        >
+                        <shared:SimpleColorPicker
+                            x:Name="scColorBar"
+                            Loaded="LoadColorBar"
+                            />
+                        <Button
+                            Padding="0"
+                            Width="32"
+                            Height="32"
+                            >
+                            <FontIcon
+                                Width="32"
+                                Height="32"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe Fluent Icons"
+                                Glyph="&#xE109;"
+                                />
+                            <Button.Flyout>
+                                <Flyout
+                                    x:Name="flNewColor"
+                                    >
+                                    <StackPanel>
+                                        <muxc:ColorPicker
+                                            x:Name="cpColor"
+                                            />
+                                        <Button
+                                            Content="Add color"
+                                            Click="AddNewColor"
+                                            />
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
                 </ScrollViewer>
             </Grid>
         </Grid>

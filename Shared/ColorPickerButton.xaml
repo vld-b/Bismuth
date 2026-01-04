@@ -12,7 +12,6 @@
     BorderBrush="Transparent"
     BorderThickness="0"
     CornerRadius="9999"
-    PointerPressed="ControlFlyout"
     >
 
     <Rectangle

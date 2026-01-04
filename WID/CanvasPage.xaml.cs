@@ -856,5 +856,12 @@ namespace WID
         {
             App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender, inkToolbar, ChangeInkColor);
         }
+
+        private void AddNewColor(object sender, RoutedEventArgs e)
+        {
+            App.AppSettings.drawingColors.Add(cpColor.Color);
+            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, inkToolbar, ChangeInkColor);
+            flNewColor.Hide();
+        }
     }
 }

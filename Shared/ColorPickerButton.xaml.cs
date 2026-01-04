@@ -69,16 +69,5 @@ namespace Shared
             this.Fill.Color = args.NewColor;
             ChangeColor?.Invoke(this, args.NewColor);
         }
-
-        private void ControlFlyout(object sender, PointerRoutedEventArgs e)
-        {
-            PointerPoint point = e.GetCurrentPoint((UIElement)sender);
-
-            if (point.Properties.IsRightButtonPressed)
-            {
-                e.Handled = true;
-                flyout.ShowAt(this);
-            }
-        }
     }
 }
