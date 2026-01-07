@@ -56,6 +56,21 @@ namespace AppSettings
             }
         }
 
+        private double _tipSize;
+        public double tipSize
+        {
+            get => _tipSize;
+            set
+            {
+                if (_tipSize != value)
+                {
+                    _tipSize = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -126,6 +141,7 @@ namespace AppSettings
                         Colors.Green,
                         Colors.Yellow,
                     },
+                    tipSize = 4d,
                 };
                 configWasPresent = false;
             }

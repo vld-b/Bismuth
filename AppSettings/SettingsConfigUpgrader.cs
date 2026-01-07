@@ -12,7 +12,19 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade1To2(current);
+            return Upgrade2To3(current);
+        }
+
+        private static Settings Upgrade2To3(Settings current)
+        {
+            if (current.configVersion < 2)
+                current = Upgrade1To2(current);
+
+            current.configVersion = 3;
+            if (current.tipSize == 0d)
+                current.tipSize = 4d;
+
+            return current;
         }
 
         private static Settings Upgrade1To2(Settings current)

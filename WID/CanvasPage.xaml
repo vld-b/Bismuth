@@ -411,6 +411,7 @@
                 >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="256" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ScrollViewer
                     Grid.Column="0"
@@ -458,6 +459,20 @@
                         </Button>
                     </StackPanel>
                 </ScrollViewer>
+                <Slider
+                    x:Name="slTipSize"
+                    Width="256"
+                    Loaded="LoadTipSize"
+                    VerticalAlignment="Center"
+                    Grid.Column="1"
+                    Margin="8, 0, 0, 0"
+                    ValueChanged="SetNewBrushWidth"
+                    StepFrequency="1"
+                    SmallChange="1"
+                    LargeChange="2"
+                    Minimum="1"
+                    Maximum="24"
+                    />
             </Grid>
         </Grid>
     </Grid>

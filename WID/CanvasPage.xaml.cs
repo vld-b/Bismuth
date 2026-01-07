@@ -863,5 +863,23 @@ namespace WID
             App.AppSettings.LoadColorsIntoStackPanel(scColorBar, inkToolbar, ChangeInkColor);
             flNewColor.Hide();
         }
+
+        private void SetNewBrushWidth(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (!slTipSize.IsLoaded)
+                return;
+            inkToolbar.InkDrawingAttributes.Size = new Windows.Foundation.Size(e.NewValue,e.NewValue);
+            InkToolChanged(inkToolbar, new object());
+
+            App.AppSettings.tipSize = e.NewValue;
+        }
+
+        private void LoadTipSize(object sender, RoutedEventArgs e)
+        {
+            Slider slider = (Slider)sender;
+            slider.Value = App.AppSettings.tipSize;
+            inkToolbar.InkDrawingAttributes.Size = new Windows.Foundation.Size(slider.Value, slider.Value);
+            InkToolChanged(inkToolbar, new object());
+        }
     }
 }
