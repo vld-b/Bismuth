@@ -196,6 +196,11 @@ namespace WID
             contentCanvas.Children.Add(text);
         }
 
+        public void AddImageToPage(OnPageImage img)
+        {
+            contentCanvas.Children.Add(img);
+        }
+
         public void RemoveTextFromPage(OnPageText text)
         {
             textBoxes.Remove(text);

@@ -27,16 +27,9 @@
                 />
 
             <Button
-                x:Name="btMove"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Foreground="Black"
-                >
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE7C2;" />
-            </Button>
-
-            <Button
                 x:Name="btResize"
+                BorderBrush="{StaticResource SystemAccentColor}"
+                BorderThickness="4"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Foreground="Black"

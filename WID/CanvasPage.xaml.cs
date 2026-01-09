@@ -896,7 +896,15 @@ namespace WID
                 await img.SetSourceAsync(await stream.OpenReadAsync());
 
                 double pageOffset = GetCurrentPage();
-
+                OnPageImage opI = new OnPageImage(
+                    0,
+                    Math.Min(pageOffset, currentPage!.Height - 100d),
+                    (currentPage!.Width - img.PixelWidth) * 0.5d,
+                    img,
+                    currentPage!,
+                    svPageZoom
+                    );
+                currentPage!.AddImageToPage(opI);
             }
         }
     }

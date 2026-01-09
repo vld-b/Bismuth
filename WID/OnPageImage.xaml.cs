@@ -47,9 +47,9 @@ namespace WID
             this.containingPage = containingPage;
             this.pageContainer = pageContainer;
 
-            btMove.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingImage), true);
-            btMove.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingImage), true);
-            btMove.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopDraggingImage), true);
+            img.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingImage), true);
+            img.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingImage), true);
+            img.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopDraggingImage), true);
 
             btResize.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartResizeImage), true);
             btResize.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueResizeImage), true);
