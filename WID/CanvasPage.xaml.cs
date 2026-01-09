@@ -843,7 +843,6 @@ namespace WID
 
             docRange.CharacterFormat.BackgroundColor = defaultBg;
             docRange.CharacterFormat.ForegroundColor = defaultFg;
-
         }
 
         private void ChangeInkColor(ColorPickerButton button, Windows.UI.Color color)
@@ -885,7 +884,7 @@ namespace WID
 
         private async void PasteObject(object sender, RoutedEventArgs e)
         {
-            if (lastEditedText == null)
+            if (lastEditedText is not null)
                 return;
 
             DataPackageView clip = Clipboard.GetContent();
@@ -895,6 +894,9 @@ namespace WID
                 RandomAccessStreamReference stream = await clip.GetBitmapAsync();
                 BitmapImage img = new BitmapImage();
                 await img.SetSourceAsync(await stream.OpenReadAsync());
+
+                double pageOffset = GetCurrentPage();
+
             }
         }
     }
