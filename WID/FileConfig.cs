@@ -13,6 +13,7 @@ using Windows.Media.AppBroadcasting;
 using Windows.Storage;
 using Windows.UI.Composition;
 using Windows.UI.WebUI;
+using Windows.UI.Xaml.Input;
 
 namespace WID
 {
@@ -182,6 +183,36 @@ namespace WID
 
 
         public TextData(int id, int containingPageId, double width, double height, double top, double left)
+        {
+            this.id = id;
+            this.containingPageId = containingPageId;
+            this.width = width;
+            this.height = height;
+            this.top = top;
+            this.left = left;
+        }
+    }
+
+    public class ImageData
+    {
+        public int id { get; set; }
+        public int containingPageId { get; set; }
+        public double width { get; set; }
+        public double height { get; set; }
+        public double top { get; set; }
+        public double left { get; set; }
+
+        public ImageData()
+        {
+            this.id = -1;
+            this.containingPageId = -1;
+            this.width = 0d;
+            this.height = 0d;
+            this.top = 0d;
+            this.left = 0d;
+        }
+
+        public ImageData(int id, int containingPageId, double width, double height, double top, double left)
         {
             this.id = id;
             this.containingPageId = containingPageId;
