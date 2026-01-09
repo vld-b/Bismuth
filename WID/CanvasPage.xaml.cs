@@ -17,6 +17,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Preview.Notes;
 using Windows.Data.Pdf;
 using Windows.Devices.Usb;
@@ -880,6 +881,21 @@ namespace WID
             slider.Value = App.AppSettings.tipSize;
             inkToolbar.InkDrawingAttributes.Size = new Windows.Foundation.Size(slider.Value, slider.Value);
             InkToolChanged(inkToolbar, new object());
+        }
+
+        private async void PasteObject(object sender, RoutedEventArgs e)
+        {
+            if (lastEditedText == null)
+                return;
+
+            DataPackageView clip = Clipboard.GetContent();
+
+            if (clip.Contains(StandardDataFormats.Bitmap))
+            {
+                RandomAccessStreamReference stream = await clip.GetBitmapAsync();
+                BitmapImage img = new BitmapImage();
+                await img.SetSourceAsync(await stream.OpenReadAsync());
+            }
         }
     }
 }

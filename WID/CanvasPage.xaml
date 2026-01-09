@@ -190,6 +190,18 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutSeparator />
                         <MenuFlyoutItem
+                            Text="Paste object"
+                            Click="PasteObject"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="V" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE77F;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem
                             x:Name="btUndoStroke"
                             Text="Undo"
                             Click="UndoStroke"
