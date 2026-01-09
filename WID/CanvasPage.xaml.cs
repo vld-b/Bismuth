@@ -733,8 +733,8 @@ namespace WID
                 );
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
-            txt.TextBoxGotFocus += (s, e) => StartTyping(s, e);
-            txt.TextBoxLostFocus += (s, e) => StopTyping(s, e);
+            txt.TextBoxGotFocus += StartTyping;
+            txt.TextBoxLostFocus += StopTyping;
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
