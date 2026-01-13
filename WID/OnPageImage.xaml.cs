@@ -26,12 +26,15 @@ namespace WID
     {
         public int id { get; private set; }
 
-        double widthToHeight;
+        private double widthToHeight;
         private Point? mousePos;
-        NotebookPage containingPage;
+        public NotebookPage containingPage { get; private set;  }
+        public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
+        public bool hasBeenModifiedSinceChange;
+        public bool isNewImage { get; private set; }
 
-        public OnPageImage(int id, double top, double left, BitmapImage imgSource, NotebookPage containingPage, ScrollViewer pageContainer)
+        public OnPageImage(int id, double top, double left, WriteableBitmap imgSource, NotebookPage containingPage, ScrollViewer pageContainer, bool isNewImage)
         {
             this.InitializeComponent();
 
@@ -39,13 +42,17 @@ namespace WID
             Canvas.SetTop(this, top);
             Canvas.SetLeft(this, left);
 
+            this.wbmp = imgSource;
             this.img.Source = imgSource;
             widthToHeight = (double)imgSource.PixelWidth / (double)imgSource.PixelHeight;
-            this.Height = 100d;
-            this.Width = 100d * widthToHeight;
+            this.Height = 500d;
+            this.Width = this.Height * widthToHeight;
 
             this.containingPage = containingPage;
             this.pageContainer = pageContainer;
+
+            this.isNewImage = isNewImage;
+            this.hasBeenModifiedSinceChange = false;
 
             img.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingImage), true);
             img.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingImage), true);
@@ -74,6 +81,7 @@ namespace WID
 
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
+            this.hasBeenModifiedSinceChange = true;
         }
 
         private void ContinueDraggingImage(object sender, PointerRoutedEventArgs e)
@@ -112,6 +120,7 @@ namespace WID
         {
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
+            this.hasBeenModifiedSinceChange = true;
         }
 
         private void ContinueResizeImage(object sender, PointerRoutedEventArgs e)

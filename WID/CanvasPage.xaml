@@ -67,7 +67,7 @@
             <Popup.OpacityTransition>
                 <ScalarTransition />
             </Popup.OpacityTransition>
-            
+
             <Border
                 x:Name="bdTextTools"
                 BorderThickness="4"
@@ -141,7 +141,7 @@
                 </StackPanel>
             </Border>
         </Popup>
-
+        
 
         <StackPanel
             Grid.Row="0"

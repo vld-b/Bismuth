@@ -193,6 +193,49 @@ namespace WID
                         Canvas.GetLeft(txt) )
                         );
                 }
+
+                foreach (OnPageImage img in page.images)
+                {
+                    ImageData imgData = new ImageData(
+                        img.id,
+                        img.containingPage.id,
+                        img.Width,
+                        img.Height,
+                        Canvas.GetTop(img),
+                        Canvas.GetLeft(img)
+                        );
+                    currentConfig.images.Add(imgData);
+                    if (!img.isNewImage) // Only save image if necessary
+                        continue;
+
+                    StorageFile currentImgFile = await file.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
+                    using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        BitmapEncoder enc = await BitmapEncoder.CreateAsync(
+                            BitmapEncoder.JpegEncoderId,
+                            stream
+                            );
+
+                        byte[] pixels;
+                        using  (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
+                        {
+                            pixels = new byte[pixelStream.Length];
+                            await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
+                        }
+
+                        enc.SetPixelData(
+                            BitmapPixelFormat.Bgra8,
+                            BitmapAlphaMode.Premultiplied,
+                            (uint)img.wbmp.PixelWidth,
+                            (uint)img.wbmp.PixelHeight,
+                            96,
+                            96,
+                            pixels
+                            );
+
+                        await enc.FlushAsync();
+                    }
+                }
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
@@ -204,7 +247,9 @@ namespace WID
                     new LastNotebookState(),
                     -1,
                     new List<int>(),
-                    new DefaultTemplate(null)
+                    new DefaultTemplate(null),
+                    -1,
+                    new List<int>()
                     );
             else
             {
@@ -318,6 +363,31 @@ namespace WID
                         txt.TextBoxGotFocus += StartTyping;
                         txt.TextBoxLostFocus += StopTyping;
                     }
+
+                    foreach (ImageData imgData in config!.pageMapping[i].images)
+                    {
+                        StorageFile imgFile = await file.GetFileAsync("img" + (imgData.id == 0 ? "" : (" (" + imgData.id + ")")) + ".jpg");
+                        BitmapImage bmp = await Utils.GetBMPFromFile(imgFile);
+                        WriteableBitmap wbmp = new WriteableBitmap(
+                            bmp.PixelWidth,
+                            bmp.PixelHeight
+                            );
+                        using (IRandomAccessStream stream = await imgFile.OpenAsync(FileAccessMode.Read))
+                        {
+                            await wbmp.SetSourceAsync(stream);
+                        }
+
+                        OnPageImage img = new OnPageImage(
+                            imgData.id,
+                            imgData.top,
+                            imgData.left,
+                            wbmp,
+                            page,
+                            svPageZoom,
+                            false
+                            );
+                        page.AddImageToPage(img);
+                    }
                     
                     await page.LoadFromFile(ink);
                     if (this.IsLoaded)
@@ -339,7 +409,9 @@ namespace WID
                     new LastNotebookState(),
                     -1,
                     new List<int>(),
-                    new DefaultTemplate(null)
+                    new DefaultTemplate(null),
+                    -1,
+                    new List<int>()
                     );
                 if (this.IsLoaded)
                     AddPage();
@@ -726,12 +798,13 @@ namespace WID
                 config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs.Pop(0),
                 500d,
                 500d,
-                Math.Min(pageOffset, currentPage!.Height - 500d),
+                Math.Min(pageOffset, currentPage!.Height - 500d), 
                 (currentPage.Width - 500d) / 2,
                 currentPage,
                 svPageZoom
                 );
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+            pendingDeletions.Remove("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
             txt.TextBoxGotFocus += StartTyping;
             txt.TextBoxLostFocus += StopTyping;
@@ -810,6 +883,9 @@ namespace WID
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
         {
             lastEditedText!.RemoveTextFromPage();
+            pendingCreations.Remove("text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf");
+            pendingDeletions.Add("text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf");
+            lastEditedText = null;
             ppTextTools.IsHitTestVisible = false;
             ppTextTools.Opacity = 0d;
         }
@@ -892,19 +968,32 @@ namespace WID
             if (clip.Contains(StandardDataFormats.Bitmap))
             {
                 RandomAccessStreamReference stream = await clip.GetBitmapAsync();
-                BitmapImage img = new BitmapImage();
-                await img.SetSourceAsync(await stream.OpenReadAsync());
+                BitmapImage bmp = new BitmapImage();
+                WriteableBitmap wbmp;
+                using (IRandomAccessStream randomStream = await stream.OpenReadAsync())
+                {
+                    await bmp.SetSourceAsync(randomStream);
+                    wbmp = new WriteableBitmap(
+                        bmp.PixelWidth,
+                        bmp.PixelHeight
+                        );
+                    randomStream.Seek(0);
+                    await wbmp.SetSourceAsync(randomStream);
+                }
 
                 double pageOffset = GetCurrentPage();
                 OnPageImage opI = new OnPageImage(
-                    0,
-                    Math.Min(pageOffset, currentPage!.Height - 100d),
-                    (currentPage!.Width - img.PixelWidth) * 0.5d,
-                    img,
+                    config!.usableImageIDs.Count == 0 ? ++config!.maxImageID : config!.usableImageIDs.Pop(0),
+                    Math.Min(pageOffset, currentPage!.Height - 500d),
+                    (currentPage!.Width - wbmp.PixelWidth) * 0.5d,
+                    wbmp,
                     currentPage!,
-                    svPageZoom
+                    svPageZoom,
+                    true
                     );
                 currentPage!.AddImageToPage(opI);
+                pendingCreations.Add("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
+                pendingDeletions.Remove("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
             }
         }
     }

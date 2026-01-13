@@ -27,6 +27,8 @@ namespace WID
         public int maxTextID { get; set; }
         public List<int> usableTextIDs { get; set; }
         public DefaultTemplate defaultTemplate { get; set; }
+        public int maxImageID { get; set; }
+        public List<int> usableImageIDs { get; set; }
 
         public NotebookConfig(
             long configVersion,
@@ -36,7 +38,9 @@ namespace WID
             LastNotebookState lastNotebookState,
             int maxTextID,
             List<int> usableTextIDs,
-            DefaultTemplate defaultTemplate
+            DefaultTemplate defaultTemplate,
+            int maxImageID,
+            List<int> usableImageIDs
             )
         {
             this.configVersion = configVersion;
@@ -47,6 +51,8 @@ namespace WID
             this.maxTextID = maxTextID;
             this.usableTextIDs = usableTextIDs;
             this.defaultTemplate = defaultTemplate;
+            this.maxImageID = maxImageID;
+            this.usableImageIDs = usableImageIDs;
         }
 
         public void DeletePageWithId(int id)
@@ -123,6 +129,7 @@ namespace WID
         public double height { get; set; }
         public bool hasBg { get; set; }
         public List<TextData> textBoxes { get; set; }
+        public List<ImageData> images { get; set; }
 
         public bool hasTemplate { get; set; }
         public PageTemplatePattern? pagePattern { get; set; }
@@ -134,6 +141,7 @@ namespace WID
             this.width = this.height = 0d;
             this.hasBg = false;
             textBoxes = new List<TextData>();
+            images = new List<ImageData>();
         }
 
         public PageConfig(int id, double width, double height, bool hasBg)
@@ -144,6 +152,7 @@ namespace WID
             this.height = height;
             this.hasBg = hasBg;
             textBoxes = new List<TextData>();
+            images = new List<ImageData>();
         }
 
         public PageConfig(int id, double width, double height, bool hasBg, List<TextData> textBoxes)

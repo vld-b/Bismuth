@@ -100,6 +100,14 @@ namespace WID
             return dialog;
         }
 
+        public static async Task<BitmapImage> GetBMPFromFile(StorageFile bgFile)
+        {
+            BitmapImage bmp = new BitmapImage();
+            using (IRandomAccessStream stream = await bgFile.OpenAsync(FileAccessMode.Read))
+                await bmp.SetSourceAsync(stream);
+            return bmp;
+        }
+
         public static async Task<BitmapImage> GetBMPFromFileWithWidth(StorageFile bgFile, int desiredWidth)
         {
             BitmapImage bmp = new BitmapImage();

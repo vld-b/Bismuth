@@ -43,6 +43,7 @@ namespace WID
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
+        public List<OnPageImage> images { get; private set; } = new List<OnPageImage>();
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
@@ -198,6 +199,7 @@ namespace WID
 
         public void AddImageToPage(OnPageImage img)
         {
+            images.Add(img);
             contentCanvas.Children.Add(img);
         }
 

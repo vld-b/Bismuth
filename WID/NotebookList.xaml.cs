@@ -169,7 +169,9 @@ namespace WID
                     new LastNotebookState(),
                     -1,
                     new List<int>(),
-                    new DefaultTemplate(options.chosenPattern)
+                    new DefaultTemplate(options.chosenPattern),
+                    -1,
+                    new List<int>()
                     );
                 await config.SerializeToFile(file);
                 LoadNotebooks();
