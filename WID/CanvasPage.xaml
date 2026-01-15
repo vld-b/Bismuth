@@ -141,7 +141,6 @@
                 </StackPanel>
             </Border>
         </Popup>
-        
 
         <StackPanel
             Grid.Row="0"
