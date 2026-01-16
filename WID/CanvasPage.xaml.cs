@@ -44,6 +44,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using WinRT;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -995,6 +996,19 @@ namespace WID
                 pendingCreations.Add("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
                 pendingDeletions.Remove("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
             }
+        }
+
+        private async void ExportCurrentPageAsImage(object sender, RoutedEventArgs e)
+        {
+            FileSavePicker savePicker = new FileSavePicker();
+            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Add("Plain Text", new List<string>() { ".txt" });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = "New Document";
+            StorageFile file = await savePicker.PickSaveFileAsync();
+
+            //StorageFile imgFile = await imgFilePicker.PickSaveFileAsync();
         }
     }
 }

@@ -290,6 +290,31 @@
                     </MenuFlyout>
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
+            <muxc:DropDownButton
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTipService.ToolTip="Export"
+                >
+                <muxc:DropDownButton.Content>
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEDE1;" />
+                </muxc:DropDownButton.Content>
+                <muxc:DropDownButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem
+                            Click="ExportCurrentPageAsImage"
+                            Text="Export current page as image"
+                            ToolTipService.ToolTip="Export the current page as an image to the chosen location"
+                            >
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEE71;" />
+                            </MenuFlyoutItem.Icon>
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="E" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </muxc:DropDownButton.Flyout>
+            </muxc:DropDownButton>
             <ToggleButton
                 Click="OpenPageOverview"
                 Background="Transparent"
