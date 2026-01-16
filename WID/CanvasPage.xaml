@@ -302,7 +302,7 @@
                     <MenuFlyout>
                         <MenuFlyoutItem
                             Click="ExportCurrentPageAsImage"
-                            Text="Export current page as image"
+                            Text="Current as image"
                             ToolTipService.ToolTip="Export the current page as an image to the chosen location"
                             >
                             <MenuFlyoutItem.Icon>

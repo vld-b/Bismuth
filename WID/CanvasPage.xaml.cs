@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -45,6 +46,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using WinRT;
+using WinRT.Interop;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 
@@ -1000,15 +1002,52 @@ namespace WID
 
         private async void ExportCurrentPageAsImage(object sender, RoutedEventArgs e)
         {
-            FileSavePicker savePicker = new FileSavePicker();
-            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            // Dropdown of file types the user can save the file as
-            savePicker.FileTypeChoices.Add("Plain Text", new List<string>() { ".txt" });
-            // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = "New Document";
-            StorageFile file = await savePicker.PickSaveFileAsync();
+            FileSavePicker imgFilePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.Downloads,
+                FileTypeChoices =
+                {
+                    ["PNG image"] = (string[])[".png"],
+                },
+                SuggestedFileName = "Image",
+                DefaultFileExtension = ".png",
+            };
 
-            //StorageFile imgFile = await imgFilePicker.PickSaveFileAsync();
+            StorageFile imgFile = await imgFilePicker.PickSaveFileAsync();
+            if (imgFile is null)
+                return;
+
+            GetCurrentPage();
+            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(currentPage);
+
+            IBuffer pixelBuffer = await rtb.GetPixelsAsync();
+            byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
+            try
+            {
+                pixelBuffer.CopyTo(pixels);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(pixels);
+            }
+            using (IRandomAccessStream stream = await imgFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                BitmapEncoder enc = await BitmapEncoder.CreateAsync(
+                    BitmapEncoder.PngEncoderId,
+                    stream
+                    );
+                enc.SetPixelData(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Premultiplied,
+                    (uint)rtb.PixelWidth,
+                    (uint)rtb.PixelHeight,
+                    96,
+                    96,
+                    pixels.ToArray()
+                    );
+                await enc.FlushAsync();
+            }
         }
     }
 }
