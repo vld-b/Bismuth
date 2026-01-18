@@ -25,6 +25,21 @@ namespace WID
     {
         public NotebookPage page { get; private set; }
         public EventHandler<DeletePageArgs>? RequestPageDelete;
+        public bool IsSelectable
+        {
+            get => cbSelected.Visibility == Visibility.Visible;
+            set
+            {
+                if (value)
+                    cbSelected.Visibility = Visibility.Visible;
+                else
+                    cbSelected.Visibility = Visibility.Collapsed;
+            }
+        }
+        public bool IsSelected
+        {
+            get => (bool)cbSelected.IsChecked!;
+        }
 
         public PageThumbnail(int id, double width, double height)
         {

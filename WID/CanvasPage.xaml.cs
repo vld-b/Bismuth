@@ -1049,5 +1049,10 @@ namespace WID
                 await enc.FlushAsync();
             }
         }
+
+        private void ExportPagesAsPDF(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -312,6 +312,18 @@
                                 <KeyboardAccelerator Key="E" Modifiers="Control" />
                             </MenuFlyoutItem.KeyboardAccelerators>
                         </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Click="ExportPagesAsPDF"
+                            Text="Pages as PDF"
+                            ToolTipService.ToolTip="Export the current page as an image to the chosen location"
+                            >
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8A5;" />
+                            </MenuFlyoutItem.Icon>
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="P" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                        </MenuFlyoutItem>
                     </MenuFlyout>
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
