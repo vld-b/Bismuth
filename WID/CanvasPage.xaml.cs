@@ -623,7 +623,7 @@ namespace WID
         private void OpenPageOverview(object sender, RoutedEventArgs e)
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
-            (sender as ToggleButton)!.IsChecked = svPageOverview.IsPaneOpen;
+            ((ToggleButton)sender).IsChecked = svPageOverview.IsPaneOpen;
             gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
