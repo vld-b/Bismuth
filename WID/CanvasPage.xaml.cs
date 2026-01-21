@@ -24,6 +24,7 @@ using Windows.Data.Pdf;
 using Windows.Devices.Usb;
 using Windows.Devices.WiFiDirect;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Capture;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
@@ -625,6 +626,11 @@ namespace WID
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             ((ToggleButton)sender).IsChecked = svPageOverview.IsPaneOpen;
             gvThumbnails.Items.Clear();
+            if (!svPageOverview.IsPaneOpen)
+            {
+                btExport.Visibility = Visibility.Collapsed;
+                return;
+            }
             foreach (NotebookPage page in spPageView.Children)
             {
                 PageThumbnail pageThumb;
@@ -1050,9 +1056,104 @@ namespace WID
             }
         }
 
-        private void ExportPagesAsPDF(object sender, RoutedEventArgs e)
+        private void PrepareExportAsPDF(object sender, RoutedEventArgs e)
         {
+            if (!svPageOverview.IsPaneOpen)
+                OpenPageOverview(tbSidepane, new RoutedEventArgs());
+            btExport.Visibility = Visibility.Visible;
+            foreach (GridViewItem item in gvThumbnails.Items)
+            {
+                ((PageThumbnail)item.Content).IsSelectable = true;
+            }
+        }
 
+        private async void ExportPagesAsPDF(object sender, RoutedEventArgs e)
+        {
+            FileSavePicker pdfFilePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                FileTypeChoices =
+                {
+                    ["PDF file"] = (string[])[".pdf"],
+                },
+                SuggestedFileName = "Document",
+                DefaultFileExtension = ".pdf",
+            };
+            StorageFile pdfFile = await pdfFilePicker.PickSaveFileAsync();
+            if (pdfFile is null)
+                return;
+
+            ContentDialog exportingDialog = Utils.ShowLoadingPopup("Exporting PDF");
+
+            PdfSharpCore.Pdf.PdfDocument doc = new PdfSharpCore.Pdf.PdfDocument();
+
+            int i = 0;
+            foreach (GridViewItem item in gvThumbnails.Items)
+            {
+                PageThumbnail thumb = (PageThumbnail)item.Content;
+                if (!thumb.IsSelected)
+                    continue;
+
+                PdfSharpCore.Pdf.PdfPage pdfPage = doc.AddPage();
+                PdfSharpCore.Drawing.XGraphics gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(pdfPage);
+
+                NotebookPage currentPage = (NotebookPage)spPageView.Children[i];
+                Transform previousTransform = currentPage.RenderTransform;
+                currentPage.RenderTransform = new ScaleTransform
+                {
+                    ScaleX = pdfPage.Width.Value / currentPage.Width,
+                    ScaleY = pdfPage.Height.Value / currentPage.Height,
+                    CenterX = 0,
+                    CenterY = 0,
+                };
+                currentPage.Measure(new Windows.Foundation.Size(pdfPage.Width.Value, pdfPage.Height.Value));
+                currentPage.Arrange(new Windows.Foundation.Rect(0, 0, pdfPage.Width.Value, pdfPage.Height.Value));
+                currentPage.UpdateLayout();
+                RenderTargetBitmap rtb = new RenderTargetBitmap();
+                await rtb.RenderAsync(currentPage);
+                currentPage.RenderTransform = previousTransform;
+
+                IBuffer pixelBuffer = await rtb.GetPixelsAsync();
+                byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
+                try
+                {
+                    pixelBuffer.CopyTo(pixels);
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(pixels);
+                }
+
+                using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+                {
+                    BitmapEncoder enc = await BitmapEncoder.CreateAsync(
+                        BitmapEncoder.PngEncoderId,
+                        stream
+                        );
+                    enc.SetPixelData(
+                        BitmapPixelFormat.Bgra8,
+                        BitmapAlphaMode.Premultiplied,
+                        (uint)rtb.PixelWidth,
+                        (uint)rtb.PixelHeight,
+                        96,
+                        96,
+                        pixels
+                        );
+                    await enc.FlushAsync();
+
+                    gfx.DrawImage(
+                        PdfSharpCore.Drawing.XImage.FromStream(stream.AsStream),
+                        new PdfSharpCore.Drawing.XPoint(0, 0)
+                        );
+                }
+
+                ++i;
+            }
+            using (Stream stream = await pdfFile.OpenStreamForWriteAsync())
+            {
+                doc.Save(stream);
+            }
+            exportingDialog.Hide();
         }
     }
 }

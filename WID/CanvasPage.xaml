@@ -313,7 +313,7 @@
                             </MenuFlyoutItem.KeyboardAccelerators>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
-                            Click="ExportPagesAsPDF"
+                            Click="PrepareExportAsPDF"
                             Text="Pages as PDF"
                             ToolTipService.ToolTip="Export the current page as an image to the chosen location"
                             >
@@ -328,6 +328,7 @@
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>
             <ToggleButton
+                x:Name="tbSidepane"
                 Click="OpenPageOverview"
                 Background="Transparent"
                 BorderBrush="Transparent"
@@ -352,11 +353,18 @@
             >
             <SplitView.Pane>
                 <Grid
+                    x:Name="gdSidepane"
                     BorderBrush="{ThemeResource SystemControlAcrylicWindowBrush}"
                     BorderThickness="0, 0, 4, 0"
                     >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
                     <GridView
                         x:Name="gvThumbnails"
+                        Grid.Row="0"
                         Height="Auto"
                         Width="Auto"
                         HorizontalAlignment="Stretch"
@@ -386,6 +394,17 @@
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                     </GridView>
+
+                    <Button
+                        x:Name="btExport"
+                        Click="ExportPagesAsPDF"
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        Visibility="Collapsed"
+                        Margin="8"
+                        >
+                        Export
+                    </Button>
                 </Grid>
             </SplitView.Pane>
             <ScrollViewer
