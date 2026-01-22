@@ -1112,6 +1112,8 @@ namespace WID
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
                 await rtb.RenderAsync(currentPage);
                 currentPage.RenderTransform = previousTransform;
+                pdfPage.Height = currentPage.Height;
+                pdfPage.Width = currentPage.Width;
 
                 IBuffer pixelBuffer = await rtb.GetPixelsAsync();
                 byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
