@@ -1099,23 +1099,13 @@ namespace WID
                 pdfPage.Width = new PdfSharpCore.Drawing.XUnit(595d);
                 pdfPage.Height = new PdfSharpCore.Drawing.XUnit(842d);
 
+                const double imgDPI = 96d;
+                const double pdfDPI = 72d;
+                const double scaleFactor = imgDPI / pdfDPI;
+
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[i];
-                Transform previousTransform = currentPage.RenderTransform;
-                currentPage.Measure(new Windows.Foundation.Size(pdfPage.Width.Value, pdfPage.Height.Value));
-                currentPage.Arrange(new Windows.Foundation.Rect(0, 0, pdfPage.Width.Value, pdfPage.Height.Value));
-                currentPage.RenderTransform = new ScaleTransform
-                {
-                    ScaleX = pdfPage.Width.Value / currentPage.Width,
-                    ScaleY = pdfPage.Height.Value / currentPage.Height,
-                    CenterX = 0,
-                    CenterY = 0,
-                };
-                currentPage.UpdateLayout();
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
-                await rtb.RenderAsync(currentPage, (int)pdfPage.Width.Value, (int)pdfPage.Height.Value);
-                //pdfPage.Height = currentPage.Height;
-                //pdfPage.Width = currentPage.Width;
-                currentPage.RenderTransform = previousTransform;
+                await rtb.RenderAsync(currentPage, (int)(pdfPage.Width.Value * scaleFactor), (int)(pdfPage.Height.Value * scaleFactor));
 
                 IBuffer pixelBuffer = await rtb.GetPixelsAsync();
                 byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
@@ -1139,8 +1129,8 @@ namespace WID
                         BitmapAlphaMode.Premultiplied,
                         (uint)rtb.PixelWidth,
                         (uint)rtb.PixelHeight,
-                        96,
-                        96,
+                        imgDPI,
+                        imgDPI,
                         pixels
                         );
                     await enc.FlushAsync();
