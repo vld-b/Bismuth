@@ -1112,7 +1112,7 @@ namespace WID
                 };
                 currentPage.UpdateLayout();
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
-                await rtb.RenderAsync(currentPage);
+                await rtb.RenderAsync(currentPage, (int)pdfPage.Width.Value, (int)pdfPage.Height.Value);
                 //pdfPage.Height = currentPage.Height;
                 //pdfPage.Width = currentPage.Width;
                 currentPage.RenderTransform = previousTransform;
