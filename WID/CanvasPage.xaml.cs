@@ -1096,9 +1096,13 @@ namespace WID
 
                 PdfSharpCore.Pdf.PdfPage pdfPage = doc.AddPage();
                 PdfSharpCore.Drawing.XGraphics gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(pdfPage);
+                pdfPage.Width = new PdfSharpCore.Drawing.XUnit(595d);
+                pdfPage.Height = new PdfSharpCore.Drawing.XUnit(842d);
 
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[i];
                 Transform previousTransform = currentPage.RenderTransform;
+                currentPage.Measure(new Windows.Foundation.Size(pdfPage.Width.Value, pdfPage.Height.Value));
+                currentPage.Arrange(new Windows.Foundation.Rect(0, 0, pdfPage.Width.Value, pdfPage.Height.Value));
                 currentPage.RenderTransform = new ScaleTransform
                 {
                     ScaleX = pdfPage.Width.Value / currentPage.Width,
@@ -1106,14 +1110,12 @@ namespace WID
                     CenterX = 0,
                     CenterY = 0,
                 };
-                currentPage.Measure(new Windows.Foundation.Size(pdfPage.Width.Value, pdfPage.Height.Value));
-                currentPage.Arrange(new Windows.Foundation.Rect(0, 0, pdfPage.Width.Value, pdfPage.Height.Value));
                 currentPage.UpdateLayout();
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
                 await rtb.RenderAsync(currentPage);
+                //pdfPage.Height = currentPage.Height;
+                //pdfPage.Width = currentPage.Width;
                 currentPage.RenderTransform = previousTransform;
-                pdfPage.Height = currentPage.Height;
-                pdfPage.Width = currentPage.Width;
 
                 IBuffer pixelBuffer = await rtb.GetPixelsAsync();
                 byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
