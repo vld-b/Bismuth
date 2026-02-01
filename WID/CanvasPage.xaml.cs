@@ -1164,9 +1164,21 @@ namespace WID
             PrepareExportOfMultiplePages("Export as Bismuth", ExportAsBismuth);
         }
 
-        private void ExportAsBismuth(object sender, RoutedEventArgs e)
+        private async void ExportAsBismuth(object sender, RoutedEventArgs e)
         {
-
+            FileSavePicker bismuthFilePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                FileTypeChoices =
+                {
+                    ["Bismuth file"] = (string[])[".bismuth"],
+                },
+                SuggestedFileName = "Pages",
+                DefaultFileExtension = ".bismuth",
+            };
+            StorageFile bismuthFile = await bismuthFilePicker.PickSaveFileAsync();
+            if (bismuthFile is null)
+                return;
         }
     }
 }
