@@ -1179,6 +1179,10 @@ namespace WID
             StorageFile bismuthFile = await bismuthFilePicker.PickSaveFileAsync();
             if (bismuthFile is null)
                 return;
+
+            StorageFolder tempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("tempFolder", CreationCollisionOption.GenerateUniqueName);
+
+            NotebookConfig config = new NotebookConfig();
         }
     }
 }

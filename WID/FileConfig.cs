@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Media.AppBroadcasting;
+using Windows.Networking.Sockets;
 using Windows.Storage;
 using Windows.UI.Composition;
 using Windows.UI.WebUI;
@@ -30,6 +31,21 @@ namespace WID
         public int maxImageID { get; set; }
         public List<int> usableImageIDs { get; set; }
 
+        public NotebookConfig()
+        {
+            this.configVersion = NotebookUpgrader.latestVersion;
+            this.pageMapping = new ObservableCollection<PageConfig>();
+            this.maxPageID = -1;
+            this.usablePageIDs = new List<int>();
+            this.lastNotebookState = new LastNotebookState();
+            this.maxTextID = -1;
+            this.usableTextIDs = new List<int>();
+            this.defaultTemplate = new DefaultTemplate(null);
+            this.maxImageID = -1;
+            this.usableImageIDs = new List<int>();
+        }
+
+        [JsonConstructor]
         public NotebookConfig(
             long configVersion,
             ObservableCollection<PageConfig> pageMapping,

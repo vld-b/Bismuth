@@ -8,6 +8,8 @@ namespace WID
 {
     internal static class NotebookUpgrader
     {
+        public static long latestVersion = 2L;
+
         public static NotebookConfig UpgradeToLastVersion(NotebookConfig config)
         {
             return Upgrade1To2(config);
