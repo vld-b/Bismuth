@@ -315,7 +315,7 @@
                         <MenuFlyoutItem
                             Click="PrepareExportAsPDF"
                             Text="Pages as PDF"
-                            ToolTipService.ToolTip="Export the current page as an image to the chosen location"
+                            ToolTipService.ToolTip="Export selected pages as a PDF"
                             >
                             <MenuFlyoutItem.Icon>
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8A5;" />
