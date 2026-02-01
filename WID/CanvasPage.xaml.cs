@@ -48,8 +48,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using WinRT;
 using WinRT.Interop;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Net.WebRequestMethods;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -1094,6 +1092,8 @@ namespace WID
 
             ContentDialog exportingDialog = Utils.ShowLoadingPopup("Exporting PDF");
 
+            if (File.Exists(pdfFile.Path))
+                File.Delete(pdfFile.Path);
             PdfSharpCore.Pdf.PdfDocument doc = new PdfSharpCore.Pdf.PdfDocument();
 
             int i = 0;
