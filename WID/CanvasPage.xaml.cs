@@ -1056,15 +1056,24 @@ namespace WID
             }
         }
 
-        private void PrepareExportAsPDF(object sender, RoutedEventArgs e)
+        private void PrepareExportOfMultiplePages(string btnLabel, RoutedEventHandler btAction)
         {
             if (!svPageOverview.IsPaneOpen)
                 OpenPageOverview(tbSidepane, new RoutedEventArgs());
+            btExport.Content = btnLabel;
             btExport.Visibility = Visibility.Visible;
-            foreach (GridViewItem item in gvThumbnails.Items)
+            btExport.Click -= ExportPagesAsPDF;
+            btExport.Click -= ExportAsBismuth;
+            btExport.Click += btAction;
+            foreach(GridViewItem item in gvThumbnails.Items)
             {
                 ((PageThumbnail)item.Content).IsSelectable = true;
             }
+        }
+
+        private void PrepareExportAsPDF(object sender, RoutedEventArgs e)
+        {
+            PrepareExportOfMultiplePages("Export as PDF", ExportPagesAsPDF);
         }
 
         private async void ExportPagesAsPDF(object sender, RoutedEventArgs e)
@@ -1148,6 +1157,16 @@ namespace WID
                 doc.Save(stream);
             }
             exportingDialog.Hide();
+        }
+
+        private void PrepareExportAsBismuth(object sender, RoutedEventArgs e)
+        {
+            PrepareExportOfMultiplePages("Export as Bismuth", ExportAsBismuth);
+        }
+
+        private void ExportAsBismuth(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

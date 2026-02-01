@@ -325,9 +325,13 @@
                             </MenuFlyoutItem.KeyboardAccelerators>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
+                            Click="PrepareExportAsBismuth"
                             Text="Pages as Bismuth file"
                             ToolTipService.ToolTip="Export selected pages to Bismuth file"
                             >
+                            <MenuFlyoutItem.Icon>
+                                <muxc:ImageIcon Source="/Assets/icon128x128.png" />
+                            </MenuFlyoutItem.Icon>
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="B" Modifiers="Control" />
                             </MenuFlyoutItem.KeyboardAccelerators>
@@ -405,14 +409,11 @@
 
                     <Button
                         x:Name="btExport"
-                        Click="ExportPagesAsPDF"
                         Grid.Row="1"
                         HorizontalAlignment="Center"
                         Visibility="Collapsed"
                         Margin="8"
-                        >
-                        Export
-                    </Button>
+                        />
                 </Grid>
             </SplitView.Pane>
             <ScrollViewer
