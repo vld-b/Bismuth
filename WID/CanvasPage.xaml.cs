@@ -167,7 +167,7 @@ namespace WID
 
             foreach (NotebookPage page in spPageView.Children)
             {
-                await config!.AddPageWhileSaving(page, file);
+                await config!.AddPageWhileSaving(page, file, false);
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
@@ -1126,7 +1126,7 @@ namespace WID
 
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
 
-                await exportConfig.AddPageWhileSaving(currentPage, tempFolder);
+                await exportConfig.AddPageWhileSaving(currentPage, tempFolder, true);
             }
             using(Stream stream = await bismuthFile.OpenStreamForWriteAsync())
                 ZipFile.CreateFromDirectory(tempFolder.Path, stream);

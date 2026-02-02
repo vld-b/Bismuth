@@ -76,9 +76,9 @@ namespace WID
             this.usableImageIDs = usableImageIDs;
         }
 
-        public async Task AddPageWhileSaving(NotebookPage page, StorageFolder folder)
+        public async Task AddPageWhileSaving(NotebookPage page, StorageFolder folder, bool isExporting)
         {
-            if (page.hasBeenModifiedSinceSave)
+            if (page.hasBeenModifiedSinceSave || isExporting)
             {
                 StorageFile pageFile = await folder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
                 await page.SaveToFile(pageFile);
@@ -91,7 +91,7 @@ namespace WID
 
             foreach (OnPageText txt in page.textBoxes)
             {
-                if (txt.hasBeenModifiedSinceSave)
+                if (txt.hasBeenModifiedSinceSave || isExporting)
                 {
                     StorageFile rtfFile = await folder.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
                     using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
@@ -119,7 +119,7 @@ namespace WID
                     Canvas.GetLeft(img)
                     );
                 currentConfig.images.Add(imgData);
-                if (!img.isNewImage) // Only save image if necessary
+                if (!img.isNewImage && !isExporting) // Only save image if necessary
                     continue;
 
                 StorageFile currentImgFile = await folder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
