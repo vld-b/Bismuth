@@ -160,90 +160,19 @@ namespace WID
 
             ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
 
-            ObservableCollection<PageConfig> pages = new ObservableCollection<PageConfig>();
+            config!.pageMapping = new ObservableCollection<PageConfig>();
 
             await Utils.CreatePending(pendingCreations, file);
 
             foreach (NotebookPage page in spPageView.Children)
             {
-                if (page.hasBeenModifiedSinceSave)
-                {
-                    StorageFile pageFile = await file.CreateFileAsync("page" + (page.id == 0 ? "" : " ("+page.id+")") + ".gif", CreationCollisionOption.OpenIfExists);
-                    await page.SaveToFile(pageFile);
-                }
-
-                PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
-                currentConfig.pagePattern = page.currentPattern;
-                currentConfig.hasTemplate = page.hasPattern;
-                pages.Add(currentConfig);
-
-                foreach (OnPageText txt in page.textBoxes)
-                {
-                    if (txt.hasBeenModifiedSinceSave)
-                    {
-                        StorageFile rtfFile = await file.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
-                        using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
-                            txt.SaveToStream(stream);
-                    }
-
-                    currentConfig.textBoxes.Add(new TextData(
-                        txt.id,
-                        page.id,
-                        txt.Width,
-                        txt.Height,
-                        Canvas.GetTop(txt),
-                        Canvas.GetLeft(txt) )
-                        );
-                }
-
-                foreach (OnPageImage img in page.images)
-                {
-                    ImageData imgData = new ImageData(
-                        img.id,
-                        img.containingPage.id,
-                        img.Width,
-                        img.Height,
-                        Canvas.GetTop(img),
-                        Canvas.GetLeft(img)
-                        );
-                    currentConfig.images.Add(imgData);
-                    if (!img.isNewImage) // Only save image if necessary
-                        continue;
-
-                    StorageFile currentImgFile = await file.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
-                    using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        BitmapEncoder enc = await BitmapEncoder.CreateAsync(
-                            BitmapEncoder.JpegEncoderId,
-                            stream
-                            );
-
-                        byte[] pixels;
-                        using  (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
-                        {
-                            pixels = new byte[pixelStream.Length];
-                            await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
-                        }
-
-                        enc.SetPixelData(
-                            BitmapPixelFormat.Bgra8,
-                            BitmapAlphaMode.Premultiplied,
-                            (uint)img.wbmp.PixelWidth,
-                            (uint)img.wbmp.PixelHeight,
-                            96,
-                            96,
-                            pixels
-                            );
-
-                        await enc.FlushAsync();
-                    }
-                }
+                await config!.AddPageWhileSaving(page, file);
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
                 config = new NotebookConfig( // Would most likely break config (or at least leave it inconsistent), because usableIDs is not being calculated
                     1L,
-                    pages,
+                    config!.pageMapping,
                     spPageView.Children.Count-1,
                     new List<int>(),
                     new LastNotebookState(),
@@ -255,7 +184,6 @@ namespace WID
                     );
             else
             {
-                config.pageMapping = pages;
                 config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
                 config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
                 config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
