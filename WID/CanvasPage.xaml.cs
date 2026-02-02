@@ -1128,6 +1128,9 @@ namespace WID
 
                 await exportConfig.AddPageWhileSaving(currentPage, tempFolder, true);
             }
+            StorageFile configFile = await tempFolder.CreateFileAsync("config.json");
+            await exportConfig.SerializeToFile(configFile);
+
             using(Stream stream = await bismuthFile.OpenStreamForWriteAsync())
                 ZipFile.CreateFromDirectory(tempFolder.Path, stream);
 
