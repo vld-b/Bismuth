@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -132,8 +133,15 @@ namespace WID
                     byte[] pixels;
                     using (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
                     {
-                        pixels = new byte[pixelStream.Length];
-                        await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
+                        pixels = ArrayPool<byte>.Shared.Rent((int)pixelStream.Length);
+                        try
+                        {
+                            await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
+                        }
+                        finally
+                        {
+                            ArrayPool<byte>.Shared.Return(pixels);
+                        }
                     }
 
                     enc.SetPixelData(
