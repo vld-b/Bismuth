@@ -1109,6 +1109,8 @@ namespace WID
             if (bismuthFile is null)
                 return;
 
+            ContentDialog exportingDialog = Utils.ShowLoadingPopup("Exporting to Bismuth file");
+
             StorageFolder tempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("tempFolder", CreationCollisionOption.GenerateUniqueName);
 
             NotebookConfig exportConfig = new NotebookConfig();
@@ -1125,10 +1127,11 @@ namespace WID
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
 
                 await exportConfig.AddPageWhileSaving(currentPage, tempFolder);
-
-                using(Stream stream = await bismuthFile.OpenStreamForWriteAsync())
-                    ZipFile.CreateFromDirectory(tempFolder.Path, stream);
             }
+            using(Stream stream = await bismuthFile.OpenStreamForWriteAsync())
+                ZipFile.CreateFromDirectory(tempFolder.Path, stream);
+
+            exportingDialog.Hide();
         }
     }
 }
