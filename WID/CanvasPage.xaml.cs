@@ -1028,6 +1028,7 @@ namespace WID
             foreach (GridViewItem item in gvThumbnails.Items)
             {
                 PageThumbnail thumb = (PageThumbnail)item.Content;
+                ++i;
                 if (!thumb.IsSelected)
                     continue;
 
@@ -1077,8 +1078,6 @@ namespace WID
                         new PdfSharpCore.Drawing.XPoint(0, 0)
                         );
                 }
-
-                ++i;
             }
             using (Stream stream = await pdfFile.OpenStreamForWriteAsync())
             {
