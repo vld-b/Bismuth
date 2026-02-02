@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -1028,6 +1029,7 @@ namespace WID
             foreach (GridViewItem item in gvThumbnails.Items)
             {
                 PageThumbnail thumb = (PageThumbnail)item.Content;
+                int currentIndex = i;
                 ++i;
                 if (!thumb.IsSelected)
                     continue;
@@ -1041,7 +1043,7 @@ namespace WID
                 const double pdfDPI = 72d;
                 const double scaleFactor = imgDPI / pdfDPI;
 
-                NotebookPage currentPage = (NotebookPage)spPageView.Children[i];
+                NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
                 await rtb.RenderAsync(currentPage, (int)(pdfPage.Width.Value * scaleFactor), (int)(pdfPage.Height.Value * scaleFactor));
 
@@ -1109,15 +1111,23 @@ namespace WID
 
             StorageFolder tempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("tempFolder", CreationCollisionOption.GenerateUniqueName);
 
-            NotebookConfig config = new NotebookConfig();
+            NotebookConfig exportConfig = new NotebookConfig();
 
             int i = 0;
             foreach(GridViewItem item in gvThumbnails.Items)
             {
                 PageThumbnail thumb = (PageThumbnail)item.Content;
+                int currentIndex = i;
                 ++i;
                 if (!thumb.IsSelected)
                     continue;
+
+                NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
+
+                await exportConfig.AddPageWhileSaving(currentPage, tempFolder);
+
+                using(Stream stream = await bismuthFile.OpenStreamForWriteAsync())
+                    ZipFile.CreateFromDirectory(tempFolder.Path, stream);
             }
         }
     }
