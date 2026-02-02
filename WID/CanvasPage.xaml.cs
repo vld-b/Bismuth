@@ -1115,6 +1115,7 @@ namespace WID
             foreach(GridViewItem item in gvThumbnails.Items)
             {
                 PageThumbnail thumb = (PageThumbnail)item.Content;
+                ++i;
                 if (!thumb.IsSelected)
                     continue;
             }
