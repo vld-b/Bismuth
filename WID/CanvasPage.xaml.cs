@@ -1111,6 +1111,14 @@ namespace WID
             StorageFolder tempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("tempFolder", CreationCollisionOption.GenerateUniqueName);
 
             NotebookConfig config = new NotebookConfig();
+
+            int i = 0;
+            foreach(GridViewItem item in gvThumbnails.Items)
+            {
+                PageThumbnail thumb = (PageThumbnail)item.Content;
+                if (!thumb.IsSelected)
+                    continue;
+            }
         }
     }
 }
