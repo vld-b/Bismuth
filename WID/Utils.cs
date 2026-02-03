@@ -32,13 +32,10 @@ namespace WID
         {
             foreach (string item in items)
             {
-                try
-                {
-                    await folder.CreateFileAsync(item, CreationCollisionOption.FailIfExists);
-                } catch
-                {
-
-                }
+                string itemPath = folder.Path + "\\" + item;
+                if (File.Exists(itemPath))
+                    File.Delete(itemPath);
+                await folder.CreateFileAsync(item, CreationCollisionOption.ReplaceExisting);
             }
             items.Clear();
         }
