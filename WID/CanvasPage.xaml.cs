@@ -702,7 +702,7 @@ namespace WID
         {
             FileOpenPicker picker = new FileOpenPicker
             {
-                FileTypeFilter = { ".pdf", ".jpg", ".png", ".jpeg" },
+                FileTypeFilter = { ".pdf", ".bismuth", ".jpg", ".png", ".jpeg" },
                 ViewMode = PickerViewMode.Thumbnail,
                 SuggestedStartLocation = PickerLocationId.Downloads,
                 CommitButtonText = "Pick file",
@@ -713,9 +713,9 @@ namespace WID
             foreach (StorageFile file in files)
             {
                 string newFilePath = ApplicationData.Current.TemporaryFolder.Path + "\\" + file.Name;
-                if (System.IO.File.Exists(newFilePath))
+                if (File.Exists(newFilePath))
                 {
-                    System.IO.File.Delete(newFilePath);
+                    File.Delete(newFilePath);
                 }
                 await file.CopyAsync(ApplicationData.Current.TemporaryFolder);
                 if (file.Name.EndsWith(".pdf"))
