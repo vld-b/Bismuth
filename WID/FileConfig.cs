@@ -125,7 +125,7 @@ namespace WID
                 if (!img.isNewImage && !isExporting) // Only save image if necessary
                     continue;
 
-                StorageFile currentImgFile = await folder.GetFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg");
+                StorageFile currentImgFile = await folder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
                 using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
                 {
                     BitmapEncoder enc = await BitmapEncoder.CreateAsync(
