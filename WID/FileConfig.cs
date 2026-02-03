@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
@@ -187,16 +188,21 @@ namespace WID
                 JsonSerializer.Serialize(opStream, this, NotebookConfigJsonContext.Default.NotebookConfig);
         }
 
+        public static NotebookConfig? DeserializeStream(Stream stream)
+        {
+            return JsonSerializer.Deserialize(stream, NotebookConfigJsonContext.Default.NotebookConfig);
+        }
+
         public static async Task<NotebookConfig?> DeserializeFile(StorageFolder folder)
         {
             using (Stream ipStream = await (await folder.GetFileAsync("config.json")).OpenStreamForReadAsync())
-                return JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                return DeserializeStream(ipStream);
         }
 
         public static async Task<NotebookConfig?> DeserializeFile(StorageFile file)
         {
             using (Stream ipStream = await file.OpenStreamForReadAsync())
-                return JsonSerializer.Deserialize(ipStream, NotebookConfigJsonContext.Default.NotebookConfig);
+                return DeserializeStream(ipStream);
         }
     }
 

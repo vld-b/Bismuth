@@ -492,6 +492,35 @@ namespace WID
             popup.Hide();
         }
 
+        private async Task ImportBismuth(StorageFile bismuthFile)
+        {
+            ContentDialog popup = Utils.ShowLoadingPopup("Importing Bismuth file");
+
+            using ZipArchive archive = new ZipArchive(await bismuthFile.OpenStreamForReadAsync(), ZipArchiveMode.Read);
+
+            ZipArchiveEntry? configEntry = archive.GetEntry("config.json");
+            if (configEntry is null)
+            {
+                popup.Hide();
+                return;
+            }
+
+            NotebookConfig? importConfig;
+            using (Stream configStream = configEntry.Open())
+                importConfig = NotebookConfig.DeserializeStream(configStream);
+            if (importConfig is null)
+            {
+                popup.Hide();
+                return;
+            }
+
+            foreach (PageConfig currentPage in importConfig.pageMapping)
+            {
+            }
+
+            popup.Hide();
+        }
+
         private void InkToolChanged(InkToolbar sender, object args)
         {
             foreach (NotebookPage page in spPageView.Children)
@@ -720,6 +749,8 @@ namespace WID
                 await file.CopyAsync(ApplicationData.Current.TemporaryFolder);
                 if (file.Name.EndsWith(".pdf"))
                     await AddPage(await PdfDocument.LoadFromFileAsync(file));
+                else if (file.Name.EndsWith(".bismuth"))
+                    await ImportBismuth(file);
                 else
                 {
                     await AddPage(file);
