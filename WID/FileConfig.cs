@@ -15,12 +15,14 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Media.AppBroadcasting;
 using Windows.Networking.Sockets;
+using Windows.Services.Maps;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Composition;
 using Windows.UI.WebUI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace WID
 {
@@ -123,7 +125,7 @@ namespace WID
                 if (!img.isNewImage && !isExporting) // Only save image if necessary
                     continue;
 
-                StorageFile currentImgFile = await folder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
+                StorageFile currentImgFile = await folder.GetFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg");
                 using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
                 {
                     BitmapEncoder enc = await BitmapEncoder.CreateAsync(
@@ -134,17 +136,9 @@ namespace WID
                     byte[] pixels;
                     using (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
                     {
-                        pixels = ArrayPool<byte>.Shared.Rent((int)pixelStream.Length);
-                        try
-                        {
-                            await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
-                        }
-                        finally
-                        {
-                            ArrayPool<byte>.Shared.Return(pixels);
-                        }
+                        pixels = new byte[pixelStream.Length];
+                        await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
                     }
-
                     enc.SetPixelData(
                         BitmapPixelFormat.Bgra8,
                         BitmapAlphaMode.Premultiplied,
@@ -158,6 +152,82 @@ namespace WID
                     await enc.FlushAsync();
                 }
             }
+        }
+
+        public async Task<NotebookPage> LoadPage(StorageFolder folder, int pageIndex, ScrollViewer scrollViewer, EventHandler startTyping, EventHandler stopTyping)
+        {
+            StorageFile ink = await folder.GetFileAsync(pageMapping[pageIndex].fileName);
+            NotebookPage page;
+
+            if (pageMapping[pageIndex].hasBg)
+            {
+                BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
+                    await folder.GetFileAsync(pageMapping[pageIndex].GetBgName()),
+                    (int)pageMapping[pageIndex].width
+                    );
+                page = new NotebookPage(pageMapping[pageIndex].id, bgImage);
+            }
+            else
+            {
+                page = new NotebookPage(
+                    pageMapping[pageIndex].id,
+                    pageMapping[pageIndex].width,
+                    pageMapping[pageIndex].height,
+                    pageMapping[pageIndex].pagePattern,
+                    pageMapping[pageIndex].hasTemplate
+                    );
+            }
+
+            foreach (TextData textData in pageMapping[pageIndex].textBoxes)
+            {
+                OnPageText txt = new OnPageText(
+                    textData.id,
+                    textData.width,
+                    textData.height,
+                    textData.top,
+                    textData.left,
+                    page,
+                    scrollViewer
+                    );
+                using (IRandomAccessStream stream = await
+                    (await folder.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
+                    .OpenAsync(FileAccessMode.Read))
+                {
+                    txt.LoadFromStream(stream);
+                }
+                page.AddTextToPage(txt);
+                txt.TextBoxGotFocus += startTyping;
+                txt.TextBoxLostFocus += stopTyping;
+            }
+
+            foreach (ImageData imgData in pageMapping[pageIndex].images)
+            {
+                StorageFile imgFile = await folder.GetFileAsync("img" + (imgData.id == 0 ? "" : (" (" + imgData.id + ")")) + ".jpg");
+                BitmapImage bmp = await Utils.GetBMPFromFile(imgFile);
+                WriteableBitmap wbmp = new WriteableBitmap(
+                    bmp.PixelWidth,
+                    bmp.PixelHeight
+                    );
+                using (IRandomAccessStream stream = await imgFile.OpenAsync(FileAccessMode.Read))
+                {
+                    await wbmp.SetSourceAsync(stream);
+                }
+
+                OnPageImage img = new OnPageImage(
+                    imgData.id,
+                    imgData.top,
+                    imgData.left,
+                    wbmp,
+                    page,
+                    scrollViewer,
+                    false
+                    );
+                page.AddImageToPage(img);
+            }
+
+            await page.LoadFromFile(ink);
+
+            return page;
         }
 
         public void DeletePageWithId(int id)
@@ -273,6 +343,7 @@ namespace WID
             this.height = height;
             this.hasBg = hasBg;
             this.textBoxes = textBoxes;
+            this.images = new List<ImageData>();
         }
 
         public string GetBgName()

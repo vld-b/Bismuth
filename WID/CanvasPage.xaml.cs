@@ -251,76 +251,8 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    StorageFile ink = await file.GetFileAsync(config!.pageMapping[i].fileName);
-                    NotebookPage page;
+                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping);
 
-                    if (config!.pageMapping[i].hasBg)
-                    {
-                        BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
-                            await file.GetFileAsync(config.pageMapping[i].GetBgName()),
-                            (int)config!.pageMapping[i].width
-                            );
-                        page = new NotebookPage(config!.pageMapping[i].id, bgImage);
-                    }
-                    else
-                    {
-                        page = new NotebookPage(
-                            config!.pageMapping[i].id,
-                            config!.pageMapping[i].width,
-                            config!.pageMapping[i].height,
-                            config!.pageMapping[i].pagePattern,
-                            config!.pageMapping[i].hasTemplate
-                            );
-                    }
-
-                    foreach (TextData textData in config!.pageMapping[i].textBoxes)
-                    {
-                        OnPageText txt = new OnPageText(
-                            textData.id,
-                            textData.width,
-                            textData.height,
-                            textData.top,
-                            textData.left,
-                            page,
-                            svPageZoom
-                            );
-                        using (IRandomAccessStream stream = await
-                            (await file.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
-                            .OpenAsync(FileAccessMode.Read))
-                        {
-                            txt.LoadFromStream(stream);
-                        }
-                        page.AddTextToPage(txt);
-                        txt.TextBoxGotFocus += StartTyping;
-                        txt.TextBoxLostFocus += StopTyping;
-                    }
-
-                    foreach (ImageData imgData in config!.pageMapping[i].images)
-                    {
-                        StorageFile imgFile = await file.GetFileAsync("img" + (imgData.id == 0 ? "" : (" (" + imgData.id + ")")) + ".jpg");
-                        BitmapImage bmp = await Utils.GetBMPFromFile(imgFile);
-                        WriteableBitmap wbmp = new WriteableBitmap(
-                            bmp.PixelWidth,
-                            bmp.PixelHeight
-                            );
-                        using (IRandomAccessStream stream = await imgFile.OpenAsync(FileAccessMode.Read))
-                        {
-                            await wbmp.SetSourceAsync(stream);
-                        }
-
-                        OnPageImage img = new OnPageImage(
-                            imgData.id,
-                            imgData.top,
-                            imgData.left,
-                            wbmp,
-                            page,
-                            svPageZoom,
-                            false
-                            );
-                        page.AddImageToPage(img);
-                    }
-                    
-                    await page.LoadFromFile(ink);
                     if (this.IsLoaded)
                         page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
 
@@ -959,8 +891,8 @@ namespace WID
                     true
                     );
                 currentPage!.AddImageToPage(opI);
-                pendingCreations.Add("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
-                pendingDeletions.Remove("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".rtf");
+                pendingCreations.Add("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".jpg");
+                pendingDeletions.Remove("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".jpg");
             }
         }
 
