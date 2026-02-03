@@ -239,7 +239,7 @@ namespace WID
             if (file is null)
                 return;
 
-            tbAppTitle.Text += file.DisplayName[..(file.DisplayName.Length-9)];
+            tbAppTitle.Text += Utils.GetNotebookNameFromFolder(file!);
             ShowFileStatus();
 
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
@@ -1012,7 +1012,7 @@ namespace WID
                 {
                     ["PDF file"] = (string[])[".pdf"],
                 },
-                SuggestedFileName = "Document",
+                SuggestedFileName = Utils.GetNotebookNameFromFolder(file!),
                 DefaultFileExtension = ".pdf",
             };
             StorageFile pdfFile = await pdfFilePicker.PickSaveFileAsync();
@@ -1102,7 +1102,7 @@ namespace WID
                 {
                     ["Bismuth file"] = (string[])[".bismuth"],
                 },
-                SuggestedFileName = "Pages",
+                SuggestedFileName = Utils.GetNotebookNameFromFolder(file!),
                 DefaultFileExtension = ".bismuth",
             };
             StorageFile bismuthFile = await bismuthFilePicker.PickSaveFileAsync();

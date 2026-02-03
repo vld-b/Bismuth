@@ -116,6 +116,11 @@ namespace WID
                 await bmp.SetSourceAsync(stream);
             return bmp;
         }
+
+        public static string GetNotebookNameFromFolder(StorageFolder folder)
+        {
+            return folder.DisplayName[..(folder.DisplayName.Length - 9)];
+        }
     }
 
     // Class for renaming files when saving notebooks
