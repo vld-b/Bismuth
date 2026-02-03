@@ -222,6 +222,8 @@ namespace WID
                     scrollViewer,
                     false
                     );
+                img.Width = imgData.width;
+                img.Height = imgData.height;
                 page.AddImageToPage(img);
             }
 
