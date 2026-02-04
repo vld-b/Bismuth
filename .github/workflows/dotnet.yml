@@ -57,7 +57,7 @@ jobs:
     # - name: Sign MSIX package
     #   run: signtool sign /fd SHA256 /f MyAppCert.pfx /p (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force) "*.msix"
 
-    Not needed because self-contained compilation, which is needed, doesn't work on actions
+    # Not needed because self-contained compilation, which is needed, doesn't work on actions
     - name: Upload app package artifacts
       uses: actions/upload-artifact@v4
       with:
