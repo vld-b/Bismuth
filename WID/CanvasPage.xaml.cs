@@ -306,7 +306,7 @@ namespace WID
         private void AddPage()
         {
             NotebookPage page = new NotebookPage(
-                config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID,
+                config!.GetNewPageID(),
                 2100,
                 2970,
                 config!.defaultTemplate.pattern,
@@ -330,11 +330,43 @@ namespace WID
             page.StartBringIntoView(options);
         }
 
+        private void AddPage(NotebookPage page)
+        {
+            page.hasBeenModifiedSinceSave = true;
+            config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
+            pendingDeletions.Remove(config!.pageMapping.Last().fileName);
+            if (page.hasBg)
+                pendingDeletions.Remove(config!.pageMapping.Last().GetBgName());
+            foreach (OnPageText text in page.textBoxes)
+            {
+                pendingDeletions.Remove("text" + (text.id == 0 ? "" : (" (" + text.id + ")")) + ".rtf");
+                text.hasBeenModifiedSinceSave = true;
+            }
+            foreach (OnPageImage image in page.images)
+            {
+                pendingDeletions.Remove("img" + (image.id == 0 ? "" : (" (" + image.id + ")")) + ".jpg");
+                image.hasBeenModifiedSinceSave = true;
+            }
+            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+            spPageView.Children.Add(page);
+            BringIntoViewOptions options = new BringIntoViewOptions
+            {
+                AnimationDesired = true,
+                VerticalAlignmentRatio = 0.1d,
+                HorizontalAlignmentRatio = 0.5d,
+            };
+            page.StartBringIntoView(options);
+        }
+
         private async Task AddPage(StorageFile bg)
         {
-            int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
+            // Make a safe copy of the background; in case user deletes the original file, pendingMoves and pendingRenames would not work; this fixes that
+            StorageFile safeBgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("bg", CreationCollisionOption.GenerateUniqueName);
+            await bg.CopyAndReplaceAsync(safeBgFile);
+
+            int pageId = config!.GetNewPageID();
             NotebookPage page;
-            BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(bg, 2100);
+            BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(safeBgFile, 2100);
             page = new NotebookPage(pageId, bmp)
             {
                 hasBeenModifiedSinceSave = true,
@@ -345,8 +377,8 @@ namespace WID
 
             config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
-            pendingMoves.Add(bg);
-            pendingRenames.Add(new RenameItem(bg, config.pageMapping.Last().GetBgName()));
+            pendingMoves.Add(safeBgFile);
+            pendingRenames.Add(new RenameItem(safeBgFile, config.pageMapping.Last().GetBgName()));
             // Remove background from pending deletions so it doesn't get deleted when it should be present
             pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
             pendingDeletions.Remove(config.pageMapping.Last().fileName);
@@ -366,7 +398,7 @@ namespace WID
             ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
             for (uint i = 0; i < bg.PageCount; ++i)
             {
-                int pageId = config!.usablePageIDs.Count != 0 ? config!.usablePageIDs.Pop(0) : ++config!.maxPageID;
+                int pageId = config!.GetNewPageID();
                 NotebookPage page;
                 StorageFile bgFile;
                 using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
@@ -448,6 +480,133 @@ namespace WID
 
             foreach (PageConfig currentPage in importConfig.pageMapping)
             {
+                NotebookPage page;
+                int pageId = config!.GetNewPageID();
+                if (currentPage.hasBg)
+                {
+                    BitmapImage img = new BitmapImage();
+                    ZipArchiveEntry? bgEntry = archive.GetEntry(currentPage.GetBgName());
+                    if (bgEntry is not null)
+                    {
+                        using (Stream bgStream = bgEntry.Open())
+                        {
+                            await img.SetSourceAsync(bgStream.AsRandomAccessStream());
+                        }
+                        string tempBgPath = ApplicationData.Current.TemporaryFolder.Path + "\\" + "tempBg.png";
+                        if (File.Exists(tempBgPath))
+                            File.Delete(tempBgPath);
+                        bgEntry.ExtractToFile(tempBgPath, true);
+                        StorageFile tempBgFile = await ApplicationData.Current.TemporaryFolder.GetFileAsync("tempBg.png");
+                        pendingMoves.Add(tempBgFile);
+                        pendingRenames.Add(
+                            new RenameItem(
+                                tempBgFile,
+                                "bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png"
+                                )
+                            );
+                        pendingDeletions.Remove("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png");
+                    }
+
+                    page = new NotebookPage(
+                        pageId,
+                        img
+                        );
+                    page.Width = currentPage.width;
+                    page.Height = currentPage.height;
+                }
+                else if (currentPage.hasTemplate)
+                {
+                    page = new NotebookPage(
+                        pageId,
+                        currentPage.width,
+                        currentPage.height,
+                        currentPage.pagePattern,
+                        true
+                        );
+                }
+                else
+                {
+                    page = new NotebookPage(
+                        pageId,
+                        currentPage.width,
+                        currentPage.height
+                        );
+                }
+
+                ZipArchiveEntry? pageEntry = archive.GetEntry(currentPage.fileName);
+                if (pageEntry is not null)
+                    using (Stream pageStream = pageEntry.Open())
+                        await page.LoadFromStream(pageStream.AsInputStream());
+
+                foreach (TextData text in currentPage.textBoxes)
+                {
+                    OnPageText onPageText = new OnPageText(
+                        config!.GetNewTextID(),
+                        text.width,
+                        text.height,
+                        text.top,
+                        text.left,
+                        page,
+                        svPageZoom
+                        );
+                    ZipArchiveEntry? textEntry = archive.GetEntry(text.GetFileName());
+                    if (textEntry is not null)
+                    {
+                        using (Stream textStream = textEntry.Open())
+                        {
+                            onPageText.LoadFromStream(textStream.AsRandomAccessStream());
+                        }
+                    }
+
+                    string textFileName = "text" + (onPageText.id == 0 ? "" : (" (" + onPageText.id + ")")) + ".rtf";
+                    pendingCreations.Add(textFileName);
+                    pendingDeletions.Add(textFileName);
+
+                    page.AddTextToPage(onPageText);
+                    onPageText.TextBoxGotFocus += StartTyping;
+                    onPageText.TextBoxLostFocus += StopTyping;
+                }
+
+                foreach (ImageData image in currentPage.images)
+                {
+                    ZipArchiveEntry? imageEntry = archive.GetEntry(image.GetFileName());
+                    if (imageEntry is null)
+                        continue;
+
+                    using Stream imageStream = imageEntry.Open();
+
+                    using InMemoryRandomAccessStream memStream = new InMemoryRandomAccessStream();
+                    await imageStream.CopyToAsync(memStream.AsStreamForWrite());
+                    memStream.Seek(0);
+
+                    BitmapImage bmpImage = new BitmapImage();
+                    await bmpImage.SetSourceAsync(memStream);
+                    memStream.Seek(0);
+
+                    WriteableBitmap wbmp = new WriteableBitmap(
+                        bmpImage.PixelWidth,
+                        bmpImage.PixelHeight
+                        );
+                    await wbmp.SetSourceAsync(memStream);
+                    memStream.Seek(0);
+
+                    OnPageImage onPageImage = new OnPageImage(
+                        config!.GetNewImageID(),
+                        image.top,
+                        image.left,
+                        wbmp,
+                        page,
+                        svPageZoom,
+                        true
+                        );
+                    onPageImage.Width = image.width;
+                    onPageImage.Height = image.height;
+                    page.AddImageToPage(onPageImage);
+
+                    pendingDeletions.Remove("img" + (onPageImage.id == 0 ? "" : (" (" + onPageImage.id + ")")) + ".jpg");
+                }
+
+                AddPage(page);
             }
 
             popup.Hide();
@@ -694,7 +853,7 @@ namespace WID
         {
             double pageOffset = GetCurrentPage();
             OnPageText txt = new OnPageText(
-                config!.usableTextIDs.Count == 0 ? ++config!.maxTextID : config!.usableTextIDs.Pop(0),
+                config!.GetNewTextID(),
                 500d,
                 500d,
                 Math.Min(pageOffset, currentPage!.Height - 500d), 
@@ -882,7 +1041,7 @@ namespace WID
 
                 double pageOffset = GetCurrentPage();
                 OnPageImage opI = new OnPageImage(
-                    config!.usableImageIDs.Count == 0 ? ++config!.maxImageID : config!.usableImageIDs.Pop(0),
+                    config!.GetNewImageID(),
                     Math.Min(pageOffset, currentPage!.Height - 500d),
                     (currentPage!.Width - wbmp.PixelWidth) * 0.5d,
                     wbmp,

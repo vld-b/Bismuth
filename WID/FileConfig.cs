@@ -23,6 +23,7 @@ using Windows.UI.WebUI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WID
 {
@@ -232,6 +233,21 @@ namespace WID
             return page;
         }
 
+        public int GetNewPageID()
+        {
+            return usablePageIDs.Count != 0 ? usablePageIDs.Pop(0) : ++maxPageID;
+        }
+
+        public int GetNewTextID()
+        {
+            return usableTextIDs.Count != 0 ? usableTextIDs.Pop(0) : ++maxTextID;
+        }
+
+        public int GetNewImageID()
+        {
+            return usableImageIDs.Count != 0 ? usableImageIDs.Pop(0) : ++maxImageID;
+        }
+
         public void DeletePageWithId(int id)
         {
             for (int i = 0; i < pageMapping.Count; ++i)
@@ -383,6 +399,11 @@ namespace WID
             this.top = top;
             this.left = left;
         }
+
+        public string GetFileName()
+        {
+            return "text" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".rtf";
+        }
     }
 
     public class ImageData
@@ -412,6 +433,11 @@ namespace WID
             this.height = height;
             this.top = top;
             this.left = left;
+        }
+
+        public string GetFileName()
+        {
+            return "img" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".jpg";
         }
     }
 

@@ -31,7 +31,7 @@ namespace WID
         public NotebookPage containingPage { get; private set;  }
         public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
-        public bool hasBeenModifiedSinceChange;
+        public bool hasBeenModifiedSinceSave;
         public bool isNewImage { get; private set; }
 
         public OnPageImage(int id, double top, double left, WriteableBitmap imgSource, NotebookPage containingPage, ScrollViewer pageContainer, bool isNewImage)
@@ -52,7 +52,7 @@ namespace WID
             this.pageContainer = pageContainer;
 
             this.isNewImage = isNewImage;
-            this.hasBeenModifiedSinceChange = false;
+            this.hasBeenModifiedSinceSave = false;
 
             img.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingImage), true);
             img.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingImage), true);
@@ -81,7 +81,7 @@ namespace WID
 
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            this.hasBeenModifiedSinceChange = true;
+            this.hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueDraggingImage(object sender, PointerRoutedEventArgs e)
@@ -120,7 +120,7 @@ namespace WID
         {
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            this.hasBeenModifiedSinceChange = true;
+            this.hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueResizeImage(object sender, PointerRoutedEventArgs e)
