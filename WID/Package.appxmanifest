@@ -35,11 +35,24 @@
         DisplayName="Bismuth"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="Bismuth is a Note-Taking app made for Windows 11 with special focus for Windows on ARM devices (e.g. the new Microsoft Surface Pro 11)!"
+        Description="Bismuth is a Note-Taking app made for Windows 11 with native compatibility for Windows on ARM devices (e.g. the new Microsoft Surface Pro 11)!"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png" ShortName="Bismuth"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="bismuth_file">
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="application/zip">.bismuth</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DisplayName>Bismuth ink file</uap:DisplayName>
+            <uap:Logo>Assets\icon128x128.png</uap:Logo>
+            <uap:EditFlags OpenIsSafe="true"/>
+            <uap:InfoTip>Bismuth file containing pages with ink, text and images</uap:InfoTip>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 </Package>
