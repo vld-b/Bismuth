@@ -1,4 +1,4 @@
-# This workflow will build a .NET project
+ # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: .NET
@@ -35,14 +35,14 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore WID.sln
 
-    - name: Decode signing certificate
-      run: |
-        echo "${{ secrets.SIGNING_CERTIFICATE }}" > cert.txt
-        certutil -decode cert.txt MyAppCert.pfx
+    # - name: Decode signing certificate
+    #   run: |
+    #     echo "${{ secrets.SIGNING_CERTIFICATE }}" > cert.txt
+    #     certutil -decode cert.txt MyAppCert.pfx
 
-    - name: Import signing certificate
-      run: |
-        powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
+    # - name: Import signing certificate
+    #   run: |
+    #     powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
       run: msbuild WID\WID.csproj /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
