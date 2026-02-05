@@ -7,11 +7,11 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="vld-b.bismuth"
-    Publisher="CN=vld-b"
+    Name="vld-b.Bismuth"
+    Publisher="CN=38A77537-4D84-4363-9B2C-692B1C1556A6"
     Version="0.1.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="3c46c478-c1fc-4622-bd3f-8cab22421a55" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="57c48758-b765-4480-94f6-dd7f4f2b755e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Bismuth</DisplayName>
