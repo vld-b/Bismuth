@@ -93,7 +93,7 @@ namespace WID
             ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
             dialog.Opened += (s, e) => ((Microsoft.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
             dialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
-            dialog.ShowAsync();
+            _ = dialog.ShowAsync();
             return dialog;
         }
 

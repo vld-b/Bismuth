@@ -57,7 +57,7 @@ namespace WID
                 }
                 else
                     notes = ApplicationData.Current.LocalFolder;
-                LoadNotebooks();
+                await LoadNotebooks();
             }
             else if (e.Parameter is LoadedNotebooks notebookData)
             {
@@ -174,7 +174,7 @@ namespace WID
                     new List<int>()
                     );
                 await config.SerializeToFile(file);
-                LoadNotebooks();
+                await LoadNotebooks();
                 //gvNotebooks.Items.Add(new MenuElement(newNotebook.DisplayName[..(newNotebook.DisplayName.Length - 9)], false));
             }
             catch
@@ -239,7 +239,7 @@ namespace WID
             try
             {
                 StorageFolder newFolder = await notes.CreateFolderAsync(txtbox.Text, CreationCollisionOption.FailIfExists);
-                LoadNotebooks();
+                await LoadNotebooks();
                 //gvNotebooks.Items.Add(new MenuElement(newFolder.Name, true));
             }
             catch
@@ -310,7 +310,7 @@ namespace WID
                 try
                 {
                     await (await notes.GetFolderAsync(element.itemName + (element.isFolder ? "" : ".notebook"))).RenameAsync(txtbox.Text + (element.isFolder ? "" : ".notebook"));
-                    LoadNotebooks();
+                    await LoadNotebooks();
                     //element.itemName = txtbox.Text;
                 }
                 catch
@@ -352,7 +352,7 @@ namespace WID
                 try
                 {
                     await (await notes.GetFolderAsync(element.itemName + (element.isFolder ? "" : ".notebook"))).DeleteAsync();
-                    LoadNotebooks();
+                    await LoadNotebooks();
                     //gvNotebooks.Items.Remove(element);
                 }
                 catch

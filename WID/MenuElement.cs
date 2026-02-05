@@ -26,6 +26,7 @@ namespace WID
 
         public MenuElement(string itemName, bool isFolder)
         {
+            this._itemName = itemName;
             this.itemName = itemName;
             this.isFolder = isFolder;
         }
