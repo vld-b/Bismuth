@@ -23,6 +23,7 @@
     <FileVersion>$(VersionPrefix)</FileVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AppPackages\**" />
