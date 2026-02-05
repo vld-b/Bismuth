@@ -9,7 +9,7 @@
   <Identity
     Name="vld-b.Bismuth"
     Publisher="CN=38A77537-4D84-4363-9B2C-692B1C1556A6"
-    Version="0.1.1.0" />
+    Version="0.1.7.0" />
 
   <mp:PhoneIdentity PhoneProductId="57c48758-b765-4480-94f6-dd7f4f2b755e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
