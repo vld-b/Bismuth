@@ -57,7 +57,7 @@ namespace WID
                 }
                 else
                     notes = ApplicationData.Current.LocalFolder;
-                LoadNotebooks();
+                _ = LoadNotebooks();
             }
             else if (e.Parameter is LoadedNotebooks notebookData)
             {
