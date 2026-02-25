@@ -203,7 +203,7 @@
                         <MenuFlyoutItem
                             x:Name="btUndoStroke"
                             Text="Undo"
-                            Click="UndoStroke"
+                            Click="UndoLastAction"
                             IsEnabled="False"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
@@ -216,7 +216,7 @@
                         <MenuFlyoutItem
                             x:Name="btRedoStroke"
                             Text="Redo"
-                            Click="RedoStroke"
+                            Click="RedoLastAction"
                             IsEnabled="False"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>

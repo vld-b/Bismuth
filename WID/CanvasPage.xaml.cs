@@ -66,8 +66,7 @@ namespace WID
 
         private bool finishedLoading = false;
 
-        private Stack<InkStroke> undoStack = new Stack<InkStroke>();
-        private Stack<InkStroke> redoStack = new Stack<InkStroke>();
+        private UndoRedoSystem undoRedoSystem = new UndoRedoSystem();
 
         private List<string> pendingCreations = new List<string>();
         private List<string> pendingDeletions = new List<string>();
@@ -129,15 +128,6 @@ namespace WID
         {
             tbAppTitle.Visibility = Visibility.Visible;
             pbFileStatus.Visibility = Visibility.Collapsed;
-        }
-
-        private void AddStrokeToUndoStack(InkPresenter sender, InkStrokesCollectedEventArgs args)
-        {
-            foreach (InkStroke stroke in args.Strokes)
-            {
-                undoStack.Push(stroke);
-            }
-            btUndoStroke.IsEnabled = true;
         }
 
         private void SaveFile(object sender, RoutedEventArgs e)
@@ -202,25 +192,16 @@ namespace WID
             await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully", "", 3000);
         }
 
-        private void UndoStroke(object sender, RoutedEventArgs e)
+        private void UndoLastAction(object sender, RoutedEventArgs e)
         {
-            if (undoStack.Count == 0) return;
-
-            redoStack.Push(undoStack.Peek().Clone());
-            undoStack.Pop().Selected = true;
-            //inkPres.StrokeContainer.DeleteSelected();
-            btUndoStroke.IsEnabled = undoStack.Count != 0;
-            btRedoStroke.IsEnabled = true;
+            undoRedoSystem.undoStack.Peek().Undo();
+            undoRedoSystem.redoStack.Push(undoRedoSystem.undoStack.Pop());
         }
 
-        private void RedoStroke(object sender, RoutedEventArgs e)
+        private void RedoLastAction(object sender, RoutedEventArgs e)
         {
-            if (redoStack.Count != 0) return;
-
-            undoStack.Push(redoStack.Pop());
-            //inkPres.StrokeContainer.AddStroke(undoStack.Peek());
-            btUndoStroke.IsEnabled = true;
-            btRedoStroke.IsEnabled = redoStack.Count != 0;
+            undoRedoSystem.redoStack.Peek().Redo();
+            undoRedoSystem.undoStack.Push(undoRedoSystem.redoStack.Pop());
         }
 
         private void PageBack(object sender, RoutedEventArgs e)
@@ -252,6 +233,7 @@ namespace WID
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
                     NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping);
+                    undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
                         page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
@@ -296,6 +278,8 @@ namespace WID
                 finishedLoading = true;
             }
             HideFileStatus();
+
+            undoRedoSystem.FlushStacks();
         }
 
         private void AddPageClicked(object sender, RoutedEventArgs e)
@@ -315,6 +299,8 @@ namespace WID
             {
                 hasBeenModifiedSinceSave = true,
             };
+            undoRedoSystem.RegisterPageToSystem(page, spPageView);
+
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -332,6 +318,7 @@ namespace WID
 
         private void AddPage(NotebookPage page)
         {
+            undoRedoSystem.RegisterPageToSystem(page, spPageView);
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -371,6 +358,7 @@ namespace WID
             {
                 hasBeenModifiedSinceSave = true,
             };
+            undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
@@ -419,6 +407,7 @@ namespace WID
                     {
                         hasBeenModifiedSinceSave = true,
                     };
+                    undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
@@ -532,6 +521,7 @@ namespace WID
                         currentPage.height
                         );
                 }
+                undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                 ZipArchiveEntry? pageEntry = archive.GetEntry(currentPage.fileName);
                 if (pageEntry is not null)
