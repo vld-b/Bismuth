@@ -19,25 +19,29 @@ namespace WID
 
     public sealed class UndoAddStroke : UndoObject
     {
-        public IList<InkStroke> strokes { get; private set; }
+        public List<InkStroke> strokes { get; private set; }
         public InkPresenter inkPres { get; private set; }
 
         public override void Undo()
         {
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
                 s.Selected = false;
+            List<InkStroke> clonedStrokes = new List<InkStroke>();
             foreach (InkStroke s in strokes)
+            {
                 s.Selected = true;
+                clonedStrokes.Add(s.Clone());
+            }
+            strokes = clonedStrokes;
             inkPres.StrokeContainer.DeleteSelected();
         }
 
         public override void Redo()
         {
-            foreach (InkStroke s in strokes)
-                inkPres.StrokeContainer.AddStroke(s);
+            inkPres.StrokeContainer.AddStrokes(strokes);
         }
 
-        public UndoAddStroke(IList<InkStroke> strokes, InkPresenter inkPres)
+        public UndoAddStroke(List<InkStroke> strokes, InkPresenter inkPres)
         {
             this.strokes = strokes;
             this.inkPres = inkPres;

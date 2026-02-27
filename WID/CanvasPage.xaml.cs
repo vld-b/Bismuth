@@ -66,7 +66,7 @@ namespace WID
 
         private bool finishedLoading = false;
 
-        private UndoRedoSystem undoRedoSystem = new UndoRedoSystem();
+        private UndoRedoSystem undoRedoSystem;
 
         private List<string> pendingCreations = new List<string>();
         private List<string> pendingDeletions = new List<string>();
@@ -84,6 +84,8 @@ namespace WID
             InitializeComponent();
             SetTitlebar();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
+
+            this.undoRedoSystem = new UndoRedoSystem(btUndo, btRedo);
 
             bdTextTools.GotFocus += (s, e) => {
                 ppTextTools.IsHitTestVisible = true;
@@ -194,14 +196,12 @@ namespace WID
 
         private void UndoLastAction(object sender, RoutedEventArgs e)
         {
-            undoRedoSystem.undoStack.Peek().Undo();
-            undoRedoSystem.redoStack.Push(undoRedoSystem.undoStack.Pop());
+            undoRedoSystem.Undo();
         }
 
         private void RedoLastAction(object sender, RoutedEventArgs e)
         {
-            undoRedoSystem.redoStack.Peek().Redo();
-            undoRedoSystem.undoStack.Push(undoRedoSystem.redoStack.Pop());
+            undoRedoSystem.Redo();
         }
 
         private void PageBack(object sender, RoutedEventArgs e)

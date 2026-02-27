@@ -15,23 +15,29 @@ namespace WID
         protected Stack<UndoObject> undoStack;
         protected Stack<UndoObject> redoStack;
 
-        protected Button undoBtn;
-        protected Button redoBtn;
+        protected Control btUndo;
+        protected Control btRedo;
 
         private int strokeCount = 0;
 
-        public UndoRedoSystem(Button undoBtn, Button redoBtn)
+        public UndoRedoSystem(Control btUndo, Control btRedo)
         {
             undoStack = new Stack<UndoObject>();
             redoStack = new Stack<UndoObject>();
-            this.undoBtn = undoBtn;
-            this.redoBtn = redoBtn;
+            this.btUndo = btUndo;
+            this.btRedo = btRedo;
         }
 
         private void AddDriedStrokeToUndoStack(InkPresenter inkPres, InkStrokesCollectedEventArgs e)
         {
             redoStack.Clear();
-            undoStack.Push(new UndoAddStroke((List<InkStroke>)e.Strokes, inkPres));
+            List<InkStroke> strokes = new List<InkStroke>();
+            foreach (InkStroke stroke in e.Strokes)
+            {
+                strokes.Add(stroke);
+            }
+            undoStack.Push(new UndoAddStroke(strokes, inkPres));
+            btUndo.IsEnabled = true;
         }
 
         private void AddDeletedStrokeToUndoStack(InkPresenter inkPres, InkStrokesErasedEventArgs e)
@@ -54,12 +60,34 @@ namespace WID
         {
             undoStack.Clear();
             redoStack.Clear();
+            btUndo.IsEnabled = false;
+            btRedo.IsEnabled = false;
         }
 
         public void AddToUndoStack(UndoObject undoObject)
         {
             undoStack.Push(undoObject);
-            undoBtn.IsEnabled = true;
+            btUndo.IsEnabled = true;
+            redoStack.Clear();
+            btRedo.IsEnabled = false;
+        }
+
+        public void Undo()
+        {
+            undoStack.Peek().Undo();
+            redoStack.Push(undoStack.Pop());
+            if (undoStack.Count == 0)
+                btUndo.IsEnabled = false;
+            btRedo.IsEnabled = true;
+        }
+
+        public void Redo()
+        {
+            redoStack.Peek().Redo();
+            undoStack.Push(redoStack.Pop());
+            if (redoStack.Count == 0)
+                btRedo.IsEnabled = false;
+            btUndo.IsEnabled = true;
         }
     }
 }

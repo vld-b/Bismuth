@@ -201,7 +201,7 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutSeparator />
                         <MenuFlyoutItem
-                            x:Name="btUndoStroke"
+                            x:Name="btUndo"
                             Text="Undo"
                             Click="UndoLastAction"
                             IsEnabled="False"
@@ -214,7 +214,7 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
-                            x:Name="btRedoStroke"
+                            x:Name="btRedo"
                             Text="Redo"
                             Click="RedoLastAction"
                             IsEnabled="False"
