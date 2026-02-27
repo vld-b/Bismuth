@@ -33,7 +33,7 @@
             x:Name="TitleBar"
             Background="Transparent"
             Width="Auto"
-            Height="Auto"
+            Height="36"
              >
             <TextBlock
                 x:Name="tbAppTitle"
@@ -137,6 +137,46 @@
                         Foreground="Red"
                         >
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Popup
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            HorizontalOffset="4"
+            VerticalOffset="40"
+            IsOpen="True"
+            >
+            <Border
+                BorderThickness="4"
+                CornerRadius="8"
+                >
+                <Border.Background>
+                    <AcrylicBrush
+                        BackgroundSource="HostBackdrop"
+                        TintColor="Black"
+                        TintOpacity="0.6"
+                        FallbackColor="Black"
+                        />
+                </Border.Background>
+                <StackPanel
+                    Orientation="Horizontal"
+                    Spacing="10"
+                    Margin="10"
+                    >
+                    <Button
+                        x:Name="btFloatUndo"
+                        Click="UndoLastAction"
+                        >
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10E;" />
+                    </Button>
+                    <Button
+                        x:Name="btFloatRedo"
+                        Click="RedoLastAction"
+                        >
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10D;" />
                     </Button>
                 </StackPanel>
             </Border>

@@ -29,8 +29,8 @@ namespace WID
             List<InkStroke> clonedStrokes = new List<InkStroke>();
             foreach (InkStroke s in strokes)
             {
-                s.Selected = true;
                 clonedStrokes.Add(s.Clone());
+                s.Selected = true;
             }
             strokes = clonedStrokes;
             inkPres.StrokeContainer.DeleteSelected();
@@ -50,7 +50,7 @@ namespace WID
 
     public sealed class UndoDeleteStroke : UndoObject
     {
-        public IList<InkStroke> strokes { get; private set; }
+        public List<InkStroke> strokes { get; private set; }
         public InkPresenter inkPres { get; private set; }
 
         public override void Undo()
@@ -61,19 +61,23 @@ namespace WID
         public override void Redo()
         {
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
-            {
                 s.Selected = false;
-            }
+            List<InkStroke> clonedStrokes = new List<InkStroke>();
             foreach (InkStroke s in strokes)
             {
+                clonedStrokes.Add(s.Clone());
                 s.Selected = true;
             }
+            strokes = clonedStrokes;
             inkPres.StrokeContainer.DeleteSelected();
         }
 
-        public UndoDeleteStroke(IList<InkStroke> strokes, InkPresenter inkPres)
+        public UndoDeleteStroke(List<InkStroke> strokes, InkPresenter inkPres)
         {
-            this.strokes = strokes;
+            List<InkStroke> clonedStrokes = new List<InkStroke>();
+            foreach (InkStroke s in strokes)
+                clonedStrokes.Add(s.Clone());
+            this.strokes = clonedStrokes;
             this.inkPres = inkPres;
         }
     }

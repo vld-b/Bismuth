@@ -12,20 +12,16 @@ namespace WID
 {
     public class UndoRedoSystem
     {
-        protected Stack<UndoObject> undoStack;
-        protected Stack<UndoObject> redoStack;
+        protected Stack<UndoObject> undoStack = new Stack<UndoObject>();
+        protected Stack<UndoObject> redoStack = new Stack<UndoObject>();
 
-        protected Control btUndo;
-        protected Control btRedo;
+        protected readonly List<Control> undoBtns = new List<Control>();
+        protected readonly List<Control> redoBtns = new List<Control>();
 
         private int strokeCount = 0;
 
-        public UndoRedoSystem(Control btUndo, Control btRedo)
+        public UndoRedoSystem()
         {
-            undoStack = new Stack<UndoObject>();
-            redoStack = new Stack<UndoObject>();
-            this.btUndo = btUndo;
-            this.btRedo = btRedo;
         }
 
         private void AddDriedStrokeToUndoStack(InkPresenter inkPres, InkStrokesCollectedEventArgs e)
@@ -36,14 +32,17 @@ namespace WID
             {
                 strokes.Add(stroke);
             }
-            undoStack.Push(new UndoAddStroke(strokes, inkPres));
-            btUndo.IsEnabled = true;
+            AddToUndoStack(new UndoAddStroke(strokes, inkPres));
+            SetUndoState(true);
         }
 
         private void AddDeletedStrokeToUndoStack(InkPresenter inkPres, InkStrokesErasedEventArgs e)
         {
             redoStack.Clear();
-            undoStack.Push(new UndoDeleteStroke((List<InkStroke>)e.Strokes, inkPres));
+            List<InkStroke> strokes = new List<InkStroke>();
+            foreach (InkStroke stroke in e.Strokes)
+                strokes.Add(stroke);
+            AddToUndoStack(new UndoDeleteStroke(strokes, inkPres));
         }
 
         public void RegisterPageToSystem(NotebookPage page, Panel parent)
@@ -56,20 +55,30 @@ namespace WID
             undoStack.Push(new UndoAddPages(pages, parent));
         }
 
+        public void RegisterUndoButton(Control activator)
+        {
+            undoBtns.Add(activator);
+        }
+
+        public void RegisterRedoButton(Control activator)
+        {
+            redoBtns.Add(activator);
+        }
+
         public void FlushStacks()
         {
             undoStack.Clear();
             redoStack.Clear();
-            btUndo.IsEnabled = false;
-            btRedo.IsEnabled = false;
+            SetUndoState(false);
+            SetRedoState(false);
         }
 
         public void AddToUndoStack(UndoObject undoObject)
         {
             undoStack.Push(undoObject);
-            btUndo.IsEnabled = true;
+            SetUndoState(true);
             redoStack.Clear();
-            btRedo.IsEnabled = false;
+            SetRedoState(false);
         }
 
         public void Undo()
@@ -77,8 +86,8 @@ namespace WID
             undoStack.Peek().Undo();
             redoStack.Push(undoStack.Pop());
             if (undoStack.Count == 0)
-                btUndo.IsEnabled = false;
-            btRedo.IsEnabled = true;
+                SetUndoState(false);
+            SetRedoState(true);
         }
 
         public void Redo()
@@ -86,8 +95,20 @@ namespace WID
             redoStack.Peek().Redo();
             undoStack.Push(redoStack.Pop());
             if (redoStack.Count == 0)
-                btRedo.IsEnabled = false;
-            btUndo.IsEnabled = true;
+                SetRedoState(false);
+            SetUndoState(true);
+        }
+
+        private void SetUndoState(bool state)
+        {
+            foreach (Control ctrl in undoBtns)
+                ctrl.IsEnabled = state;
+        }
+
+        private void SetRedoState(bool state)
+        {
+            foreach (Control ctrl in redoBtns)
+                ctrl.IsEnabled = state;
         }
     }
 }
