@@ -304,6 +304,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
 
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
@@ -323,6 +324,7 @@ namespace WID
         private void AddPage(NotebookPage page)
         {
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -363,6 +365,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
@@ -388,6 +391,9 @@ namespace WID
         private async Task AddPage(PdfDocument bg)
         {
             ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
+
+            List<NotebookPage> addedPages = new List<NotebookPage>();
+
             for (uint i = 0; i < bg.PageCount; ++i)
             {
                 int pageId = config!.GetNewPageID();
@@ -412,6 +418,7 @@ namespace WID
                         hasBeenModifiedSinceSave = true,
                     };
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
+                    addedPages.Add(page);
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
@@ -439,6 +446,9 @@ namespace WID
                 pendingDeletions.Remove(config.pageMapping.Last().fileName);
 
             }
+
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView));
+
             BringIntoViewOptions options = new BringIntoViewOptions
             {
                 AnimationDesired = true,
@@ -470,6 +480,8 @@ namespace WID
                 popup.Hide();
                 return;
             }
+
+            List<NotebookPage> addedPages = new List<NotebookPage>();
 
             foreach (PageConfig currentPage in importConfig.pageMapping)
             {
@@ -526,6 +538,7 @@ namespace WID
                         );
                 }
                 undoRedoSystem.RegisterPageToSystem(page, spPageView);
+                addedPages.Add(page);
 
                 ZipArchiveEntry? pageEntry = archive.GetEntry(currentPage.fileName);
                 if (pageEntry is not null)
@@ -602,6 +615,7 @@ namespace WID
 
                 AddPage(page);
             }
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView));
 
             popup.Hide();
         }
