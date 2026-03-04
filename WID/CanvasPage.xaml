@@ -506,6 +506,12 @@
                     >
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
                 </InkToolbarEraserButton>
+                <InkToolbarCustomToolButton
+                    Checked="LassoSelected"
+                    Unchecked="LassoUnselected"
+                    >
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                </InkToolbarCustomToolButton>
                 <InkToolbarCustomToggleButton
                     Checked="RulerChecked"
                     Unchecked="RulerUnchecked"

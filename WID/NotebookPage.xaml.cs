@@ -28,6 +28,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -44,11 +45,15 @@ namespace WID
         public BitmapImage? bgImage { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public List<OnPageImage> images { get; private set; } = new List<OnPageImage>();
+
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
         public InkPresenter inkPres { get; private set; }
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
+
+        private Polyline? selectionLasso;
+
         private CanvasControl? _templateCanvas;
         public CanvasControl? templateCanvas
         {
@@ -101,6 +106,9 @@ namespace WID
             currentPattern = null;
 
             this.Unloaded += (s, e) => templateCanvas = null;
+            inkPres.UnprocessedInput.PointerPressed += StartLasso;
+            inkPres.UnprocessedInput.PointerMoved += ContinueLasso;
+            inkPres.UnprocessedInput.PointerReleased += EndLasso;
         }
 
         public NotebookPage(int id) : this()
@@ -234,6 +242,30 @@ namespace WID
         private void StartedDrawingInk(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs e)
         {
             this.hasBeenModifiedSinceSave = true;
+        }
+
+        private void StartLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
+        {
+            selectionLasso = new Polyline
+            {
+                Stroke = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]),
+                StrokeThickness = 2,
+                StrokeDashArray = new DoubleCollection { 7, 3 },
+                IsHitTestVisible = false,
+            };
+            selectionLasso.Points.Add(e.CurrentPoint.RawPosition);
+            contentCanvas.Children.Add(selectionLasso);
+        }
+
+        private void ContinueLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
+        {
+            selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
+        }
+
+        private void EndLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
+        {
+            selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
+            inkPres.StrokeContainer.SelectWithPolyLine(selectionLasso.Points);
         }
     }
 }

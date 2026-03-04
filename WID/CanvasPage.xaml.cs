@@ -1266,5 +1266,17 @@ namespace WID
 
             exportingDialog.Hide();
         }
+
+        private void LassoSelected(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+        }
+
+        private void LassoUnselected(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+        }
     }
 }
