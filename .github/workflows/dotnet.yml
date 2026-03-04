@@ -35,14 +35,14 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore WID.sln
 
-    - name: Decode signing certificate
-      run: |
-        echo "${{ secrets.SIGNING_CERTIFICATE }}" > cert.txt
-        certutil -decode cert.txt MyAppCert.pfx
+    # - name: Decode signing certificate
+    #   run: |
+    #     echo "${{ secrets.SIGNING_CERTIFICATE }}" > cert.txt
+    #     certutil -decode cert.txt MyAppCert.pfx
 
-    - name: Import signing certificate
-      run: |
-        powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
+    # - name: Import signing certificate
+    #   run: |
+    #     powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
     - name: Publish project using MSBuild
       run: msbuild WID\WID.csproj /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always
@@ -57,7 +57,7 @@ jobs:
     # - name: Sign MSIX package
     #   run: signtool sign /fd SHA256 /f MyAppCert.pfx /p (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force) "*.msix"
 
-    # Not needed because self-contained compilation, which is needed, doesn't work on actions
+    # Not needed because self-contained compilation, which is needed, doesn't work on actions, still done for testing purposes
     - name: Upload app package artifacts
       uses: actions/upload-artifact@v4
       with:
