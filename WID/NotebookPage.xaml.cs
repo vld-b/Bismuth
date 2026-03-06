@@ -53,6 +53,7 @@ namespace WID
         public InkPresenterProtractor protractor { get; private set; }
 
         private Polyline? selectionLasso;
+        private ManipulateInkRect? selectionRect;
 
         private CanvasControl? _templateCanvas;
         public CanvasControl? templateCanvas
@@ -211,6 +212,13 @@ namespace WID
             contentCanvas.Children.Add(img);
         }
 
+        public void RemoveManipulationRects()
+        {
+            foreach (UIElement el in contentCanvas.Children)
+                if (el is ManipulateInkRect rect)
+                    contentCanvas.Children.Remove(el);
+        }
+
         public void RemoveTextFromPage(OnPageText text)
         {
             textBoxes.Remove(text);
@@ -246,10 +254,16 @@ namespace WID
 
         private void StartLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
         {
+            if (selectionRect is not null)
+            {
+                contentCanvas.Children.Remove(selectionRect);
+                selectionRect = null; 
+            }
+
             selectionLasso = new Polyline
             {
                 Stroke = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]),
-                StrokeThickness = 2,
+                StrokeThickness = 4,
                 StrokeDashArray = new DoubleCollection { 7, 3 },
                 IsHitTestVisible = false,
             };
@@ -266,6 +280,22 @@ namespace WID
         {
             selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
             inkPres.StrokeContainer.SelectWithPolyLine(selectionLasso.Points);
+
+            List<InkStroke> selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
+            if (selectedStrokes.Count == 0)
+            {
+                contentCanvas.Children.Remove(selectionLasso!);
+                selectionLasso = null;
+                return;
+            }
+            Rect selectionRect = selectedStrokes[0].BoundingRect;
+            foreach (InkStroke stroke in selectedStrokes)
+                selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
+
+            contentCanvas.Children.Remove(selectionLasso!);
+            selectionLasso = null;
+            this.selectionRect = new ManipulateInkRect(selectionRect, this, selectedStrokes);
+            contentCanvas.Children.Add(this.selectionRect);
         }
     }
 }

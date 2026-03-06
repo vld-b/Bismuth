@@ -1,0 +1,22 @@
+﻿<Grid
+    x:Class="WID.ManipulateInkRect"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent"
+    ManipulationMode="TranslateX,TranslateY"
+    >
+
+    <Rectangle
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        StrokeDashArray="7.0, 3.0"
+        Stroke="{StaticResource SystemAccentColor}"
+        StrokeThickness="4"
+        >
+        
+    </Rectangle>
+</Grid>

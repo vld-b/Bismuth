@@ -1276,7 +1276,10 @@ namespace WID
         private void LassoUnselected(object sender, RoutedEventArgs e)
         {
             foreach (NotebookPage page in spPageView.Children)
+            {
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                page.RemoveManipulationRects();
+            }
         }
     }
 }
