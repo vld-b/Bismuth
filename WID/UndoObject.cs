@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Input.Inking;
@@ -106,6 +107,42 @@ namespace WID
         {
             this.pages = pages;
             this.parent = parent;
+        }
+    }
+
+    public class MovedStroke
+    {
+        public InkStroke stroke;
+        public Matrix3x2 oldTransform;
+        public Matrix3x2 newTransform;
+
+        public MovedStroke(InkStroke stroke, Matrix3x2 oldTransform, Matrix3x2 newTransform)
+        {
+            this.stroke = stroke;
+            this.oldTransform = oldTransform;
+            this.newTransform = newTransform;
+        }
+    }
+
+    public sealed class UndoMoveStrokes : UndoObject
+    {
+        public List<MovedStroke> movedStrokes { get; private set; }
+
+        public UndoMoveStrokes(List<MovedStroke> movedStrokes)
+        {
+            this.movedStrokes = movedStrokes;
+        }
+
+        public override void Undo()
+        {
+            foreach (MovedStroke stroke in movedStrokes)
+                stroke.stroke.PointTransform = stroke.oldTransform;
+        }
+
+        public override void Redo()
+        {
+            foreach (MovedStroke stroke in movedStrokes)
+                stroke.stroke.PointTransform = stroke.newTransform;
         }
     }
 }

@@ -52,6 +52,8 @@ namespace WID
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
 
+        private UndoRedoSystem undoRedoSystem;
+
         private Polyline? selectionLasso;
         private ManipulateInkRect? selectionRect;
 
@@ -97,6 +99,7 @@ namespace WID
         public NotebookPage()
         {
             this.InitializeComponent();
+            this.undoRedoSystem = new UndoRedoSystem();
             this.hasBg = false;
             contentCanvas = pageContent;
             canvas = inkCanvas;
@@ -112,24 +115,25 @@ namespace WID
             inkPres.UnprocessedInput.PointerReleased += EndLasso;
         }
 
-        public NotebookPage(int id) : this()
+        public NotebookPage(int id, UndoRedoSystem undoRedoSystem) : this()
         {
             this.id = id;
+            this.undoRedoSystem = undoRedoSystem;
         }
 
 
-        public NotebookPage(int id, BitmapImage bg) : this(id)
+        public NotebookPage(int id, BitmapImage bg, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
         {
             LoadBackground(bg);
         }
 
-        public NotebookPage(int id, double width, double height) : this(id)
+        public NotebookPage(int id, double width, double height, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
         {
             this.Width = width;
             this.Height = height;
         }
 
-        public NotebookPage(int id, double width, double height, PageTemplatePattern? pattern, bool hasPattern) : this(id)
+        public NotebookPage(int id, double width, double height, PageTemplatePattern? pattern, bool hasPattern, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
         {
             this.Width = width;
             this.Height = height;
@@ -294,7 +298,7 @@ namespace WID
 
             contentCanvas.Children.Remove(selectionLasso!);
             selectionLasso = null;
-            this.selectionRect = new ManipulateInkRect(selectionRect, this, selectedStrokes);
+            this.selectionRect = new ManipulateInkRect(selectionRect, this, selectedStrokes, undoRedoSystem);
             contentCanvas.Children.Add(this.selectionRect);
         }
     }

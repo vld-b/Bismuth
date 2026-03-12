@@ -236,7 +236,7 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping);
+                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping, undoRedoSystem);
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
@@ -298,7 +298,8 @@ namespace WID
                 2100,
                 2970,
                 config!.defaultTemplate.pattern,
-                config!.defaultTemplate.pattern is not null
+                config!.defaultTemplate.pattern is not null,
+                undoRedoSystem
                 )
             {
                 hasBeenModifiedSinceSave = true,
@@ -360,7 +361,7 @@ namespace WID
             int pageId = config!.GetNewPageID();
             NotebookPage page;
             BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(safeBgFile, 2100);
-            page = new NotebookPage(pageId, bmp)
+            page = new NotebookPage(pageId, bmp, undoRedoSystem)
             {
                 hasBeenModifiedSinceSave = true,
             };
@@ -413,7 +414,7 @@ namespace WID
                     //stream.Seek(0);
                     //await wbmp.SetSourceAsync(stream);
                     //stream.Seek(0);
-                    page = new NotebookPage(pageId, bmpImage)
+                    page = new NotebookPage(pageId, bmpImage, undoRedoSystem)
                     {
                         hasBeenModifiedSinceSave = true,
                     };
@@ -514,7 +515,8 @@ namespace WID
 
                     page = new NotebookPage(
                         pageId,
-                        img
+                        img,
+                        undoRedoSystem
                         );
                     page.Width = currentPage.width;
                     page.Height = currentPage.height;
@@ -526,7 +528,8 @@ namespace WID
                         currentPage.width,
                         currentPage.height,
                         currentPage.pagePattern,
-                        true
+                        true,
+                        undoRedoSystem
                         );
                 }
                 else
@@ -534,7 +537,8 @@ namespace WID
                     page = new NotebookPage(
                         pageId,
                         currentPage.width,
-                        currentPage.height
+                        currentPage.height,
+                        undoRedoSystem
                         );
                 }
                 undoRedoSystem.RegisterPageToSystem(page, spPageView);
@@ -719,7 +723,7 @@ namespace WID
         {
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage(page.id);
+                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem);
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.Width = 200;
                 pageThumb.Height = 200;

@@ -44,7 +44,7 @@ namespace WID
         public PageThumbnail(int id, double width, double height)
         {
             this.InitializeComponent();
-            page = new NotebookPage(id, width, height);
+            page = new NotebookPage(id, width, height, new UndoRedoSystem());
             page.canvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.None;
             page.canvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
             Grid.SetRow(page, 0);
@@ -54,7 +54,7 @@ namespace WID
         public PageThumbnail(int id, double width, double height, BitmapImage bg)
         {
             this.InitializeComponent();
-            page = new NotebookPage(id, bg);
+            page = new NotebookPage(id, bg, new UndoRedoSystem());
             page.canvas.InkPresenter.InputProcessingConfiguration.Mode = Windows.UI.Input.Inking.InkInputProcessingMode.None;
             page.canvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
             Grid.SetRow(page, 0);

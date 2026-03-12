@@ -25,10 +25,15 @@ namespace WID
     public sealed partial class ManipulateInkRect : Grid
     {
         private Point? mousePos;
+        private Vector2? originalPos;
         private NotebookPage containingPage;
-        List<InkStroke> selectedStrokes;
+        private List<MovedStroke> selectedStrokes;
 
-        public ManipulateInkRect(double x, double y, double width, double height, NotebookPage containingPage, List<InkStroke> selectedStrokes)
+        private UndoRedoSystem undoRedoSystem;
+
+        private bool hasMoved = false;
+
+        public ManipulateInkRect(double x, double y, double width, double height, NotebookPage containingPage, List<InkStroke> selectedStrokes, UndoRedoSystem undoRedoSystem)
         {
             this.InitializeComponent();
 
@@ -37,14 +42,20 @@ namespace WID
             this.Width = width;
             this.Height = height;
             this.containingPage = containingPage;
-            this.selectedStrokes = selectedStrokes;
+
+            this.selectedStrokes = new List<MovedStroke>();
+            foreach (InkStroke stroke in selectedStrokes)
+                this.selectedStrokes.Add(new MovedStroke(stroke, stroke.PointTransform, Matrix3x2.Identity));
+
+            this.undoRedoSystem = undoRedoSystem;
 
             AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingInk), true);
             AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingInk), true);
             AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopDraggingInk), true);
         }
 
-        public ManipulateInkRect(Rect rect, NotebookPage containingPage, List<InkStroke> selectedStrokes) : this(rect.X, rect.Y, rect.Width, rect.Height, containingPage, selectedStrokes)
+        public ManipulateInkRect(Rect rect, NotebookPage containingPage, List<InkStroke> selectedStrokes, UndoRedoSystem undoRedoSystem)
+            : this(rect.X, rect.Y, rect.Width, rect.Height, containingPage, selectedStrokes, undoRedoSystem)
         {
         }
 
@@ -55,6 +66,7 @@ namespace WID
             //pageContainer.VerticalScrollMode = ScrollMode.Disabled;
 
             mousePos = e.GetCurrentPoint(containingPage).Position;
+            originalPos = new Vector2((float)Canvas.GetLeft(this), (float)Canvas.GetTop(this));
             ((UIElement)sender).CapturePointer(e.Pointer);
             containingPage.hasBeenModifiedSinceSave = true;
         }
@@ -68,20 +80,22 @@ namespace WID
                 double oldY = Canvas.GetTop(this);
                 Point oldMousePos = mousePos.Value;
 
-                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, Canvas.GetTop(this) + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
-                Canvas.SetLeft(this, Canvas.GetLeft(this) + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X);
+                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, originalPos!.Value.Y + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
+                Canvas.SetLeft(this, originalPos.Value.X + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X);
 
-                if (oldY != Canvas.GetTop(this))
-                {
-                    mousePos = e.GetCurrentPoint(containingPage).Position;
-                }
-                else
-                {
-                    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
-                }
+                //if (oldY != Canvas.GetTop(this))
+                //{
+                //    mousePos = e.GetCurrentPoint(containingPage).Position;
+                //}
+                //else
+                //{
+                //    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
+                //}
 
-                foreach (InkStroke stroke in selectedStrokes)
-                    stroke.PointTransform *= Matrix3x2.CreateTranslation(mousePos.Value.ToVector2() - oldMousePos.ToVector2());
+                foreach (MovedStroke stroke in selectedStrokes)
+                {
+                    stroke.stroke.PointTransform *= Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this), (float)Canvas.GetTop(this)) - originalPos!.Value);
+                }
             }
         }
 
@@ -90,7 +104,20 @@ namespace WID
             e.Handled = true;
             //pageContainer.HorizontalScrollMode = ScrollMode.Enabled;
             //pageContainer.VerticalScrollMode = ScrollMode.Enabled;
+            if (mousePos != e.GetCurrentPoint(containingPage).Position)
+            {
+                hasMoved = true;
+                foreach (MovedStroke stroke in selectedStrokes)
+                    stroke.newTransform = stroke.stroke.PointTransform;
+                undoRedoSystem.AddToUndoStack(new UndoMoveStrokes(selectedStrokes));
+            }
+
             mousePos = null;
+            originalPos = null;
+
+            foreach (MovedStroke stroke in selectedStrokes)
+                stroke.newTransform = stroke.stroke.PointTransform;
+
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
     }
