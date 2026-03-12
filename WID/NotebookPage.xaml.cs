@@ -216,11 +216,10 @@ namespace WID
             contentCanvas.Children.Add(img);
         }
 
-        public void RemoveManipulationRects()
+        public void RemoveManipulationRect()
         {
-            foreach (UIElement el in contentCanvas.Children)
-                if (el is ManipulateInkRect rect)
-                    contentCanvas.Children.Remove(el);
+            contentCanvas.Children.Remove(selectionRect);
+            this.selectionRect = null;
         }
 
         public void RemoveTextFromPage(OnPageText text)

@@ -201,11 +201,15 @@ namespace WID
         private void UndoLastAction(object sender, RoutedEventArgs e)
         {
             undoRedoSystem.Undo();
+            foreach (NotebookPage page in spPageView.Children)
+                page.RemoveManipulationRect();
         }
 
         private void RedoLastAction(object sender, RoutedEventArgs e)
         {
             undoRedoSystem.Redo();
+            foreach (NotebookPage page in spPageView.Children)
+                page.RemoveManipulationRect();
         }
 
         private void PageBack(object sender, RoutedEventArgs e)
@@ -1282,7 +1286,7 @@ namespace WID
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
-                page.RemoveManipulationRects();
+                page.RemoveManipulationRect();
             }
         }
     }
