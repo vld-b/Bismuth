@@ -28,6 +28,7 @@ namespace WID
         private Vector2? originalPos;
         private NotebookPage containingPage;
         private List<MovedStroke> selectedStrokes;
+        private float oldX, oldY;
 
         private UndoRedoSystem undoRedoSystem;
 
@@ -39,6 +40,8 @@ namespace WID
 
             Canvas.SetLeft(this, x);
             Canvas.SetTop(this, y);
+            oldX = (float)x;
+            oldY = (float)y;
             this.Width = width;
             this.Height = height;
             this.containingPage = containingPage;
@@ -77,7 +80,6 @@ namespace WID
             {
                 e.Handled = true;
 
-                double oldY = Canvas.GetTop(this);
                 Point oldMousePos = mousePos.Value;
 
                 Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, originalPos!.Value.Y + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
@@ -94,7 +96,7 @@ namespace WID
 
                 foreach (MovedStroke stroke in selectedStrokes)
                 {
-                    stroke.stroke.PointTransform *= Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this), (float)Canvas.GetTop(this)) - originalPos!.Value);
+                    stroke.stroke.PointTransform = stroke.oldTransform * Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this) - oldX, (float)Canvas.GetTop(this) - oldY));
                 }
             }
         }
