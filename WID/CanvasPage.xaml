@@ -70,6 +70,8 @@
 
             <Border
                 x:Name="bdTextTools"
+                GotFocus="ToolPopupFocused"
+                LostFocus="ToolPopupUnfocused"
                 BorderThickness="4"
                 CornerRadius="8"
                 >
@@ -134,6 +136,64 @@
                         />
                     <Button
                         Click="DeleteCurrentTextBox"
+                        Foreground="Red"
+                        >
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <Popup
+            x:Name="ppSelectionTools"
+            Loaded="ToolPopupLoaded"
+            Height="Auto"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            VerticalOffset="40"
+            IsOpen="True"
+            Opacity="1"
+            IsHitTestVisible="True"
+            >
+            <Popup.OpacityTransition>
+                <ScalarTransition />
+            </Popup.OpacityTransition>
+
+            <Border
+                x:Name="bdSelectionTools"
+                GotFocus="ToolPopupFocused"
+                LostFocus="ToolPopupUnfocused"
+                BorderThickness="4"
+                CornerRadius="8"
+                >
+                <Border.Background>
+                    <AcrylicBrush
+                        BackgroundSource="HostBackdrop"
+                        TintColor="Black"
+                        TintOpacity="0.6"
+                        FallbackColor="Black"
+                        />
+                </Border.Background>
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Stretch"
+                    Spacing="10"
+                    Margin="10"
+                    >
+                    <Button
+                        Content=" "
+                        >
+                        <Button.Flyout>
+                            <Flyout>
+                                <muxc:ColorPicker
+                                    IsAlphaEnabled="False"
+                                    />
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Button
+                        x:Name="btDeleteSelectedStrokes"
+                        Click="DeleteCurrentlySelectedStrokes"
                         Foreground="Red"
                         >
                         <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74D;" />

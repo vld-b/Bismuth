@@ -90,15 +90,6 @@ namespace WID
 
             undoRedoSystem.RegisterRedoButton(btRedo);
             undoRedoSystem.RegisterRedoButton(btFloatRedo);
-
-            bdTextTools.GotFocus += (s, e) => {
-                ppTextTools.IsHitTestVisible = true;
-                ppTextTools.Opacity = 1d;
-            };
-            bdTextTools.LostFocus += (s, e) => {
-                ppTextTools.IsHitTestVisible = false;
-                ppTextTools.Opacity = 0d;
-            };
         }
 
         private void SetTitlebar()
@@ -908,6 +899,22 @@ namespace WID
             popup.HorizontalOffset = -((FrameworkElement)popup.Child).ActualWidth / 2;
         }
 
+        private void ToolPopupFocused(object sender, RoutedEventArgs e)
+        {
+            Popup parent = (Popup)((Border)sender).Parent;
+
+            parent.IsHitTestVisible = true;
+            parent.Opacity = 1d;
+        }
+
+        private void ToolPopupUnfocused(object sender, RoutedEventArgs e)
+        {
+            Popup parent = (Popup)((Border)sender).Parent;
+
+            parent.IsHitTestVisible = false;
+            parent.Opacity = 0d;
+        }
+
         private void StartTyping(object? sender, EventArgs e)
         {
             lastEditedText = (OnPageText?)sender;
@@ -1286,6 +1293,15 @@ namespace WID
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                page.RemoveManipulationRect();
+            }
+        }
+
+        private void DeleteCurrentlySelectedStrokes(object sender, RoutedEventArgs e)
+        {
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.StrokeContainer.DeleteSelected();
                 page.RemoveManipulationRect();
             }
         }
