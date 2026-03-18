@@ -187,6 +187,7 @@
                             <Flyout>
                                 <muxc:ColorPicker
                                     IsAlphaEnabled="False"
+                                    ColorChanged="ChangeSelectedInkColor"
                                     />
                             </Flyout>
                         </Button.Flyout>

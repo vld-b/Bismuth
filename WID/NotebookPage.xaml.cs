@@ -56,6 +56,7 @@ namespace WID
 
         private Polyline? selectionLasso;
         private ManipulateInkRect? selectionRect;
+        private PageState pageState;
 
         private CanvasControl? _templateCanvas;
         public CanvasControl? templateCanvas
@@ -100,6 +101,7 @@ namespace WID
         {
             this.InitializeComponent();
             this.undoRedoSystem = new UndoRedoSystem();
+            this.pageState = new PageState();
             this.hasBg = false;
             contentCanvas = pageContent;
             canvas = inkCanvas;
@@ -115,25 +117,30 @@ namespace WID
             inkPres.UnprocessedInput.PointerReleased += EndLasso;
         }
 
-        public NotebookPage(int id, UndoRedoSystem undoRedoSystem) : this()
+        public NotebookPage(int id, UndoRedoSystem undoRedoSystem, PageState pageState)
+            : this()
         {
             this.id = id;
             this.undoRedoSystem = undoRedoSystem;
+            this.pageState = pageState;
         }
 
 
-        public NotebookPage(int id, BitmapImage bg, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
+        public NotebookPage(int id, BitmapImage bg, UndoRedoSystem undoRedoSystem, PageState pageState)
+            : this(id, undoRedoSystem, pageState)
         {
             LoadBackground(bg);
         }
 
-        public NotebookPage(int id, double width, double height, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
+        public NotebookPage(int id, double width, double height, UndoRedoSystem undoRedoSystem, PageState pageState)
+            : this(id, undoRedoSystem, pageState)
         {
             this.Width = width;
             this.Height = height;
         }
 
-        public NotebookPage(int id, double width, double height, PageTemplatePattern? pattern, bool hasPattern, UndoRedoSystem undoRedoSystem) : this(id, undoRedoSystem)
+        public NotebookPage(int id, double width, double height, PageTemplatePattern? pattern, bool hasPattern, UndoRedoSystem undoRedoSystem, PageState pageState)
+            : this(id, undoRedoSystem, pageState)
         {
             this.Width = width;
             this.Height = height;
@@ -262,6 +269,8 @@ namespace WID
                 contentCanvas.Children.Remove(selectionRect);
                 selectionRect = null; 
             }
+            pageState.selectedStrokes?.Clear();
+            pageState.selectedStrokes = null;
 
             selectionLasso = new Polyline
             {
@@ -283,22 +292,32 @@ namespace WID
         {
             selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
             inkPres.StrokeContainer.SelectWithPolyLine(selectionLasso.Points);
-
-            List<InkStroke> selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
-            if (selectedStrokes.Count == 0)
+            
+            pageState.selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
+            if (pageState.selectedStrokes.Count == 0)
             {
                 contentCanvas.Children.Remove(selectionLasso!);
                 selectionLasso = null;
                 return;
             }
-            Rect selectionRect = selectedStrokes[0].BoundingRect;
-            foreach (InkStroke stroke in selectedStrokes)
+            Rect selectionRect = pageState.selectedStrokes[0].BoundingRect;
+            foreach (InkStroke stroke in pageState.selectedStrokes)
                 selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
 
             contentCanvas.Children.Remove(selectionLasso!);
             selectionLasso = null;
-            this.selectionRect = new ManipulateInkRect(selectionRect, this, selectedStrokes, undoRedoSystem);
+            this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
             contentCanvas.Children.Add(this.selectionRect);
+        }
+    }
+
+    public class PageState
+    {
+        public List<InkStroke>? selectedStrokes = null;
+
+        public PageState()
+        {
+
         }
     }
 }

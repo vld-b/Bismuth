@@ -73,7 +73,8 @@ namespace WID
         private List<StorageFile> pendingMoves = new List<StorageFile>();
         private List<RenameItem> pendingRenames = new List<RenameItem>();
 
-        OnPageText? lastEditedText;
+        private OnPageText? lastEditedText;
+        private PageState pageState;
 
         private Task? savingTask;
 
@@ -84,6 +85,8 @@ namespace WID
             InitializeComponent();
             SetTitlebar();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
+
+            pageState = new PageState();
 
             undoRedoSystem.RegisterUndoButton(btUndo);
             undoRedoSystem.RegisterUndoButton(btFloatUndo);
@@ -231,7 +234,7 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping, undoRedoSystem);
+                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping, undoRedoSystem, pageState);
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
@@ -294,7 +297,8 @@ namespace WID
                 2970,
                 config!.defaultTemplate.pattern,
                 config!.defaultTemplate.pattern is not null,
-                undoRedoSystem
+                undoRedoSystem,
+                pageState
                 )
             {
                 hasBeenModifiedSinceSave = true,
@@ -356,7 +360,7 @@ namespace WID
             int pageId = config!.GetNewPageID();
             NotebookPage page;
             BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(safeBgFile, 2100);
-            page = new NotebookPage(pageId, bmp, undoRedoSystem)
+            page = new NotebookPage(pageId, bmp, undoRedoSystem, pageState)
             {
                 hasBeenModifiedSinceSave = true,
             };
@@ -409,7 +413,7 @@ namespace WID
                     //stream.Seek(0);
                     //await wbmp.SetSourceAsync(stream);
                     //stream.Seek(0);
-                    page = new NotebookPage(pageId, bmpImage, undoRedoSystem)
+                    page = new NotebookPage(pageId, bmpImage, undoRedoSystem, pageState)
                     {
                         hasBeenModifiedSinceSave = true,
                     };
@@ -511,7 +515,8 @@ namespace WID
                     page = new NotebookPage(
                         pageId,
                         img,
-                        undoRedoSystem
+                        undoRedoSystem,
+                        pageState
                         );
                     page.Width = currentPage.width;
                     page.Height = currentPage.height;
@@ -524,7 +529,8 @@ namespace WID
                         currentPage.height,
                         currentPage.pagePattern,
                         true,
-                        undoRedoSystem
+                        undoRedoSystem,
+                        pageState
                         );
                 }
                 else
@@ -533,7 +539,8 @@ namespace WID
                         pageId,
                         currentPage.width,
                         currentPage.height,
-                        undoRedoSystem
+                        undoRedoSystem,
+                        pageState
                         );
                 }
                 undoRedoSystem.RegisterPageToSystem(page, spPageView);
@@ -718,7 +725,7 @@ namespace WID
         {
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem);
+                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem, new PageState());
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.Width = 200;
                 pageThumb.Height = 200;
@@ -1303,6 +1310,16 @@ namespace WID
             {
                 page.inkPres.StrokeContainer.DeleteSelected();
                 page.RemoveManipulationRect();
+            }
+        }
+
+        private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
+        {
+            foreach (InkStroke stroke in pageState.selectedStrokes!)
+            {
+                InkDrawingAttributes attrs = stroke.DrawingAttributes;
+                attrs.Color = args.NewColor;
+                stroke.DrawingAttributes = attrs;
             }
         }
     }

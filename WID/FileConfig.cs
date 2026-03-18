@@ -155,7 +155,15 @@ namespace WID
             }
         }
 
-        public async Task<NotebookPage> LoadPage(StorageFolder folder, int pageIndex, ScrollViewer scrollViewer, EventHandler startTyping, EventHandler stopTyping, UndoRedoSystem undoRedoSystem)
+        public async Task<NotebookPage> LoadPage(
+            StorageFolder folder,
+            int pageIndex,
+            ScrollViewer scrollViewer,
+            EventHandler startTyping,
+            EventHandler stopTyping,
+            UndoRedoSystem undoRedoSystem,
+            PageState pageState
+            )
         {
             StorageFile ink = await folder.GetFileAsync(pageMapping[pageIndex].fileName);
             NotebookPage page;
@@ -166,7 +174,7 @@ namespace WID
                     await folder.GetFileAsync(pageMapping[pageIndex].GetBgName()),
                     (int)pageMapping[pageIndex].width
                     );
-                page = new NotebookPage(pageMapping[pageIndex].id, bgImage, undoRedoSystem);
+                page = new NotebookPage(pageMapping[pageIndex].id, bgImage, undoRedoSystem, pageState);
             }
             else
             {
@@ -176,7 +184,8 @@ namespace WID
                     pageMapping[pageIndex].height,
                     pageMapping[pageIndex].pagePattern,
                     pageMapping[pageIndex].hasTemplate,
-                    undoRedoSystem
+                    undoRedoSystem,
+                    pageState
                     );
             }
 
