@@ -225,6 +225,13 @@ namespace WID
 
         public void RemoveManipulationRect()
         {
+            if (pageState.selectedStrokes is not null)
+            {
+                foreach (InkStroke stroke in pageState.selectedStrokes!)
+                    stroke.Selected = false;
+                pageState.selectedStrokes = null;
+            }
+            pageState.currentlyActivePage = null;
             contentCanvas.Children.Remove(selectionRect);
             this.selectionRect = null;
         }
@@ -271,6 +278,7 @@ namespace WID
             }
             pageState.selectedStrokes?.Clear();
             pageState.selectedStrokes = null;
+            pageState.currentlyActivePage = this;
 
             selectionLasso = new Polyline
             {
@@ -314,6 +322,7 @@ namespace WID
     public class PageState
     {
         public List<InkStroke>? selectedStrokes = null;
+        public NotebookPage? currentlyActivePage = null;
 
         public PageState()
         {

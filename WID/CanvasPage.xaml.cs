@@ -1306,11 +1306,8 @@ namespace WID
 
         private void DeleteCurrentlySelectedStrokes(object sender, RoutedEventArgs e)
         {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.StrokeContainer.DeleteSelected();
-                page.RemoveManipulationRect();
-            }
+            pageState.currentlyActivePage!.inkPres.StrokeContainer.DeleteSelected();
+            pageState.currentlyActivePage!.RemoveManipulationRect();
         }
 
         private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
