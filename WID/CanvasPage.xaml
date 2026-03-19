@@ -152,8 +152,8 @@
             VerticalAlignment="Top"
             VerticalOffset="40"
             IsOpen="True"
-            Opacity="1"
-            IsHitTestVisible="True"
+            Opacity="0"
+            IsHitTestVisible="False"
             >
             <Popup.OpacityTransition>
                 <ScalarTransition />

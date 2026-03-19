@@ -101,7 +101,7 @@ namespace WID
         {
             this.InitializeComponent();
             this.undoRedoSystem = new UndoRedoSystem();
-            this.pageState = new PageState();
+            this.pageState = new PageState(null);
             this.hasBg = false;
             contentCanvas = pageContent;
             canvas = inkCanvas;
@@ -312,6 +312,8 @@ namespace WID
             foreach (InkStroke stroke in pageState.selectedStrokes)
                 selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
 
+            pageState.ShowPopup();
+
             contentCanvas.Children.Remove(selectionLasso!);
             selectionLasso = null;
             this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
@@ -323,10 +325,25 @@ namespace WID
     {
         public List<InkStroke>? selectedStrokes = null;
         public NotebookPage? currentlyActivePage = null;
+        public Popup? pp;
 
-        public PageState()
+        public PageState(Popup? pp)
         {
+            this.pp = pp;
+        }
 
+        public void ShowPopup()
+        {
+            pp!.Opacity = 1d;
+            pp!.IsHitTestVisible = true;
+        }
+
+        public void DeselectStrokes()
+        {
+            selectedStrokes = null;
+            currentlyActivePage = null;
+            pp!.Opacity = 0d;
+            pp!.IsHitTestVisible = false;
         }
     }
 }

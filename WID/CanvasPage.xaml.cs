@@ -86,7 +86,7 @@ namespace WID
             SetTitlebar();
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
 
-            pageState = new PageState();
+            pageState = new PageState(ppSelectionTools);
 
             undoRedoSystem.RegisterUndoButton(btUndo);
             undoRedoSystem.RegisterUndoButton(btFloatUndo);
@@ -194,6 +194,7 @@ namespace WID
 
         private void UndoLastAction(object sender, RoutedEventArgs e)
         {
+            pageState.DeselectStrokes();
             undoRedoSystem.Undo();
             foreach (NotebookPage page in spPageView.Children)
                 page.RemoveManipulationRect();
@@ -725,7 +726,7 @@ namespace WID
         {
             foreach (NotebookPage page in spPageView.Children)
             {
-                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem, new PageState());
+                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem, new PageState(null));
                 pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.Width = 200;
                 pageThumb.Height = 200;
@@ -1306,8 +1307,10 @@ namespace WID
 
         private void DeleteCurrentlySelectedStrokes(object sender, RoutedEventArgs e)
         {
+            undoRedoSystem.AddToUndoStack(new UndoDeleteStroke(pageState.selectedStrokes!, pageState.currentlyActivePage!.inkPres));
             pageState.currentlyActivePage!.inkPres.StrokeContainer.DeleteSelected();
             pageState.currentlyActivePage!.RemoveManipulationRect();
+            pageState.DeselectStrokes();
         }
 
         private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
