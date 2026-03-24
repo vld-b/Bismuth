@@ -18,6 +18,29 @@ namespace WID
         public abstract void Redo();
 
         public abstract void UpdateReferences(List<NewStrokereference> newStrokeReferences);
+        protected void UpdateStrokeReferences(List<InkStroke> strokes, List<NewStrokereference> newStrokeReferences)
+        {
+            for (int i = 0; i < strokes.Count; ++i)
+                for (int j = 0; j < newStrokeReferences.Count; ++j)
+                    if (newStrokeReferences[j].oldStroke == strokes[i])
+                        strokes[i] = newStrokeReferences[j].newStroke;
+        }
+
+        protected List<InkStroke> CloneStrokesAndUpdateReferences(List<InkStroke> strokes, EventHandler<InkStroke>? strokeAction)
+        {
+            List<InkStroke> clonedStrokes = new List<InkStroke>();
+            List<NewStrokereference> newRefs = new List<NewStrokereference>();
+            foreach (InkStroke s in strokes)
+            {
+                InkStroke clone = s.Clone();
+                clonedStrokes.Add(clone);
+                newRefs.Add(new NewStrokereference(s, clone));
+                strokeAction?.Invoke(this, s);
+            }
+            containingSystem.UpdateStrokeReferences(newRefs);
+
+            return clonedStrokes;
+        }
 
         protected UndoRedoSystem containingSystem;
 
@@ -62,18 +85,9 @@ namespace WID
         {
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
                 s.Selected = false;
-            List<InkStroke> clonedStrokes = new List<InkStroke>();
-            List<NewStrokereference> newRefs = new List<NewStrokereference>();
-            foreach (InkStroke s in strokes)
-            {
-                InkStroke clone = s.Clone();
-                clonedStrokes.Add(clone);
-                newRefs.Add(new NewStrokereference(s, clone));
-                s.Selected = true;
-            }
-            containingSystem.UpdateStrokeReferences(newRefs);
 
-            strokes = clonedStrokes;
+            strokes = CloneStrokesAndUpdateReferences(strokes, (sender, s) => s.Selected = true);
+
             inkPres.StrokeContainer.DeleteSelected();
         }
 
@@ -84,10 +98,7 @@ namespace WID
 
         public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
         {
-            for (int i = 0; i < strokes.Count; ++i)
-                for (int j = 0; j < newStrokeReferences.Count; ++j)
-                    if (newStrokeReferences[j].oldStroke == strokes[i])
-                        strokes[i] = newStrokeReferences[j].newStroke;
+            UpdateStrokeReferences(strokes, newStrokeReferences);
         }
 
         public UndoAddStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
@@ -111,42 +122,20 @@ namespace WID
         {
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
                 s.Selected = false;
-            List<InkStroke> clonedStrokes = new List<InkStroke>();
-            List<NewStrokereference> newRefs = new List<NewStrokereference>();
-            foreach (InkStroke s in strokes)
-            {
-                InkStroke clone = s.Clone();
-                clonedStrokes.Add(clone);
-                newRefs.Add(new NewStrokereference(s, clone));
-                s.Selected = true;
-            }
-            containingSystem.UpdateStrokeReferences(newRefs);
 
-            strokes = clonedStrokes;
+            strokes = CloneStrokesAndUpdateReferences(strokes, (sender, s) => s.Selected = true);
+
             inkPres.StrokeContainer.DeleteSelected();
         }
 
         public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
         {
-            for (int i = 0; i < strokes.Count; ++i)
-                for (int j = 0; j < newStrokeReferences.Count; ++j)
-                    if (newStrokeReferences[j].oldStroke == strokes[i])
-                        strokes[i] = newStrokeReferences[j].newStroke;
+            UpdateStrokeReferences(strokes, newStrokeReferences);
         }
 
         public UndoDeleteStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
         {
-            List<InkStroke> clonedStrokes = new List<InkStroke>();
-            List<NewStrokereference> newRefs = new List<NewStrokereference>();
-            foreach (InkStroke s in strokes)
-            {
-                InkStroke clone = s.Clone();
-                clonedStrokes.Add(clone);
-                newRefs.Add(new NewStrokereference(s, clone));
-            }
-            containingSystem.UpdateStrokeReferences(newRefs);
-
-            this.strokes = clonedStrokes;
+            this.strokes = CloneStrokesAndUpdateReferences(strokes, null);
             this.inkPres = inkPres;
         }
     }
