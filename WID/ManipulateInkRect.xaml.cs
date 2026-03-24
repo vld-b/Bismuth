@@ -111,7 +111,7 @@ namespace WID
                 hasMoved = true;
                 foreach (MovedStroke stroke in selectedStrokes)
                     stroke.newTransform = stroke.stroke.PointTransform;
-                undoRedoSystem.AddToUndoStack(new UndoMoveStrokes(selectedStrokes));
+                undoRedoSystem.AddToUndoStack(new UndoMoveStrokes(selectedStrokes, undoRedoSystem));
             }
 
             mousePos = null;

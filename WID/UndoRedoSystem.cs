@@ -32,7 +32,7 @@ namespace WID
             {
                 strokes.Add(stroke);
             }
-            AddToUndoStack(new UndoAddStroke(strokes, inkPres));
+            AddToUndoStack(new UndoAddStroke(strokes, inkPres, this));
             SetUndoState(true);
         }
 
@@ -42,7 +42,19 @@ namespace WID
             List<InkStroke> strokes = new List<InkStroke>();
             foreach (InkStroke stroke in e.Strokes)
                 strokes.Add(stroke);
-            AddToUndoStack(new UndoDeleteStroke(strokes, inkPres));
+            AddToUndoStack(new UndoDeleteStroke(strokes, inkPres, this));
+        }
+
+        private void SetUndoState(bool state)
+        {
+            foreach (Control ctrl in undoBtns)
+                ctrl.IsEnabled = state;
+        }
+
+        private void SetRedoState(bool state)
+        {
+            foreach (Control ctrl in redoBtns)
+                ctrl.IsEnabled = state;
         }
 
         public void RegisterPageToSystem(NotebookPage page, Panel parent)
@@ -52,12 +64,22 @@ namespace WID
 
             List<NotebookPage> pages = new List<NotebookPage>();
             pages.Add(page);
-            undoStack.Push(new UndoAddPages(pages, parent));
+            undoStack.Push(new UndoAddPages(pages, parent, this));
         }
 
         public void RegisterUndoButton(Control activator)
         {
             undoBtns.Add(activator);
+        }
+
+        public void UpdateStrokeReferences(List<NewStrokereference> newRefs)
+        {
+            foreach (UndoObject obj in undoStack)
+                if (obj is not UndoAddPages)
+                    obj.UpdateReferences(newRefs);
+            foreach (UndoObject obj in redoStack)
+                if (obj is not UndoAddPages)
+                    obj.UpdateReferences(newRefs);
         }
 
         public void RegisterRedoButton(Control activator)
@@ -97,18 +119,6 @@ namespace WID
             if (redoStack.Count == 0)
                 SetRedoState(false);
             SetUndoState(true);
-        }
-
-        private void SetUndoState(bool state)
-        {
-            foreach (Control ctrl in undoBtns)
-                ctrl.IsEnabled = state;
-        }
-
-        private void SetRedoState(bool state)
-        {
-            foreach (Control ctrl in redoBtns)
-                ctrl.IsEnabled = state;
         }
     }
 }

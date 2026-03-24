@@ -9,13 +9,48 @@ using Windows.UI.Xaml.Controls;
 
 namespace WID
 {
+    public delegate void NewRefsTrigger(List<NewStrokereference> newRefs);
+
     public abstract class UndoObject
     {
 
         public abstract void Undo();
         public abstract void Redo();
 
-        public UndoObject() { }
+        public abstract void UpdateReferences(List<NewStrokereference> newStrokeReferences);
+
+        protected UndoRedoSystem containingSystem;
+
+        public UndoObject(UndoRedoSystem containingSystem)
+        {
+            this.containingSystem = containingSystem;
+        }
+    }
+
+    public class NewStrokereference
+    {
+        public InkStroke oldStroke;
+        public InkStroke newStroke;
+
+        public NewStrokereference(InkStroke oldStroke, InkStroke newStroke)
+        {
+            this.oldStroke = oldStroke;
+            this.newStroke = newStroke;
+        }
+    }
+
+    public class MovedStroke
+    {
+        public InkStroke stroke;
+        public Matrix3x2 oldTransform;
+        public Matrix3x2 newTransform;
+
+        public MovedStroke(InkStroke stroke, Matrix3x2 oldTransform, Matrix3x2 newTransform)
+        {
+            this.stroke = stroke;
+            this.oldTransform = oldTransform;
+            this.newTransform = newTransform;
+        }
     }
 
     public sealed class UndoAddStroke : UndoObject
@@ -28,11 +63,16 @@ namespace WID
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
                 s.Selected = false;
             List<InkStroke> clonedStrokes = new List<InkStroke>();
+            List<NewStrokereference> newRefs = new List<NewStrokereference>();
             foreach (InkStroke s in strokes)
             {
-                clonedStrokes.Add(s.Clone());
+                InkStroke clone = s.Clone();
+                clonedStrokes.Add(clone);
+                newRefs.Add(new NewStrokereference(s, clone));
                 s.Selected = true;
             }
+            containingSystem.UpdateStrokeReferences(newRefs);
+
             strokes = clonedStrokes;
             inkPres.StrokeContainer.DeleteSelected();
         }
@@ -42,7 +82,15 @@ namespace WID
             inkPres.StrokeContainer.AddStrokes(strokes);
         }
 
-        public UndoAddStroke(List<InkStroke> strokes, InkPresenter inkPres)
+        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        {
+            for (int i = 0; i < strokes.Count; ++i)
+                for (int j = 0; j < newStrokeReferences.Count; ++j)
+                    if (newStrokeReferences[j].oldStroke == strokes[i])
+                        strokes[i] = newStrokeReferences[j].newStroke;
+        }
+
+        public UndoAddStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
         {
             this.strokes = strokes;
             this.inkPres = inkPres;
@@ -64,20 +112,40 @@ namespace WID
             foreach (InkStroke s in inkPres.StrokeContainer.GetStrokes())
                 s.Selected = false;
             List<InkStroke> clonedStrokes = new List<InkStroke>();
+            List<NewStrokereference> newRefs = new List<NewStrokereference>();
             foreach (InkStroke s in strokes)
             {
-                clonedStrokes.Add(s.Clone());
+                InkStroke clone = s.Clone();
+                clonedStrokes.Add(clone);
+                newRefs.Add(new NewStrokereference(s, clone));
                 s.Selected = true;
             }
+            containingSystem.UpdateStrokeReferences(newRefs);
+
             strokes = clonedStrokes;
             inkPres.StrokeContainer.DeleteSelected();
         }
 
-        public UndoDeleteStroke(List<InkStroke> strokes, InkPresenter inkPres)
+        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        {
+            for (int i = 0; i < strokes.Count; ++i)
+                for (int j = 0; j < newStrokeReferences.Count; ++j)
+                    if (newStrokeReferences[j].oldStroke == strokes[i])
+                        strokes[i] = newStrokeReferences[j].newStroke;
+        }
+
+        public UndoDeleteStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
         {
             List<InkStroke> clonedStrokes = new List<InkStroke>();
+            List<NewStrokereference> newRefs = new List<NewStrokereference>();
             foreach (InkStroke s in strokes)
-                clonedStrokes.Add(s.Clone());
+            {
+                InkStroke clone = s.Clone();
+                clonedStrokes.Add(clone);
+                newRefs.Add(new NewStrokereference(s, clone));
+            }
+            containingSystem.UpdateStrokeReferences(newRefs);
+
             this.strokes = clonedStrokes;
             this.inkPres = inkPres;
         }
@@ -103,35 +171,21 @@ namespace WID
                 parent.Children.Insert(pageIndex+i, pages[i]);
         }
 
-        public UndoAddPages(IList<NotebookPage> pages, Panel parent)
+        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UndoAddPages(IList<NotebookPage> pages, Panel parent, UndoRedoSystem containingSystem) : base(containingSystem)
         {
             this.pages = pages;
             this.parent = parent;
         }
     }
 
-    public class MovedStroke
-    {
-        public InkStroke stroke;
-        public Matrix3x2 oldTransform;
-        public Matrix3x2 newTransform;
-
-        public MovedStroke(InkStroke stroke, Matrix3x2 oldTransform, Matrix3x2 newTransform)
-        {
-            this.stroke = stroke;
-            this.oldTransform = oldTransform;
-            this.newTransform = newTransform;
-        }
-    }
-
     public sealed class UndoMoveStrokes : UndoObject
     {
         public List<MovedStroke> movedStrokes { get; private set; }
-
-        public UndoMoveStrokes(List<MovedStroke> movedStrokes)
-        {
-            this.movedStrokes = movedStrokes;
-        }
 
         public override void Undo()
         {
@@ -143,6 +197,19 @@ namespace WID
         {
             foreach (MovedStroke stroke in movedStrokes)
                 stroke.stroke.PointTransform = stroke.newTransform;
+        }
+
+        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        {
+            for (int i = 0; i < movedStrokes.Count; ++i)
+                for (int j = 0; j < newStrokeReferences.Count; ++j)
+                    if (newStrokeReferences[j].oldStroke == movedStrokes[i].stroke)
+                        movedStrokes[i].stroke = newStrokeReferences[j].newStroke;
+        }
+
+        public UndoMoveStrokes(List<MovedStroke> movedStrokes, UndoRedoSystem containingSystem) : base(containingSystem)
+        {
+            this.movedStrokes = movedStrokes;
         }
     }
 }

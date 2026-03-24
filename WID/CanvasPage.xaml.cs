@@ -305,7 +305,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
 
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
@@ -325,7 +325,7 @@ namespace WID
         private void AddPage(NotebookPage page)
         {
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -366,7 +366,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView));
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
 
             page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
             spPageView.Children.Add(page);
@@ -448,7 +448,7 @@ namespace WID
 
             }
 
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView));
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             BringIntoViewOptions options = new BringIntoViewOptions
             {
@@ -622,7 +622,7 @@ namespace WID
 
                 AddPage(page);
             }
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView));
+            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             popup.Hide();
         }
@@ -1307,7 +1307,7 @@ namespace WID
 
         private void DeleteCurrentlySelectedStrokes(object sender, RoutedEventArgs e)
         {
-            undoRedoSystem.AddToUndoStack(new UndoDeleteStroke(pageState.selectedStrokes!, pageState.currentlyActivePage!.inkPres));
+            undoRedoSystem.AddToUndoStack(new UndoDeleteStroke(pageState.selectedStrokes!, pageState.currentlyActivePage!.inkPres, undoRedoSystem));
             pageState.currentlyActivePage!.inkPres.StrokeContainer.DeleteSelected();
             pageState.currentlyActivePage!.RemoveManipulationRect();
             pageState.DeselectStrokes();
