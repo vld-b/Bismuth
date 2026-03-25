@@ -11,7 +11,6 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <PackageCertificateThumbprint>0170414422C2AC0453A830A17A687A0BB2CFFD98</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <Version>$(AssemblyVersion)</Version>
     <AssemblyName></AssemblyName>
