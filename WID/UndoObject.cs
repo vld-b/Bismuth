@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 
@@ -73,6 +75,18 @@ namespace WID
             this.stroke = stroke;
             this.oldTransform = oldTransform;
             this.newTransform = newTransform;
+        }
+    }
+
+    public class RecoloredStroke
+    {
+        public InkStroke stroke;
+        public Color oldColor;
+
+        public RecoloredStroke(InkStroke stroke, Color oldColor)
+        {
+            this.stroke = stroke;
+            this.oldColor = oldColor;
         }
     }
 
@@ -199,6 +213,46 @@ namespace WID
         public UndoMoveStrokes(List<MovedStroke> movedStrokes, UndoRedoSystem containingSystem) : base(containingSystem)
         {
             this.movedStrokes = movedStrokes;
+        }
+    }
+
+    public sealed class UndoRecolorStrokes : UndoObject
+    {
+        List<RecoloredStroke> recoloredStrokes;
+        Color newColor;
+
+        public override void Undo()
+        {
+            foreach (RecoloredStroke s in recoloredStrokes)
+            {
+                InkDrawingAttributes attrs = s.stroke.DrawingAttributes;
+                attrs.Color = s.oldColor;
+                s.stroke.DrawingAttributes = attrs;
+            }
+        }
+
+        public override void Redo()
+        {
+            foreach (RecoloredStroke s in recoloredStrokes)
+            {
+                InkDrawingAttributes attrs = s.stroke.DrawingAttributes;
+                attrs.Color = newColor;
+                s.stroke.DrawingAttributes = attrs;
+            }
+        }
+
+        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        {
+            for (int i = 0; i < recoloredStrokes.Count; ++i)
+                for (int j = 0; j < newStrokeReferences.Count; ++j)
+                    if (newStrokeReferences[j].oldStroke == recoloredStrokes[i].stroke)
+                        recoloredStrokes[i].stroke = newStrokeReferences[j].newStroke;
+        }
+
+        public UndoRecolorStrokes(List<RecoloredStroke> recoloredStrokes, Color newColor, UndoRedoSystem containingSystem) : base(containingSystem)
+        {
+            this.recoloredStrokes = recoloredStrokes;
+            this.newColor = newColor;
         }
     }
 }

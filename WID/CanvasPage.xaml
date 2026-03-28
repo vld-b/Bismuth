@@ -186,8 +186,11 @@
                         <Button.Flyout>
                             <Flyout>
                                 <muxc:ColorPicker
+                                    x:Name="cpInkColor"
                                     IsAlphaEnabled="False"
                                     ColorChanged="ChangeSelectedInkColor"
+                                    GotFocus="StartChangeSelectedInkColor"
+                                    LostFocus="StopChangeSelectedInkColor"
                                     />
                             </Flyout>
                         </Button.Flyout>
