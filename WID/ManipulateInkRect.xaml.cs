@@ -106,7 +106,6 @@ namespace WID
             //pageContainer.VerticalScrollMode = ScrollMode.Enabled;
             if (mousePos != e.GetCurrentPoint(containingPage).Position)
             {
-                hasMoved = true;
                 foreach (MovedStroke stroke in selectedStrokes)
                     stroke.newTransform = stroke.stroke.PointTransform;
                 undoRedoSystem.AddToUndoStack(new UndoMoveStrokes(selectedStrokes, undoRedoSystem));
