@@ -18,8 +18,6 @@ namespace WID
         protected readonly List<Control> undoBtns = new List<Control>();
         protected readonly List<Control> redoBtns = new List<Control>();
 
-        private int strokeCount = 0;
-
         public UndoRedoSystem()
         {
         }

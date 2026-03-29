@@ -32,8 +32,6 @@ namespace WID
 
         private UndoRedoSystem undoRedoSystem;
 
-        private bool hasMoved = false;
-
         public ManipulateInkRect(double x, double y, double width, double height, NotebookPage containingPage, List<InkStroke> selectedStrokes, UndoRedoSystem undoRedoSystem)
         {
             this.InitializeComponent();
