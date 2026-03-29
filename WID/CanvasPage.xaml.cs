@@ -75,7 +75,7 @@ namespace WID
 
         private OnPageText? lastEditedText;
         private PageState pageState;
-        private List<Windows.UI.Color>? startedChangingInkColor;
+        private List<RecoloredStroke>? recoloredStrokes;
 
         private Task? savingTask;
 
@@ -1316,12 +1316,15 @@ namespace WID
 
         private void StartChangeSelectedInkColor(object sender, RoutedEventArgs e)
         {
-            startedChangingInkColor
+            recoloredStrokes = new List<RecoloredStroke>();
+            foreach (InkStroke s in pageState.selectedStrokes!)
+                recoloredStrokes.Add(new RecoloredStroke(s, s.DrawingAttributes.Color));
         }
 
         private void StopChangeSelectedInkColor(object sender, RoutedEventArgs e)
         {
-            undoRedoSystem.AddToUndoStack(new UndoRecolorStrokes(pageState.selectedStrokes!, ))
+            undoRedoSystem.AddToUndoStack(new UndoRecolorStrokes(recoloredStrokes!, cpInkColor.Color, undoRedoSystem));
+            recoloredStrokes = null;
         }
 
         private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
