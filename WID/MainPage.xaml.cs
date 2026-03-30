@@ -46,7 +46,7 @@ namespace WID
             if (App.notebookLoadData.loadedNotebooks is null)
                 frMainMenu.Navigate(
                     typeof(NotebookList),
-                    new FolderNavigationData(null, frMainMenu),
+                    new FolderNavigationData(null, Frame),
                     new SuppressNavigationTransitionInfo()
                     );
             else
