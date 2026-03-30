@@ -43,7 +43,7 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            if (App.notebookLoadData.loadedNotebooks is null)
+            if (e.NavigationMode == NavigationMode.Back)
                 frMainMenu.Navigate(
                     typeof(NotebookList),
                     new FolderNavigationData(null, Frame),
@@ -53,10 +53,9 @@ namespace WID
             {
                 frMainMenu.Navigate(
                     typeof(NotebookList),
-                    App.notebookLoadData.loadedNotebooks,
+                    e.Parameter,
                     new SuppressNavigationTransitionInfo()
                     );
-                App.notebookLoadData.loadedNotebooks = null;
             }
         }
 
