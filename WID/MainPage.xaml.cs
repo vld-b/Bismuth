@@ -43,11 +43,21 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            frMainMenu.Navigate(
-                typeof(NotebookList),
-                e.Parameter,
-                new SuppressNavigationTransitionInfo()
-                );
+            if (App.notebookLoadData.loadedNotebooks is null)
+                frMainMenu.Navigate(
+                    typeof(NotebookList),
+                    new FolderNavigationData(null, frMainMenu),
+                    new SuppressNavigationTransitionInfo()
+                    );
+            else
+            {
+                frMainMenu.Navigate(
+                    typeof(NotebookList),
+                    App.notebookLoadData.loadedNotebooks,
+                    new SuppressNavigationTransitionInfo()
+                    );
+                App.notebookLoadData.loadedNotebooks = null;
+            }
         }
 
         private void SetTitlebar()

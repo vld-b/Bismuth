@@ -20,6 +20,7 @@ namespace WID
         /// Global app settings instance
         /// </summary>
         public static Settings AppSettings { get; private set; } = new Settings();
+        public static NotebookLoadData notebookLoadData { get; set; } = new NotebookLoadData();
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().

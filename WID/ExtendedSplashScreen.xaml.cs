@@ -33,7 +33,6 @@ namespace WID
     public sealed partial class ExtendedSplashScreen : Page
     {
         private Task? loadingTask;
-        private LoadedNotebooks? notebookData;
 
         public ExtendedSplashScreen()
         {
@@ -92,7 +91,7 @@ namespace WID
                 }
             }
 
-            this.notebookData = noteData;
+            App.notebookLoadData.loadedNotebooks = noteData;
         }
 
         private async void StartAnimation(object sender, RoutedEventArgs e)
@@ -111,8 +110,7 @@ namespace WID
                     await Task.Delay(200);
             }
             await loadingTask;
-            Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
-            notebookData = null;
+            Frame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
             Frame.BackStack.Clear();
         }
     }
@@ -155,5 +153,10 @@ namespace WID
             this.width = width;
             this.height = height;
         }
+    }
+
+    public class NotebookLoadData
+    {
+        public LoadedNotebooks? loadedNotebooks;
     }
 }
