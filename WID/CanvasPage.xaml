@@ -206,46 +206,6 @@
             </Border>
         </Popup>
 
-        <Popup
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            HorizontalOffset="4"
-            VerticalOffset="40"
-            IsOpen="True"
-            >
-            <Border
-                BorderThickness="4"
-                CornerRadius="8"
-                >
-                <Border.Background>
-                    <AcrylicBrush
-                        BackgroundSource="HostBackdrop"
-                        TintColor="Black"
-                        TintOpacity="0.6"
-                        FallbackColor="Black"
-                        />
-                </Border.Background>
-                <StackPanel
-                    Orientation="Horizontal"
-                    Spacing="10"
-                    Margin="10"
-                    >
-                    <Button
-                        x:Name="btFloatUndo"
-                        Click="UndoLastAction"
-                        >
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10E;" />
-                    </Button>
-                    <Button
-                        x:Name="btFloatRedo"
-                        Click="RedoLastAction"
-                        >
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10D;" />
-                    </Button>
-                </StackPanel>
-            </Border>
-        </Popup>
-
         <StackPanel
             Grid.Row="0"
             Height="36"
@@ -520,30 +480,70 @@
                         />
                 </Grid>
             </SplitView.Pane>
-            <ScrollViewer
-                x:Name="svPageZoom"
-                IsTabStop="True"
-                ZoomMode="Enabled"
-                MinZoomFactor="0.1"
-                MaxZoomFactor="10"
-                HorizontalScrollMode="Enabled"
-                VerticalScrollMode="Enabled"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Hidden"
-                >
-                <StackPanel
-                    x:Name="spPageView"
-                    Orientation="Vertical"
-                    Spacing="20"
+            <Grid>
+                <ScrollViewer
+                    x:Name="svPageZoom"
+                    IsTabStop="True"
+                    ZoomMode="Enabled"
+                    MinZoomFactor="0.1"
+                    MaxZoomFactor="10"
+                    HorizontalScrollMode="Enabled"
+                    VerticalScrollMode="Enabled"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Hidden"
                     >
-                    <StackPanel.ChildrenTransitions>
-                        <TransitionCollection>
-                            <EntranceThemeTransition />
-                            <ReorderThemeTransition />
-                        </TransitionCollection>
-                    </StackPanel.ChildrenTransitions>
-                </StackPanel>
-            </ScrollViewer>
+                    <StackPanel
+                        x:Name="spPageView"
+                        Orientation="Vertical"
+                        Spacing="20"
+                        >
+                        <StackPanel.ChildrenTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition />
+                                <ReorderThemeTransition />
+                            </TransitionCollection>
+                        </StackPanel.ChildrenTransitions>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Popup
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsOpen="True"
+                    >
+                    <Border
+                        BorderThickness="4"
+                        CornerRadius="8"
+                        >
+                        <Border.Background>
+                            <AcrylicBrush
+                                BackgroundSource="HostBackdrop"
+                                TintColor="Black"
+                                TintOpacity="0.6"
+                                FallbackColor="Black"
+                                />
+                        </Border.Background>
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="10"
+                            Margin="10"
+                            >
+                            <Button
+                                x:Name="btFloatUndo"
+                                Click="UndoLastAction"
+                                >
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10E;" />
+                            </Button>
+                            <Button
+                                x:Name="btFloatRedo"
+                                Click="RedoLastAction"
+                                >
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE10D;" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </Grid>
         </SplitView>
 
         <Grid
