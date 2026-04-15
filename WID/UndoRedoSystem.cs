@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -17,6 +18,11 @@ namespace WID
 
         protected readonly List<Control> undoBtns = new List<Control>();
         protected readonly List<Control> redoBtns = new List<Control>();
+
+        protected List<string> pendingCreations = new List<string>();
+        protected List<string> pendingDeletions = new List<string>();
+        protected List<StorageFile> pendingMoves = new List<StorageFile>();
+        protected List<RenameItem> pendingRenames = new List<RenameItem>();
 
         public UndoRedoSystem()
         {
@@ -53,6 +59,14 @@ namespace WID
         {
             foreach (Control ctrl in redoBtns)
                 ctrl.IsEnabled = state;
+        }
+
+        public void BindPendingFileOperationsList(List<string> pendingCreations, List<string> pendingDeletions, List<StorageFile> pendingMoves, List<RenameItem> pendingRenames)
+        {
+            this.pendingCreations = pendingCreations;
+            this.pendingDeletions = pendingDeletions;
+            this.pendingMoves = pendingMoves;
+            this.pendingRenames = pendingRenames;
         }
 
         public void RegisterPageToSystem(NotebookPage page, Panel parent)

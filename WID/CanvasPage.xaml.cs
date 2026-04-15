@@ -94,6 +94,8 @@ namespace WID
 
             undoRedoSystem.RegisterRedoButton(btRedo);
             undoRedoSystem.RegisterRedoButton(btFloatRedo);
+
+            undoRedoSystem.BindPendingFileOperationsList(pendingCreations, pendingDeletions, pendingMoves, pendingRenames);
         }
 
         private void SetTitlebar()
