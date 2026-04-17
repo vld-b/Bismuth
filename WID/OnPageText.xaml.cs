@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -24,7 +25,7 @@ namespace WID
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class OnPageText : Grid
+    public sealed partial class OnPageText : Grid, IOnPageItem
     {
         public int id { get; private set; }
         public RichEditBox TextBox;
@@ -70,6 +71,16 @@ namespace WID
         {
             containingPage.RemoveTextFromPage(this);
             containingPage.hasBeenModifiedSinceSave = true;
+        }
+
+        public double GetTop() => Canvas.GetTop(this);
+
+        public double GetLeft() => Canvas.GetLeft(this);
+
+        public void SetPos(double top, double left)
+        {
+            Canvas.SetTop(this, top);
+            Canvas.SetLeft(this, left);
         }
 
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)

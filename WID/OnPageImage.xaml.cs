@@ -22,7 +22,7 @@ namespace WID
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class OnPageImage : Grid
+    public sealed partial class OnPageImage : Grid, IOnPageItem
     {
         public int id { get; private set; }
 
@@ -61,6 +61,16 @@ namespace WID
             btResize.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartResizeImage), true);
             btResize.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueResizeImage), true);
             btResize.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopResizeImage), true);
+        }
+
+        public double GetTop() => Canvas.GetTop(this);
+
+        public double GetLeft() => Canvas.GetLeft(this);
+
+        public void SetPos(double top, double left)
+        {
+            Canvas.SetTop(this, top);
+            Canvas.SetLeft(this, left);
         }
 
         private void FocusImage(object sender, RoutedEventArgs e)
