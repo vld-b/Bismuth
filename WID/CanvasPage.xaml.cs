@@ -975,8 +975,9 @@ namespace WID
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
         {
             lastEditedText!.RemoveTextFromPage();
-            pendingCreations.Remove("text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf");
-            pendingDeletions.Add("text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf");
+            string textBoxFileName = "text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf";
+            pendingCreations.Remove(textBoxFileName);
+            pendingDeletions.Add(textBoxFileName);
             lastEditedText = null;
             ppTextTools.IsHitTestVisible = false;
             ppTextTools.Opacity = 0d;

@@ -186,7 +186,7 @@ namespace WID
             }
         }
 
-        public async Task CollectText()
+        public async Task CollectText() // TODO: Implement collecting text from textboxes and from ink
         {
             InkAnalyzer analyzer = new InkAnalyzer();
             analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
