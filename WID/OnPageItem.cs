@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace WID
 {
-    internal interface IOnPageItem
+    public interface IOnPageItem
     {
         public double GetTop();
         public double GetLeft();
         public void SetPos(double top, double left);
+        public string GetFileName();
     }
 }

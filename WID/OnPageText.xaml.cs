@@ -67,10 +67,11 @@ namespace WID
             reb.Document.LoadFromStream(Windows.UI.Text.TextSetOptions.FormatRtf, stream);
         }
 
-        public void RemoveTextFromPage()
+        public NotebookPage RemoveTextFromPage()
         {
             containingPage.RemoveTextFromPage(this);
             containingPage.hasBeenModifiedSinceSave = true;
+            return containingPage;
         }
 
         public double GetTop() => Canvas.GetTop(this);
@@ -82,6 +83,8 @@ namespace WID
             Canvas.SetTop(this, top);
             Canvas.SetLeft(this, left);
         }
+
+        public string GetFileName() => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf";
 
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
         {

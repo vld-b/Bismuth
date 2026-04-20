@@ -73,6 +73,8 @@ namespace WID
             Canvas.SetLeft(this, left);
         }
 
+        public string GetFileName() => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg";
+
         private void FocusImage(object sender, RoutedEventArgs e)
         {
 

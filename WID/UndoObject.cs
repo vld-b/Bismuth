@@ -2,25 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace WID
 {
     public delegate void NewRefsTrigger(List<NewStrokereference> newRefs);
 
+    public interface ICanUpdateStrokeReferences
+    {
+        public void UpdateStrokeReferences(List<NewStrokereference> newStrokeReferences);
+    }
+
     public abstract class UndoObject
     {
 
         public abstract void Undo();
         public abstract void Redo();
-
-        public abstract void UpdateReferences(List<NewStrokereference> newStrokeReferences);
-        protected void UpdateStrokeReferences(List<InkStroke> strokes, List<NewStrokereference> newStrokeReferences)
+        protected void UpdateStrokeReferencesCommon(List<InkStroke> strokes, List<NewStrokereference> newStrokeReferences)
         {
             for (int i = 0; i < strokes.Count; ++i)
                 for (int j = 0; j < newStrokeReferences.Count; ++j)
@@ -90,7 +93,7 @@ namespace WID
         }
     }
 
-    public sealed class UndoAddStroke : UndoObject
+    public sealed class UndoAddStroke : UndoObject, ICanUpdateStrokeReferences
     {
         public List<InkStroke> strokes { get; private set; }
         public InkPresenter inkPres { get; private set; }
@@ -110,9 +113,9 @@ namespace WID
             inkPres.StrokeContainer.AddStrokes(strokes);
         }
 
-        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        public void UpdateStrokeReferences(List<NewStrokereference> newStrokeReferences)
         {
-            UpdateStrokeReferences(strokes, newStrokeReferences);
+            UpdateStrokeReferencesCommon(strokes, newStrokeReferences);
         }
 
         public UndoAddStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
@@ -122,7 +125,7 @@ namespace WID
         }
     }
 
-    public sealed class UndoDeleteStroke : UndoObject
+    public sealed class UndoDeleteStroke : UndoObject, ICanUpdateStrokeReferences
     {
         public List<InkStroke> strokes { get; private set; }
         public InkPresenter inkPres { get; private set; }
@@ -142,9 +145,9 @@ namespace WID
             inkPres.StrokeContainer.DeleteSelected();
         }
 
-        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        public void UpdateStrokeReferences(List<NewStrokereference> newStrokeReferences)
         {
-            UpdateStrokeReferences(strokes, newStrokeReferences);
+            UpdateStrokeReferencesCommon(strokes, newStrokeReferences);
         }
 
         public UndoDeleteStroke(List<InkStroke> strokes, InkPresenter inkPres, UndoRedoSystem containingSystem) : base(containingSystem)
@@ -174,11 +177,6 @@ namespace WID
                 parent.Children.Insert(pageIndex+i, pages[i]);
         }
 
-        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
-        {
-            throw new NotImplementedException();
-        }
-
         public UndoAddPages(IList<NotebookPage> pages, Panel parent, UndoRedoSystem containingSystem) : base(containingSystem)
         {
             this.pages = pages;
@@ -186,7 +184,7 @@ namespace WID
         }
     }
 
-    public sealed class UndoMoveStrokes : UndoObject
+    public sealed class UndoMoveStrokes : UndoObject, ICanUpdateStrokeReferences
     {
         public List<MovedStroke> movedStrokes { get; private set; }
 
@@ -202,7 +200,7 @@ namespace WID
                 stroke.stroke.PointTransform = stroke.newTransform;
         }
 
-        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        public void UpdateStrokeReferences(List<NewStrokereference> newStrokeReferences)
         {
             for (int i = 0; i < movedStrokes.Count; ++i)
                 for (int j = 0; j < newStrokeReferences.Count; ++j)
@@ -216,7 +214,7 @@ namespace WID
         }
     }
 
-    public sealed class UndoRecolorStrokes : UndoObject
+    public sealed class UndoRecolorStrokes : UndoObject, ICanUpdateStrokeReferences
     {
         List<RecoloredStroke> recoloredStrokes;
         Color newColor;
@@ -241,7 +239,7 @@ namespace WID
             }
         }
 
-        public override void UpdateReferences(List<NewStrokereference> newStrokeReferences)
+        public void UpdateStrokeReferences(List<NewStrokereference> newStrokeReferences)
         {
             for (int i = 0; i < recoloredStrokes.Count; ++i)
                 for (int j = 0; j < newStrokeReferences.Count; ++j)
@@ -254,5 +252,46 @@ namespace WID
             this.recoloredStrokes = recoloredStrokes;
             this.newColor = newColor;
         }
+    }
+
+    public class UndoAddOnPageElement : UndoObject
+    {
+        private Panel parent;
+        private IOnPageItem el;
+
+        public override void Undo()
+        {
+            parent.Children.Remove((UIElement)el);
+            containingSystem.pendingCreations.Remove(el.GetFileName());
+            containingSystem.pendingDeletions.Add(el.GetFileName());
+        }
+
+        public override void Redo()
+        {
+            parent.Children.Add((UIElement)el);
+            containingSystem.pendingCreations.Add(el.GetFileName());
+            containingSystem.pendingDeletions.Remove(el.GetFileName());
+        }
+
+        public UndoAddOnPageElement(Panel parent, IOnPageItem el, UndoRedoSystem containingSystem) : base(containingSystem)
+        {
+            this.parent = parent;
+            this.el = el;
+        }
+    }
+
+    public sealed class UndoRemoveOnPageElement : UndoAddOnPageElement
+    {
+        public override void Undo()
+        {
+            base.Redo();
+        }
+
+        public override void Redo()
+        {
+            base.Undo();
+        }
+
+        public UndoRemoveOnPageElement(Panel parent, IOnPageItem el, UndoRedoSystem containingSystem) : base(parent, el, containingSystem) { }
     }
 }

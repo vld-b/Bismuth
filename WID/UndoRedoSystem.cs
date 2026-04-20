@@ -19,10 +19,10 @@ namespace WID
         protected readonly List<Control> undoBtns = new List<Control>();
         protected readonly List<Control> redoBtns = new List<Control>();
 
-        protected List<string> pendingCreations = new List<string>();
-        protected List<string> pendingDeletions = new List<string>();
-        protected List<StorageFile> pendingMoves = new List<StorageFile>();
-        protected List<RenameItem> pendingRenames = new List<RenameItem>();
+        public List<string> pendingCreations { get; private set; } = new List<string>();
+        public List<string> pendingDeletions { get; private set; } = new List<string>();
+        public List<StorageFile> pendingMoves { get; private set; } = new List<StorageFile>();
+        public List<RenameItem> pendingRenames { get; private set; } = new List<RenameItem>();
 
         public UndoRedoSystem()
         {
@@ -86,12 +86,12 @@ namespace WID
 
         public void UpdateStrokeReferences(List<NewStrokereference> newRefs)
         {
-            foreach (UndoObject obj in undoStack)
-                if (obj is not UndoAddPages)
-                    obj.UpdateReferences(newRefs);
-            foreach (UndoObject obj in redoStack)
-                if (obj is not UndoAddPages)
-                    obj.UpdateReferences(newRefs);
+            foreach (UndoObject undoObj in undoStack)
+                if (undoObj is ICanUpdateStrokeReferences updateableStrokeReferencesObj)
+                    updateableStrokeReferencesObj.UpdateStrokeReferences(newRefs);
+            foreach (UndoObject undoObj in redoStack)
+                if (undoObj is ICanUpdateStrokeReferences updateableStrokeReferencesObj)
+                    updateableStrokeReferencesObj.UpdateStrokeReferences(newRefs);
         }
 
         public void RegisterRedoButton(Control activator)

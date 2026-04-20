@@ -882,6 +882,7 @@ namespace WID
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             pendingDeletions.Remove("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
+            undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, txt, undoRedoSystem));
             txt.TextBoxGotFocus += StartTyping;
             txt.TextBoxLostFocus += StopTyping;
         }
@@ -974,8 +975,9 @@ namespace WID
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.RemoveTextFromPage();
-            string textBoxFileName = "text" + (lastEditedText!.id == 0 ? "" : (" (" + lastEditedText!.id + ")")) + ".rtf";
+            NotebookPage textBoxPage = lastEditedText!.RemoveTextFromPage();
+            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage.contentCanvas, lastEditedText!, undoRedoSystem));
+            string textBoxFileName = lastEditedText!.GetFileName();
             pendingCreations.Remove(textBoxFileName);
             pendingDeletions.Add(textBoxFileName);
             lastEditedText = null;
