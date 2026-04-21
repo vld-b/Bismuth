@@ -1304,6 +1304,7 @@ namespace WID
 
         private void LassoUnselected(object sender, RoutedEventArgs e)
         {
+            pageState.DeselectStrokes();
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;

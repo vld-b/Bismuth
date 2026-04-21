@@ -306,13 +306,14 @@ namespace WID
             {
                 contentCanvas.Children.Remove(selectionLasso!);
                 selectionLasso = null;
+                pageState.DeselectStrokes();
                 return;
             }
             Rect selectionRect = pageState.selectedStrokes[0].BoundingRect;
             foreach (InkStroke stroke in pageState.selectedStrokes)
                 selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
 
-            pageState.ShowPopup();
+            pageState.ShowInkSelectionPopup();
 
             contentCanvas.Children.Remove(selectionLasso!);
             selectionLasso = null;
@@ -332,7 +333,7 @@ namespace WID
             this.pp = pp;
         }
 
-        public void ShowPopup()
+        public void ShowInkSelectionPopup()
         {
             pp!.Opacity = 1d;
             pp!.IsHitTestVisible = true;
