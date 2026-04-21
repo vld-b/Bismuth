@@ -361,10 +361,9 @@ namespace WID
             StorageFile safeBgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("bg", CreationCollisionOption.GenerateUniqueName);
             await bg.CopyAndReplaceAsync(safeBgFile);
 
-            int pageId = config!.GetNewPageID();
             NotebookPage page;
             BitmapImage bmp = await Utils.GetBMPFromFileWithWidth(safeBgFile, 2100);
-            page = new NotebookPage(pageId, bmp, undoRedoSystem, pageState)
+            page = new NotebookPage(config!.GetNewPageID(), bmp, undoRedoSystem, pageState)
             {
                 hasBeenModifiedSinceSave = true,
             };
@@ -860,7 +859,7 @@ namespace WID
                     await AddPage(await PdfDocument.LoadFromFileAsync(file));
                 else if (file.Name.EndsWith(".bismuth"))
                     await ImportBismuth(file);
-                else
+                else // Can only be image
                 {
                     await AddPage(file);
                 }
