@@ -19,7 +19,7 @@
         IsHitTestVisible="False"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        Stretch="Fill"
+        Stretch="Uniform"
         />
 
     <InkCanvas

@@ -150,8 +150,8 @@ namespace WID
 
         public void LoadBackground(BitmapImage bg)
         {
-            this.Width = bg.PixelWidth;
-            this.Height = bg.PixelHeight;
+            this.Width = 2100;
+            this.Height = 2970;
             this.bgImage = bg;
             this.hasBg = true;
             bgImg.Source = bg;
