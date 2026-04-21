@@ -43,6 +43,7 @@ namespace WID
         public bool hasBg { get; private set; }
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
+        public Image? bgImg { get; private set; }
         public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
         public List<OnPageImage> images { get; private set; } = new List<OnPageImage>();
 
@@ -154,7 +155,15 @@ namespace WID
             this.Height = 2970;
             this.bgImage = bg;
             this.hasBg = true;
+            this.bgImg = new Image
+            {
+                IsHitTestVisible = false,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Stretch = Stretch.Uniform,
+            };
             bgImg.Source = bg;
+            Children.Insert(0, bgImg);
         }
 
         public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)

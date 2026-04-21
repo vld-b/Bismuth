@@ -14,14 +14,6 @@
     CornerRadius="40"
     >
 
-    <Image
-        x:Name="bgImg"
-        IsHitTestVisible="False"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        Stretch="Uniform"
-        />
-
     <InkCanvas
         x:Name="inkCanvas"
         />
