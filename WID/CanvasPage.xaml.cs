@@ -568,9 +568,12 @@ namespace WID
                     ZipArchiveEntry? textEntry = archive.GetEntry(text.GetFileName());
                     if (textEntry is not null)
                     {
-                        using (Stream textStream = textEntry.Open())
+                        MemoryStream memStream = new MemoryStream();
+                        textEntry.Open().CopyTo(memStream); // ZipArchiveEntry streams aren't seekable, so copy to seekable stream
+                        memStream.Seek(0, SeekOrigin.Begin);
+                        using (IRandomAccessStream textStream = memStream.AsRandomAccessStream())
                         {
-                            onPageText.LoadFromStream(textStream.AsRandomAccessStream());
+                            onPageText.LoadFromStream(textStream);
                         }
                     }
 

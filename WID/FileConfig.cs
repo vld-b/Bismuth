@@ -97,7 +97,7 @@ namespace WID
             {
                 if (txt.hasBeenModifiedSinceSave || isExporting)
                 {
-                    StorageFile rtfFile = await folder.GetFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+                    StorageFile rtfFile = await folder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
                     using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
                         txt.SaveToStream(stream);
                 }
