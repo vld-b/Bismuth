@@ -40,7 +40,10 @@ namespace WID
     public sealed partial class NotebookPage : Grid
     {
         public int id { get; private set; }
-        public bool hasBg { get; private set; }
+        public bool hasBg
+        {
+            get => bgImg is not null;
+        }
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public Image? bgImg { get; private set; }
@@ -103,7 +106,6 @@ namespace WID
             this.InitializeComponent();
             this.undoRedoSystem = new UndoRedoSystem();
             this.pageState = new PageState(null);
-            this.hasBg = false;
             contentCanvas = pageContent;
             canvas = inkCanvas;
             inkPres = inkCanvas.InkPresenter;
@@ -154,7 +156,6 @@ namespace WID
             this.Width = 2100;
             this.Height = 2970;
             this.bgImage = bg;
-            this.hasBg = true;
             this.bgImg = new Image
             {
                 IsHitTestVisible = false,
