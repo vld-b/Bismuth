@@ -192,7 +192,7 @@ namespace WID
             await Utils.RenamePending(pendingRenames);
 
             popup.Hide();
-            await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully", "", 3000);
+            await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
         }
 
         private void UndoLastAction(object sender, RoutedEventArgs e)
@@ -513,6 +513,11 @@ namespace WID
                                 )
                             );
                         pendingDeletions.Remove("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png");
+                    } else
+                    {
+                        popup.Hide();
+                        await Utils.ShowTeachingTip(ttInfoPopup, "Import failed ❌", "Corrupt file provided", 3000);
+                        return;
                     }
 
                     page = new NotebookPage(
