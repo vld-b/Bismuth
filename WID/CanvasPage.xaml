@@ -571,25 +571,27 @@
                             <Button
                                 Width="48"
                                 Height="48"
+                                Padding="0"
                                 >
                                 <Grid
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE88F;" />
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE76D;" />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" Foreground="Black" FontFamily="Segoe MDL2 Assets" Glyph="&#xE88F;" />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE76D;" />
                                 </Grid>
                             </Button>
                             <Button
                                 Width="48"
                                 Height="48"
+                                Padding="0"
                                 >
                                 <Grid
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE891;" />
-                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7E6;" />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE891;" />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE7E6;" />
                                 </Grid>
                             </Button>
                         </StackPanel>
