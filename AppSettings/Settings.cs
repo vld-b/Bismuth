@@ -71,6 +71,21 @@ namespace AppSettings
             }
         }
 
+        private HomeScreenThumbnailSize _homescreenThumbnailSize;
+        public HomeScreenThumbnailSize homescreenThumbnailSize
+        {
+            get => _homescreenThumbnailSize;
+            set
+            {
+                if (_homescreenThumbnailSize != value)
+                {
+                    _homescreenThumbnailSize = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -80,7 +95,8 @@ namespace AppSettings
 
         public Settings()
         {
-            inputDevices = CoreInputDeviceTypes.None;
+            configVersion = 0;
+            inputDevices = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen;
             _drawingColors = new ObservableCollection<Color>();
         }
 
@@ -101,11 +117,11 @@ namespace AppSettings
             });
         }
 
-        public void Flush()
+        public async Task Flush()
         {
             _cts?.Cancel();
             _cts = null;
-            _ = SaveSettings();
+            await SaveSettings();
         }
 
         private async Task SaveSettings()
@@ -129,20 +145,7 @@ namespace AppSettings
                         );
             else
             {
-                settings = new Settings
-                {
-                    configVersion = 2,
-                    inputDevices = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen,
-                    drawingColors = new ObservableCollection<Color>
-                    {
-                        Colors.Black,
-                        Colors.Blue,
-                        Colors.Red,
-                        Colors.Green,
-                        Colors.Yellow,
-                    },
-                    tipSize = 4d,
-                };
+                settings = SettingsConfigUpgrader.UpgradeToLatest(new Settings());
                 configWasPresent = false;
             }
 
@@ -171,8 +174,32 @@ namespace AppSettings
                 panel.Children.Add(button);
             }
         }
+
+        public void GetHomescreenThumbnailSizeAllowedWidths(out double minWidth, out double maxWidth)
+        {
+            if (homescreenThumbnailSize == HomeScreenThumbnailSize.Small)
+            {
+                minWidth = 216d;
+                maxWidth = 360d;
+            } else if (homescreenThumbnailSize == HomeScreenThumbnailSize.Medium)
+            {
+                minWidth = 324d;
+                maxWidth = 540d;
+            } else
+            {
+                minWidth = 432d;
+                maxWidth = 720d;
+            }
+        }
     }
 
     [JsonSerializable(typeof(Settings))]
     internal partial class SettingsJsonContext : JsonSerializerContext { }
+
+    public enum HomeScreenThumbnailSize
+    {
+        Small,
+        Medium,
+        Large,
+    }
 }

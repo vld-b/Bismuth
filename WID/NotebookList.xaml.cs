@@ -38,6 +38,8 @@ namespace WID
         private int noteCounter = 0;
         private List<NotebookPage> templates = new List<NotebookPage>();
 
+        private double minThumbWidth, maxThumbWidth;
+
         public NotebookList()
         {
             InitializeComponent();
@@ -46,6 +48,8 @@ namespace WID
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            App.AppSettings.GetHomescreenThumbnailSizeAllowedWidths(out minThumbWidth, out maxThumbWidth);
 
             if (e.Parameter is FolderNavigationData folderInfo)
             {
@@ -79,14 +83,12 @@ namespace WID
         {
             if (gvNotebooks.ItemsPanelRoot is ItemsWrapGrid panel)
             {
-                double minWidth = 324d;
-                double maxWidth = 540d;
 
-                int columns = Math.Max(1, (int)(e.NewSize.Width / minWidth));
+                int columns = Math.Max(1, (int)(e.NewSize.Width / minThumbWidth));
 
                 double itemWidth = e.NewSize.Width / columns;
 
-                itemWidth = Math.Max(minWidth, Math.Min(maxWidth, itemWidth));
+                itemWidth = Math.Max(minThumbWidth, Math.Min(maxThumbWidth, itemWidth));
 
                 panel.ItemWidth = itemWidth;
                 panel.ItemHeight = double.NaN;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppSettings;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,13 @@ namespace WID
             ["Touch"] = CoreInputDeviceTypes.Touch,
         };
 
+        private readonly Dictionary<string, HomeScreenThumbnailSize> homescreenThumbnailSizes = new Dictionary<string, HomeScreenThumbnailSize>
+        {
+            ["Small"] = HomeScreenThumbnailSize.Small,
+            ["Medium"] = HomeScreenThumbnailSize.Medium,
+            ["Large"] = HomeScreenThumbnailSize.Large,
+        };
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -37,6 +45,8 @@ namespace WID
             cbInputMouse.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Mouse) != 0;
             cbInputPen.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Pen) != 0;
             cbInputTouch.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Touch) != 0;
+
+            cbxHomeScreenThumbnailSize.SelectedItem = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -56,6 +66,11 @@ namespace WID
         {
             CheckBox cb = (CheckBox)sender;
             App.AppSettings.inputDevices &= ~(inputDeviceTypes[(string)cb.Content]);
+        }
+
+        private void ChangeHomescreenThumbnailSize(object sender, SelectionChangedEventArgs e)
+        {
+            App.AppSettings.homescreenThumbnailSize = homescreenThumbnailSizes[(string)e.AddedItems[0]];
         }
     }
 }

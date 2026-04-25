@@ -88,11 +88,11 @@ namespace WID
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 
-            AppSettings.Flush();
+            await AppSettings.Flush();
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
