@@ -179,6 +179,7 @@
                             VerticalAlignment="Center"
                             HorizontalAlignment="Stretch"
                             FontSize="20"
+                            FontWeight="SemiBold"
                             Grid.Row="1"
                             />
                     </Grid>
