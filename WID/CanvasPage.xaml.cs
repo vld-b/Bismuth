@@ -734,15 +734,15 @@ namespace WID
 
         private void ThumbnailGridViewLoaded(object sender, RoutedEventArgs e)
         {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem, new PageState(null));
-                pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
-                pageThumb.Width = 200;
-                pageThumb.Height = 200;
-                gvThumbnails.Items.Clear();
-                gvThumbnails.Items.Add(pageThumb);
-            }
+            //foreach (NotebookPage page in spPageView.Children)
+            //{
+            //    NotebookPage pageThumb = new NotebookPage(page.id, undoRedoSystem, new PageState(null));
+            //    pageThumb.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
+            //    pageThumb.Width = 200;
+            //    pageThumb.Height = 200;
+            //    gvThumbnails.Items.Clear();
+            //    gvThumbnails.Items.Add(pageThumb);
+            //}
         }
 
         private double GetCurrentPage()
@@ -818,15 +818,9 @@ namespace WID
             }
 
             config!.DeletePageWithId(args.id);
-            if (args.id == 0)
-            {
-                pendingDeletions.Add("page.gif");
-                pendingDeletions.Add("bg.jpg");
-            } else
-            {
-                pendingDeletions.Add("page (" + args.id + ").gif");
-                pendingDeletions.Add("bg (" + args.id + ").jpg");
-            }
+
+            pendingDeletions.Add("page" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".gif");
+            pendingDeletions.Add("bg" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".png");
         }
 
         private async void OpenCameraForFileImport(object sender, RoutedEventArgs e)
