@@ -79,8 +79,8 @@ namespace WID
         {
             if (gvNotebooks.ItemsPanelRoot is ItemsWrapGrid panel)
             {
-                double minWidth = 432d;
-                double maxWidth = 720d;
+                double minWidth = 324d;
+                double maxWidth = 540d;
 
                 int columns = Math.Max(1, (int)(e.NewSize.Width / minWidth));
 

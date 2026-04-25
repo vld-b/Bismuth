@@ -154,8 +154,8 @@
                             </Button.Flyout>
                         </Button>
                         <Viewbox
-                            Stretch="UniformToFill"
-                            Margin="50"
+                            Stretch="Uniform"
+                            Margin="0, 50, 0, 10"
                             Grid.Row="0"
                             >
                             <Grid>
@@ -178,8 +178,7 @@
                             TextAlignment="Center"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Stretch"
-                            Margin="10"
-                            FontSize="18"
+                            FontSize="20"
                             Grid.Row="1"
                             />
                     </Grid>
