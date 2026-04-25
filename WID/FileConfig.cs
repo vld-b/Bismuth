@@ -269,6 +269,17 @@ namespace WID
             {
                 if (pageMapping[i].id == id)
                 {
+                    PageConfig deletedConfig = pageMapping[i];
+
+                    foreach (TextData txt in deletedConfig.textBoxes)
+                    {
+                        ReregisterTextId(txt.id);
+                    }
+                    foreach (ImageData img in deletedConfig.images)
+                    {
+                        ReregisterImageId(img.id);
+                    }
+
                     pageMapping.RemoveAt(i);
                     break;
                 }
@@ -277,6 +288,22 @@ namespace WID
                 --maxPageID;
             else
                 usablePageIDs.Add(id);
+        }
+
+        public void ReregisterTextId(int id)
+        {
+            if (id == maxTextID)
+                --maxTextID;
+            else
+                usableTextIDs.Add(id);
+        }
+
+        public void ReregisterImageId(int id)
+        {
+            if (id == maxImageID)
+                --maxImageID;
+            else
+                usableImageIDs.Add(id);
         }
 
         public async Task SerializeToFile(StorageFolder folder)

@@ -814,6 +814,17 @@ namespace WID
             {
                 if (page.id == args.id)
                 {
+                    NotebookPage deletedPage = (NotebookPage)spPageView.Children[i];
+
+                    foreach (OnPageText txt in deletedPage.textBoxes)
+                    {
+                        pendingDeletions.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+                    }
+                    foreach (OnPageImage img in deletedPage.images)
+                    {
+                        pendingDeletions.Add("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg");
+                    }
+
                     spPageView.Children.RemoveAt(i);
                     break;
                 }
