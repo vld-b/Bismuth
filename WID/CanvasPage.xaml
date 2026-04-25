@@ -543,6 +543,58 @@
                         </StackPanel>
                     </Border>
                 </Popup>
+
+                <Popup
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    VerticalOffset="-32"
+                    IsOpen="False"
+                    Loaded="InkToolbarPopupLoaded"
+                    >
+                    <Border
+                        BorderThickness="4"
+                        CornerRadius="8"
+                        >
+                        <Border.Background>
+                            <AcrylicBrush
+                                BackgroundSource="HostBackdrop"
+                                TintColor="Black"
+                                TintOpacity="0.6"
+                                FallbackColor="Black"
+                                />
+                        </Border.Background>
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="2"
+                            Margin="2"
+                            >
+                            <Button
+                                Width="48"
+                                Height="48"
+                                >
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE88F;" />
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE76D;" />
+                                </Grid>
+                            </Button>
+                            <Button
+                                Width="48"
+                                Height="48"
+                                >
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE891;" />
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7E6;" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </Grid>
         </SplitView>
 

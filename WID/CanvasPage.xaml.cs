@@ -1357,5 +1357,10 @@ namespace WID
                 stroke.DrawingAttributes = attrs;
             }
         }
+
+        private void InkToolbarPopupLoaded(object sender, RoutedEventArgs e)
+        {
+            ToolPopupLoaded(sender, e);
+        }
     }
 }
