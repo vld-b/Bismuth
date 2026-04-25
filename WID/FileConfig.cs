@@ -80,12 +80,17 @@ namespace WID
             this.usableImageIDs = usableImageIDs;
         }
 
-        public async Task AddPageWhileSaving(NotebookPage page, StorageFolder folder, bool isExporting)
+        public async Task AddPageWhileSaving(NotebookPage page, StorageFolder destFolder, StorageFolder originFolder, bool isExporting)
         {
             if (page.hasBeenModifiedSinceSave || isExporting)
             {
-                StorageFile pageFile = await folder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
+                StorageFile pageFile = await destFolder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
                 await page.SaveToFile(pageFile);
+            }
+            if (isExporting && page.hasBg)
+            {
+                StorageFile bgFile = await originFolder.GetFileAsync("bg" + (page.id == 0 ? "" : " (" + page.id + ")") + ".png");
+                await bgFile.CopyAsync(destFolder);
             }
 
             PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
@@ -97,7 +102,7 @@ namespace WID
             {
                 if (txt.hasBeenModifiedSinceSave || isExporting)
                 {
-                    StorageFile rtfFile = await folder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
+                    StorageFile rtfFile = await destFolder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
                     using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
                         txt.SaveToStream(stream);
                 }
@@ -126,7 +131,7 @@ namespace WID
                 if (!img.isNewImage && !isExporting) // Only save image if necessary
                     continue;
 
-                StorageFile currentImgFile = await folder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
+                StorageFile currentImgFile = await destFolder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
                 using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
                 {
                     BitmapEncoder enc = await BitmapEncoder.CreateAsync(

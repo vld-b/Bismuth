@@ -160,7 +160,7 @@ namespace WID
 
             foreach (NotebookPage page in spPageView.Children)
             {
-                await config!.AddPageWhileSaving(page, file, false);
+                await config!.AddPageWhileSaving(page, file, file, false);
             }
 
             if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
@@ -498,7 +498,10 @@ namespace WID
                     {
                         using (Stream bgStream = bgEntry.Open())
                         {
-                            await img.SetSourceAsync(bgStream.AsRandomAccessStream());
+                            InMemoryRandomAccessStream memStream = new InMemoryRandomAccessStream();
+                            bgStream.CopyTo(memStream.AsStreamForWrite()); // ZipArchiveEntry streams aren't seekable, so copy to seekable stream
+                            memStream.Seek(0);
+                            await img.SetSourceAsync(memStream);
                         }
                         string tempBgPath = ApplicationData.Current.TemporaryFolder.Path + "\\" + "tempBg.png";
                         if (File.Exists(tempBgPath))
@@ -1286,7 +1289,7 @@ namespace WID
 
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
 
-                await exportConfig.AddPageWhileSaving(currentPage, tempFolder, true);
+                await exportConfig.AddPageWhileSaving(currentPage, tempFolder, file!, true);
             }
             StorageFile configFile = await tempFolder.CreateFileAsync("config.json");
             await exportConfig.SerializeToFile(configFile);
