@@ -569,6 +569,7 @@
                             Margin="2"
                             >
                             <Button
+                                Click="ChangeToInkTool"
                                 Width="48"
                                 Height="48"
                                 Padding="0"
@@ -577,11 +578,17 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" Foreground="Black" FontFamily="Segoe MDL2 Assets" Glyph="&#xE88F;" />
+                                    <FontIcon
+                                        x:Name="fiInkTool"
+                                        Style="{StaticResource InkToolbarIcon}"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Glyph="&#xE88F;"
+                                        />
                                     <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE76D;" />
                                 </Grid>
                             </Button>
                             <Button
+                                Click="ChangeToHighlightTool"
                                 Width="48"
                                 Height="48"
                                 Padding="0"
@@ -590,7 +597,12 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE891;" />
+                                    <FontIcon
+                                        x:Name="fiHighlightTool"
+                                        Style="{StaticResource InkToolbarIcon}"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Glyph="&#xE891;"
+                                        />
                                     <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE7E6;" />
                                 </Grid>
                             </Button>

@@ -1362,5 +1362,37 @@ namespace WID
         {
             ToolPopupLoaded(sender, e);
         }
+
+        private void ChangeToInkTool(object sender, RoutedEventArgs e)
+        {
+            InkDrawingAttributes attrs = new InkDrawingAttributes
+            {
+                PenTip = PenTipShape.Circle,
+                DrawAsHighlighter = false,
+                Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                Size = new Windows.Foundation.Size(4, 4),
+            };
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.UpdateDefaultDrawingAttributes(attrs);
+            }
+            fiInkTool.Foreground = new SolidColorBrush(attrs.Color);
+        }
+
+        private void ChangeToHighlightTool(object sender, RoutedEventArgs e)
+        {
+            InkDrawingAttributes attrs = new InkDrawingAttributes
+            {
+                PenTip = PenTipShape.Rectangle,
+                DrawAsHighlighter = true,
+                Color = Windows.UI.Color.FromArgb(255, 255, 255, 0),
+                Size = new Windows.Foundation.Size(5, 20),
+            };
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.UpdateDefaultDrawingAttributes(attrs);
+            }
+            fiHighlightTool.Foreground = new SolidColorBrush(attrs.Color);
+        }
     }
 }
