@@ -26,5 +26,11 @@ namespace Shared
                 this.Children.Add(button);
             }
         }
+
+        public void UpdateButtonIndices()
+        {
+            for (int i = 0; i < Children.Count; ++i)
+                ((ColorPickerButton)Children[i]).btIndex = i;
+        }
     }
 }

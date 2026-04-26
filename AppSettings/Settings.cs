@@ -159,20 +159,22 @@ namespace AppSettings
             return settings;
         }
 
-        public void LoadColorsIntoStackPanel(StackPanel panel, InkToolbar inkToolbar, ChangeColorEvent method, SimpleColorPicker parent)
+        public void LoadColorsIntoStackPanel(SimpleColorPicker panel, ChangeColorEvent method, SimpleColorPicker parent)
         {
             panel.Children.Clear();
             foreach (Color color in this.drawingColors)
             {
-                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), inkToolbar, parent);
+                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), parent);
                 button.RemoveColor += (s, e) =>
                 {
                     this.drawingColors.Remove(s.Fill.Color);
                     panel.Children.Remove(s);
+                    panel.UpdateButtonIndices();
                 };
                 button.ChangeColor += method;
                 panel.Children.Add(button);
             }
+            panel.UpdateButtonIndices();
         }
 
         public void GetHomescreenThumbnailSizeAllowedWidths(out double minWidth, out double maxWidth)

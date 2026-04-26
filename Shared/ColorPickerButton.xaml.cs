@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Shapes;
 namespace Shared
 {
     public delegate void RemoveColorEvent(ColorPickerButton button, EventArgs args);
-    public delegate void ChangeColorEvent(ColorPickerButton sender, Color color);
+    public delegate void ChangeColorEvent(ColorPickerButton sender, ChangeColorData changeColorData);
 
     public partial class ColorPickerButton : Button
     {
@@ -37,21 +37,19 @@ namespace Shared
             }
         }
 
-        private readonly InkToolbar inkToolbar;
-
         public RemoveColorEvent? RemoveColor;
         public ChangeColorEvent? ChangeColor;
 
         SimpleColorPicker parent;
 
         public bool hasBeenSelected = false;
+        public int btIndex = 0;
 
-        public ColorPickerButton(SolidColorBrush Fill, InkToolbar inkToolbar, SimpleColorPicker parent)
+        public ColorPickerButton(SolidColorBrush Fill, SimpleColorPicker parent)
         {
             this.InitializeComponent();
             this.Fill = Fill;
             colorPicker.Color = Fill.Color;
-            this.inkToolbar = inkToolbar;
             this.parent = parent;
         }
 
@@ -76,13 +74,27 @@ namespace Shared
                 hasBeenSelected = true;
             }
 
-            ChangeColor?.Invoke(this, Fill.Color);
+            ChangeColor?.Invoke(this, new ChangeColorData(Fill.Color, btIndex, false));
         }
 
         private void ChooseNewColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
         {
             this.Fill.Color = args.NewColor;
-            ChangeColor?.Invoke(this, args.NewColor);
+            ChangeColor?.Invoke(this, new ChangeColorData(args.NewColor, btIndex, true));
+        }
+    }
+
+    public class ChangeColorData
+    {
+        public Color color;
+        public int buttonIndex;
+        public bool shouldSave;
+
+        public ChangeColorData(Color color, int buttonIndex, bool shouldSave)
+        {
+            this.color = color;
+            this.buttonIndex = buttonIndex;
+            this.shouldSave = shouldSave;
         }
     }
 }

@@ -25,6 +25,7 @@ using Windows.Data.Pdf;
 using Windows.Devices.Usb;
 using Windows.Devices.WiFiDirect;
 using Windows.Foundation.Collections;
+using Windows.Globalization.Collation;
 using Windows.Graphics.Capture;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
@@ -1031,22 +1032,30 @@ namespace WID
             docRange.CharacterFormat.ForegroundColor = defaultFg;
         }
 
-        private void ChangeInkColor(ColorPickerButton button, Windows.UI.Color color)
+        private void ChangeInkColor(ColorPickerButton button, ChangeColorData changeData)
         {
-            inkToolbar.InkDrawingAttributes.Color = color;
-
-            InkToolChanged(inkToolbar, new object());
+            if (changeData.shouldSave)
+            {
+                App.AppSettings.drawingColors[changeData.buttonIndex] = changeData.color;
+                App.AppSettings.RequestSave();
+            }
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                InkDrawingAttributes attrs = page.inkPres.CopyDefaultDrawingAttributes();
+                attrs.Color = changeData.color;
+                page.inkPres.UpdateDefaultDrawingAttributes(attrs);
+            }
         }
 
         private void LoadColorBar(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender, inkToolbar, ChangeInkColor, scColorBar);
+            App.AppSettings.LoadColorsIntoStackPanel((SimpleColorPicker)sender, ChangeInkColor, scColorBar);
         }
 
         private void AddNewColor(object sender, RoutedEventArgs e)
         {
             App.AppSettings.drawingColors.Add(cpColor.Color);
-            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, inkToolbar, ChangeInkColor, scColorBar);
+            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar);
             flNewColor.Hide();
         }
 
