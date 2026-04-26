@@ -159,12 +159,12 @@ namespace AppSettings
             return settings;
         }
 
-        public void LoadColorsIntoStackPanel(StackPanel panel, InkToolbar inkToolbar, ChangeColorEvent method)
+        public void LoadColorsIntoStackPanel(StackPanel panel, InkToolbar inkToolbar, ChangeColorEvent method, SimpleColorPicker parent)
         {
             panel.Children.Clear();
             foreach (Color color in this.drawingColors)
             {
-                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), inkToolbar);
+                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), inkToolbar, parent);
                 button.RemoveColor += (s, e) =>
                 {
                     this.drawingColors.Remove(s.Fill.Color);

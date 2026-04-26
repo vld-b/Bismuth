@@ -9,8 +9,8 @@
     mc:Ignorable="d"
     Click="ChangeToCurrentColor"
     Padding="0"
-    BorderBrush="Transparent"
     BorderThickness="0"
+    BorderBrush="{StaticResource SystemAccentColor}"
     CornerRadius="9999"
     >
 

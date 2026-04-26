@@ -1040,13 +1040,13 @@ namespace WID
 
         private void LoadColorBar(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender, inkToolbar, ChangeInkColor);
+            App.AppSettings.LoadColorsIntoStackPanel((StackPanel)sender, inkToolbar, ChangeInkColor, scColorBar);
         }
 
         private void AddNewColor(object sender, RoutedEventArgs e)
         {
             App.AppSettings.drawingColors.Add(cpColor.Color);
-            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, inkToolbar, ChangeInkColor);
+            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, inkToolbar, ChangeInkColor, scColorBar);
             flNewColor.Hide();
         }
 

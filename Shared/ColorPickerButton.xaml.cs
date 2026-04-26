@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -41,12 +42,17 @@ namespace Shared
         public RemoveColorEvent? RemoveColor;
         public ChangeColorEvent? ChangeColor;
 
-        public ColorPickerButton(SolidColorBrush Fill, InkToolbar inkToolbar)
+        SimpleColorPicker parent;
+
+        public bool hasBeenSelected = false;
+
+        public ColorPickerButton(SolidColorBrush Fill, InkToolbar inkToolbar, SimpleColorPicker parent)
         {
             this.InitializeComponent();
             this.Fill = Fill;
             colorPicker.Color = Fill.Color;
             this.inkToolbar = inkToolbar;
+            this.parent = parent;
         }
 
         private void RemoveCurrentColor(object sender, RoutedEventArgs e)
@@ -56,12 +62,21 @@ namespace Shared
 
         private void ChangeToCurrentColor(object sender, RoutedEventArgs e)
         {
-            if (inkToolbar.InkDrawingAttributes.Color != Fill.Color)
+            foreach (ColorPickerButton bt in parent.Children)
             {
+                bt.BorderThickness = new Thickness(0);
+                if (bt != this)
+                    bt.hasBeenSelected = false;
+            }
+            BorderThickness = new Thickness(4);
+            if (!hasBeenSelected)
+            {
+                flyout.ShowAt(this);
                 flyout.Hide();
+                hasBeenSelected = true;
             }
 
-            ChangeColor?.Invoke(this, this.Fill.Color);
+            ChangeColor?.Invoke(this, Fill.Color);
         }
 
         private void ChooseNewColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)

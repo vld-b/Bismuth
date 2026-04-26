@@ -548,7 +548,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
                     VerticalOffset="-32"
-                    IsOpen="False"
+                    IsOpen="True"
                     Loaded="InkToolbarPopupLoaded"
                     >
                     <Border
