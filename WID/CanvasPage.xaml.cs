@@ -1363,8 +1363,22 @@ namespace WID
             ToolPopupLoaded(sender, e);
         }
 
-        private void ChangeToInkTool(object sender, RoutedEventArgs e)
+        private void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)
         {
+            Button btSelectedTool = (Button)sender;
+
+            SolidColorBrush accentColor = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
+            foreach (UIElement el in spCustomInkToolbar.Children)
+            {
+                if (el is Button btn)
+                {
+                    if (btn.Name == btSelectedTool.Name)
+                        btn.Background = accentColor;
+                    else
+                        btn.Background = null;
+                }
+            }
+
             InkDrawingAttributes attrs = new InkDrawingAttributes
             {
                 PenTip = PenTipShape.Circle,
@@ -1372,27 +1386,56 @@ namespace WID
                 Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
                 Size = new Windows.Foundation.Size(4, 4),
             };
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.UpdateDefaultDrawingAttributes(attrs);
-            }
-            fiInkTool.Foreground = new SolidColorBrush(attrs.Color);
-        }
 
-        private void ChangeToHighlightTool(object sender, RoutedEventArgs e)
-        {
-            InkDrawingAttributes attrs = new InkDrawingAttributes
+            if (btSelectedTool.Name == btInkTool.Name)
             {
-                PenTip = PenTipShape.Rectangle,
-                DrawAsHighlighter = true,
-                Color = Windows.UI.Color.FromArgb(255, 255, 255, 0),
-                Size = new Windows.Foundation.Size(5, 20),
-            };
+                attrs = new InkDrawingAttributes
+                {
+                    PenTip = PenTipShape.Circle,
+                    DrawAsHighlighter = false,
+                    Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                    Size = new Windows.Foundation.Size(4, 4),
+                };
+            } else if (btSelectedTool.Name == btHighlightTool.Name)
+            {
+                attrs = new InkDrawingAttributes
+                {
+                    PenTip = PenTipShape.Rectangle,
+                    DrawAsHighlighter = true,
+                    Color = Windows.UI.Color.FromArgb(255, 255, 255, 0),
+                    Size = new Windows.Foundation.Size(5, 20),
+                };
+            } else if (btSelectedTool.Name == btPencilTool.Name)
+            {
+                attrs = InkDrawingAttributes.CreateForPencil();
+                attrs.IgnorePressure = false;
+                attrs.Color = Windows.UI.Color.FromArgb(255, 0, 0, 0);
+                attrs.Size = new Windows.Foundation.Size(4, 4);
+            } else
+            {
+                attrs = new InkDrawingAttributes
+                {
+                    DrawAsHighlighter = false,
+                    IgnorePressure = false,
+                    Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                    Size = new Windows.Foundation.Size(2, 8),
+                    PenTipTransform = new Matrix3x2
+                    {
+                        M11 = MathF.Cos(35f),
+                        M12 = MathF.Sin(35f),
+                        M21 = -MathF.Sin(35f),
+                        M22 = MathF.Cos(35f),
+                        M31 = 0,
+                        M32 = 0,
+                    },
+                };
+            }
+
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.UpdateDefaultDrawingAttributes(attrs);
             }
-            fiHighlightTool.Foreground = new SolidColorBrush(attrs.Color);
+            btSelectedTool.Foreground = new SolidColorBrush(attrs.Color);
         }
     }
 }

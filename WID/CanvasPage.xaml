@@ -564,22 +564,25 @@
                                 />
                         </Border.Background>
                         <StackPanel
+                            x:Name="spCustomInkToolbar"
                             Orientation="Horizontal"
                             Spacing="2"
                             Margin="2"
                             >
                             <Button
-                                Click="ChangeToInkTool"
+                                x:Name="btInkTool"
+                                Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
                                 Padding="0"
+                                BorderThickness="0"
                                 >
                                 <Grid
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
                                     <FontIcon
-                                        x:Name="fiInkTool"
+                                        Foreground="{Binding Foreground, ElementName=btInkTool}"
                                         Style="{StaticResource InkToolbarIcon}"
                                         FontFamily="Segoe MDL2 Assets"
                                         Glyph="&#xE88F;"
@@ -588,17 +591,19 @@
                                 </Grid>
                             </Button>
                             <Button
-                                Click="ChangeToHighlightTool"
+                                x:Name="btHighlightTool"
+                                Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
                                 Padding="0"
+                                BorderThickness="0"
                                 >
                                 <Grid
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
                                     <FontIcon
-                                        x:Name="fiHighlightTool"
+                                        Foreground="{Binding Foreground, ElementName=btHighlightTool}"
                                         Style="{StaticResource InkToolbarIcon}"
                                         FontFamily="Segoe MDL2 Assets"
                                         Glyph="&#xE891;"
@@ -606,6 +611,108 @@
                                     <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xE7E6;" />
                                 </Grid>
                             </Button>
+                            <Button
+                                x:Name="btPencilTool"
+                                Click="ChangeCurrentInkingTool"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                BorderThickness="0"
+                                >
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <FontIcon
+                                        Foreground="{Binding Foreground, ElementName=btPencilTool}"
+                                        Style="{StaticResource InkToolbarIcon}"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Glyph="&#xF0C6;"
+                                        />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xED63;" />
+                                </Grid>
+                            </Button>
+                            <Button
+                                x:Name="btCalligraphyTool"
+                                Click="ChangeCurrentInkingTool"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                BorderThickness="0"
+                                >
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <FontIcon
+                                        Foreground="{Binding Foreground, ElementName=btCalligraphyTool}"
+                                        Style="{StaticResource InkToolbarIcon}"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Glyph="&#xF0C7;"
+                                        />
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe MDL2 Assets" Glyph="&#xEDFB;" />
+                                </Grid>
+                            </Button>
+                            <ScrollViewer
+                                Grid.Column="0"
+                                VerticalScrollMode="Disabled"
+                                HorizontalScrollMode="Enabled"
+                                VerticalScrollBarVisibility="Disabled"
+                                HorizontalScrollBarVisibility="Hidden"
+                                >
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="8"
+                                    >
+                                    <shared:SimpleColorPicker
+                                        x:Name="scColorBar"
+                                        Loaded="LoadColorBar"
+                                        />
+                                    <Button
+                                        Padding="0"
+                                        Width="32"
+                                        Height="32"
+                                        >
+                                        <FontIcon
+                                            Width="32"
+                                            Height="32"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe Fluent Icons"
+                                            Glyph="&#xE109;"
+                                            />
+                                        <Button.Flyout>
+                                            <Flyout
+                                                x:Name="flNewColor"
+                                                >
+                                                <StackPanel>
+                                                    <muxc:ColorPicker
+                                                        x:Name="cpColor"
+                                                        />
+                                                    <Button
+                                                        Content="Add color"
+                                                        Click="AddNewColor"
+                                                        />
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
+                            </ScrollViewer>
+                            <Slider
+                                x:Name="slTipSize"
+                                Width="256"
+                                Loaded="LoadTipSize"
+                                VerticalAlignment="Center"
+                                Grid.Column="1"
+                                Margin="8, 0, 0, 0"
+                                ValueChanged="SetNewBrushWidth"
+                                StepFrequency="1"
+                                SmallChange="1"
+                                LargeChange="2"
+                                Minimum="1"
+                                Maximum="24"
+                                />
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -665,66 +772,6 @@
                     <ColumnDefinition Width="256" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ScrollViewer
-                    Grid.Column="0"
-                    VerticalScrollMode="Disabled"
-                    HorizontalScrollMode="Enabled"
-                    VerticalScrollBarVisibility="Disabled"
-                    HorizontalScrollBarVisibility="Hidden"
-                    >
-                    <StackPanel
-                        Orientation="Horizontal"
-                        Spacing="8"
-                        >
-                        <shared:SimpleColorPicker
-                            x:Name="scColorBar"
-                            Loaded="LoadColorBar"
-                            />
-                        <Button
-                            Padding="0"
-                            Width="32"
-                            Height="32"
-                            >
-                            <FontIcon
-                                Width="32"
-                                Height="32"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe Fluent Icons"
-                                Glyph="&#xE109;"
-                                />
-                            <Button.Flyout>
-                                <Flyout
-                                    x:Name="flNewColor"
-                                    >
-                                    <StackPanel>
-                                        <muxc:ColorPicker
-                                            x:Name="cpColor"
-                                            />
-                                        <Button
-                                            Content="Add color"
-                                            Click="AddNewColor"
-                                            />
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </StackPanel>
-                </ScrollViewer>
-                <Slider
-                    x:Name="slTipSize"
-                    Width="256"
-                    Loaded="LoadTipSize"
-                    VerticalAlignment="Center"
-                    Grid.Column="1"
-                    Margin="8, 0, 0, 0"
-                    ValueChanged="SetNewBrushWidth"
-                    StepFrequency="1"
-                    SmallChange="1"
-                    LargeChange="2"
-                    Minimum="1"
-                    Maximum="24"
-                    />
             </Grid>
         </Grid>
     </Grid>
