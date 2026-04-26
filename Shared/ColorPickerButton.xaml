@@ -18,6 +18,8 @@
         x:Name="rect"
         Height="32"
         Width="32"
+        RadiusX="32"
+        RadiusY="32"
         />
 
     <Button.Flyout>

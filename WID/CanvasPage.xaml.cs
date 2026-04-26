@@ -1037,7 +1037,7 @@ namespace WID
             if (changeData.shouldSave)
             {
                 App.AppSettings.drawingColors[changeData.buttonIndex] = changeData.color;
-                App.AppSettings.RequestSave();
+                //App.AppSettings.RequestSave();
             }
             foreach (NotebookPage page in spPageView.Children)
             {
