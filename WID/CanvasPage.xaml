@@ -663,6 +663,7 @@
                             </ToggleButton>
                             <ScrollViewer
                                 Width="256"
+                                Margin="8, 0"
                                 VerticalScrollMode="Disabled"
                                 HorizontalScrollMode="Enabled"
                                 VerticalScrollBarVisibility="Disabled"

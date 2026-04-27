@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
+using Windows.UI.Composition;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -15,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
@@ -56,9 +59,13 @@ namespace Shared
 
         public int btIndex = 0;
 
+        Storyboard? animBoard;
+        ScaleTransform scaleTrans = new ScaleTransform { ScaleX = 0d, ScaleY = 0d };
+
         public ColorPickerButton(SolidColorBrush Fill, SimpleColorPicker parent)
         {
             this.InitializeComponent();
+            RenderTransform = scaleTrans;
             this.Fill = Fill;
             colorPicker.Color = Fill.Color;
             this.parent = parent;
@@ -90,6 +97,36 @@ namespace Shared
         {
             this.Fill.Color = args.NewColor;
             ChangeColor?.Invoke(this, new ChangeColorData(args.NewColor, btIndex, true));
+        }
+
+        public void AnimateScale(float scale)
+        {
+            animBoard = new Storyboard();
+
+            DoubleAnimation scaleXAnim = new DoubleAnimation
+            {
+                From = scaleTrans.ScaleX,
+                To = scale,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+            };
+            Storyboard.SetTarget(scaleXAnim, scaleTrans);
+            Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
+
+            DoubleAnimation scaleYAnim = new DoubleAnimation
+            {
+                From = scaleTrans.ScaleX,
+                To = scale,
+                Duration = TimeSpan.FromMilliseconds(200),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+            };
+            Storyboard.SetTarget(scaleYAnim, scaleTrans);
+            Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");
+
+            animBoard.Children.Add(scaleXAnim);
+            animBoard.Children.Add(scaleYAnim);
+
+            animBoard.Begin();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using ABI.System.Numerics;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -201,6 +202,8 @@ namespace AppSettings
         public bool configHasLoaded { get; private set; } = false;
 
         private DispatcherTimer? saveTimer;
+        private CancellationTokenSource ctsLoadingColors = new CancellationTokenSource();
+        private Task? loadingColorsTask;
 
         public Settings()
         {
@@ -241,13 +244,6 @@ namespace AppSettings
             }
         }
 
-        private async Task SaveSettings()
-        {
-            configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
-            using (Stream opStream = await configFile!.OpenStreamForWriteAsync())
-                JsonSerializer.Serialize(opStream, this, SettingsJsonContext.Default.Settings);
-        }
-
         public static async Task<Settings> LoadSettingsFromFile()
         {
             Settings settings;
@@ -276,38 +272,19 @@ namespace AppSettings
             return settings;
         }
 
-        public void LoadColorsIntoStackPanel(SimpleColorPicker panel, ChangeColorEvent onChangeColor, SimpleColorPicker parent, ColorPalette palette)
+        public async Task LoadColorsIntoStackPanel(
+            SimpleColorPicker panel,
+            ChangeColorEvent onChangeColor,
+            SimpleColorPicker parent,
+            ColorPalette palette,
+            CurrentlySelectedColors currentColors
+            )
         {
-            panel.Children.Clear();
-            ObservableCollection<Color> colorsToLoad;
-            switch (palette)
-            {
-                case ColorPalette.Drawing:
-                    colorsToLoad = drawingColors;
-                    break;
-                case ColorPalette.Highlight:
-                    colorsToLoad = highlightColors;
-                    break;
-                case ColorPalette.Pencil:
-                    colorsToLoad = pencilColors;
-                    break;
-                default:
-                    colorsToLoad = calligraphyColors;
-                    break;
-            }
-            foreach (Color color in colorsToLoad)
-            {
-                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), parent);
-                button.RemoveColor += (s, e) =>
-                {
-                    colorsToLoad.Remove(s.Fill.Color);
-                    panel.Children.Remove(s);
-                    panel.UpdateButtonIndices();
-                };
-                button.ChangeColor += onChangeColor;
-                panel.Children.Add(button);
-            }
-            panel.UpdateButtonIndices();
+            ctsLoadingColors.Cancel();
+            if (loadingColorsTask is not null)
+                await loadingColorsTask;
+            ctsLoadingColors = new CancellationTokenSource();
+            loadingColorsTask = LoadColorsIntoStackPanelCancellable(panel, onChangeColor, parent, palette, currentColors, ctsLoadingColors.Token);
         }
 
         public void GetHomescreenThumbnailSizeAllowedWidths(out double minWidth, out double maxWidth)
@@ -326,10 +303,89 @@ namespace AppSettings
                 maxWidth = 720d;
             }
         }
+
+        private async Task LoadColorsIntoStackPanelCancellable(
+            SimpleColorPicker panel,
+            ChangeColorEvent onChangeColor,
+            SimpleColorPicker parent,
+            ColorPalette palette,
+            CurrentlySelectedColors currentColors,
+            CancellationToken ct
+            )
+        {
+            for (int i = panel.Children.Count - 1; i >= 0; --i)
+            {
+                ColorPickerButton btn = (ColorPickerButton)panel.Children[i];
+                btn.AnimateScale(0f);
+                await Task.Delay(40);
+                panel.Children.RemoveAt(i);
+            }
+
+            int selectedButton;
+            ObservableCollection<Color> colorsToLoad;
+            switch (palette)
+            {
+                case ColorPalette.Drawing:
+                    colorsToLoad = drawingColors;
+                    selectedButton = currentColors.drawing;
+                    break;
+                case ColorPalette.Highlight:
+                    colorsToLoad = highlightColors;
+                    selectedButton = currentColors.highlight;
+                    break;
+                case ColorPalette.Pencil:
+                    colorsToLoad = pencilColors;
+                    selectedButton = currentColors.pencil;
+                    break;
+                default:
+                    colorsToLoad = calligraphyColors;
+                    selectedButton = currentColors.calligraphy;
+                    break;
+            }
+            int j = 0;
+            foreach (Color color in colorsToLoad)
+            {
+                ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), parent);
+                button.RemoveColor += (s, e) =>
+                {
+                    colorsToLoad.Remove(s.Fill.Color);
+                    panel.Children.Remove(s);
+                    panel.UpdateButtonIndices();
+                };
+                button.ChangeColor += onChangeColor;
+                if (selectedButton == j)
+                    button.isSelected = true;
+                panel.Children.Add(button);
+                ++j;
+                button.AnimateScale(1f);
+                await Task.Delay(40);
+                if (ct.IsCancellationRequested)
+                    return;
+            }
+            panel.UpdateButtonIndices();
+            loadingColorsTask = null;
+        }
+
+        private async Task SaveSettings()
+        {
+            configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
+            using (Stream opStream = await configFile!.OpenStreamForWriteAsync())
+                JsonSerializer.Serialize(opStream, this, SettingsJsonContext.Default.Settings);
+        }
     }
 
     [JsonSerializable(typeof(Settings))]
     internal partial class SettingsJsonContext : JsonSerializerContext { }
+
+    public class CurrentlySelectedColors
+    {
+        public int drawing, highlight, pencil, calligraphy;
+
+        public CurrentlySelectedColors()
+        {
+            drawing = highlight = pencil = calligraphy = 0;
+        }
+    }
 
     public enum HomeScreenThumbnailSize
     {

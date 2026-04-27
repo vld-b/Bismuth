@@ -1031,37 +1031,37 @@ namespace WID
             }
         }
 
-        private void LoadColorBar(object sender, RoutedEventArgs e)
+        private async void LoadColorBar(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.LoadColorsIntoStackPanel((SimpleColorPicker)sender, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+            await App.AppSettings.LoadColorsIntoStackPanel((SimpleColorPicker)sender, ChangeInkColor, scColorBar, ColorPalette.Drawing, currentColors);
             ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
         }
 
-        private void AddNewColor(object sender, RoutedEventArgs e)
+        private async void AddNewColor(object sender, RoutedEventArgs e)
         {
             switch (currentInkingTool)
             {
                 case CurrentInkingTool.Drawing:
                     App.AppSettings.drawingColors.Add(cpColor.Color);
-                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+                    await App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing, currentColors);
                     scColorBar.UpdateButtonIndices();
                     ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
                     break;
                 case CurrentInkingTool.Highlighter:
                     App.AppSettings.highlightColors.Add(cpColor.Color);
-                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Highlight);
+                    await App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight, currentColors);
                     scColorBar.UpdateButtonIndices();
                     ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
                     break;
                 case CurrentInkingTool.Pencil:
                     App.AppSettings.pencilColors.Add(cpColor.Color);
-                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Pencil);
+                    await App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil, currentColors);
                     scColorBar.UpdateButtonIndices();
                     ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
                     break;
                 default:
                     App.AppSettings.calligraphyColors.Add(cpColor.Color);
-                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Calligraphy);
+                    await App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy, currentColors);
                     scColorBar.UpdateButtonIndices();
                     ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
                     break;
@@ -1387,7 +1387,7 @@ namespace WID
             pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
         }
 
-        private void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)
+        private async void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)
         {
             CustomInkToolbarTool btSelectedTool = (CustomInkToolbarTool)sender;
 
@@ -1420,12 +1420,13 @@ namespace WID
             };
             InkInputProcessingMode inkMode = InkInputProcessingMode.Inking;
             double newTipSizeSliderValue = 0;
+            Task? colorsLoading = null;
 
             if (btSelectedTool.Name == btInkTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Drawing;
                 newTipSizeSliderValue = App.AppSettings.tipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing);
+                colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing, currentColors);
                 ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1439,7 +1440,7 @@ namespace WID
             {
                 currentInkingTool = CurrentInkingTool.Highlighter;
                 newTipSizeSliderValue = App.AppSettings.highlightTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight);
+                colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight, currentColors);
                 ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1453,7 +1454,7 @@ namespace WID
             {
                 currentInkingTool = CurrentInkingTool.Pencil;
                 newTipSizeSliderValue = App.AppSettings.pencilTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil);
+                colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil, currentColors);
                 ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
@@ -1464,7 +1465,7 @@ namespace WID
             {
                 currentInkingTool = CurrentInkingTool.Calligraphy;
                 newTipSizeSliderValue = App.AppSettings.calligraphyTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy);
+                colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy, currentColors);
                 ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1521,6 +1522,8 @@ namespace WID
             sb.Completed += (s, e) => slTipSize.ValueChanged += SetNewBrushWidth;
 
             sb.Begin();
+            if (colorsLoading is not null)
+                await colorsLoading;
         }
 
         private void ToggleRuler(object sender, RoutedEventArgs e)
@@ -1581,14 +1584,4 @@ namespace WID
         Eraser,
         Lasso,
     };
-
-    public class CurrentlySelectedColors
-    {
-        public int drawing, highlight, pencil, calligraphy;
-
-        public CurrentlySelectedColors()
-        {
-            drawing = highlight = pencil = calligraphy = 0;
-        }
-    }
 }

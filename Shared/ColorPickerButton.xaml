@@ -11,6 +11,7 @@
     Padding="0"
     BorderThickness="0"
     BorderBrush="{StaticResource SystemAccentColor}"
+    RenderTransformOrigin="0.5, 0.5"
     CornerRadius="9999"
     >
 
