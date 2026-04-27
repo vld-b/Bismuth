@@ -16,6 +16,7 @@ using Windows.Devices.Enumeration;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace AppSettings
@@ -91,7 +92,7 @@ namespace AppSettings
         [JsonIgnore]
         public bool configHasLoaded { get; private set; } = false;
 
-        private CancellationTokenSource? _cts;
+        private DispatcherTimer? saveTimer;
 
         public Settings()
         {
@@ -102,26 +103,31 @@ namespace AppSettings
 
         public void RequestSave()
         {
-            _cts?.Cancel();
-            _cts = new CancellationTokenSource();
-            CancellationToken token = _cts.Token;
-
-            _ = Task.Run(async () =>
+            if (saveTimer is null)
             {
-                try
+                saveTimer = new DispatcherTimer();
+                saveTimer.Interval = TimeSpan.FromSeconds(1);
+                saveTimer.Tick += async (s, e) =>
                 {
-                    await Task.Delay(1000, token);
-                    if (!token.IsCancellationRequested)
-                        await SaveSettings();
-                } catch (TaskCanceledException) { }
-            });
+                    saveTimer.Stop();
+                    saveTimer = null;
+                    await SaveSettings();
+                };
+            }
+            saveTimer.Stop();
+            saveTimer.Start();
         }
 
         public async Task Flush()
         {
-            _cts?.Cancel();
-            _cts = null;
-            await SaveSettings();
+            if (saveTimer is null)
+                await SaveSettings();
+            else
+            {
+                saveTimer.Stop();
+                saveTimer = null;
+                await SaveSettings();
+            }
         }
 
         private async Task SaveSettings()
