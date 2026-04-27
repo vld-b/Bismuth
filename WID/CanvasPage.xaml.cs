@@ -76,6 +76,7 @@ namespace WID
         private List<RenameItem> pendingRenames = new List<RenameItem>();
 
         private OnPageText? lastEditedText;
+        private OnPageImage? lastEditedImage;
         private PageState pageState;
         private List<RecoloredStroke>? recoloredStrokes;
 
@@ -649,6 +650,8 @@ namespace WID
                     onPageImage.Width = image.width;
                     onPageImage.Height = image.height;
                     page.AddImageToPage(onPageImage);
+                    onPageImage.ImageGotFocus += FocusedOnPageItem;
+                    onPageImage.ImageLostFocus += UnfocusedOnPageItem;
 
                     pendingDeletions.Remove("img" + (onPageImage.id == 0 ? "" : (" (" + onPageImage.id + ")")) + ".jpg");
                 }
@@ -913,6 +916,11 @@ namespace WID
                 lastEditedText = opt;
                 ppTextTools.Opacity = 1d;
                 ppTextTools.IsHitTestVisible = true;
+            } else if (sender is OnPageImage img)
+            {
+                lastEditedImage = img;
+                ppImageTools.Opacity = 1d;
+                ppImageTools.IsHitTestVisible = true;
             }
         }
 
@@ -922,6 +930,10 @@ namespace WID
             {
                 ppTextTools.IsHitTestVisible = false;
                 ppTextTools.Opacity = 0d;
+            } else if (sender is OnPageImage img)
+            {
+                ppImageTools.Opacity = 0d;
+                ppImageTools.IsHitTestVisible = false;
             }
         }
 
@@ -962,12 +974,26 @@ namespace WID
         {
             NotebookPage textBoxPage = lastEditedText!.RemoveTextFromPage();
             undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage.contentCanvas, lastEditedText!, undoRedoSystem));
+            config!.DeleteTextWithId(lastEditedText!.id);
             string textBoxFileName = lastEditedText!.GetFileName();
             pendingCreations.Remove(textBoxFileName);
             pendingDeletions.Add(textBoxFileName);
             lastEditedText = null;
             ppTextTools.IsHitTestVisible = false;
             ppTextTools.Opacity = 0d;
+        }
+
+        private void DeleteCurrentImage(object sender, RoutedEventArgs e)
+        {
+            NotebookPage imgPage = lastEditedImage!.RemoveImageFromPage();
+            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(imgPage.contentCanvas, lastEditedImage, undoRedoSystem));
+            config!.DeleteImageWithId(lastEditedImage!.id);
+            string imgFileName = lastEditedImage!.GetFileName();
+            pendingCreations.Remove(imgFileName);
+            pendingDeletions.Add(imgFileName);
+            lastEditedImage = null;
+            ppImageTools.IsHitTestVisible = false;
+            ppImageTools.Opacity = 0d;
         }
 
         private void SearchTextInCurrentBox()
@@ -1146,8 +1172,10 @@ namespace WID
                     true
                     );
                 currentPage!.AddImageToPage(opI);
-                pendingCreations.Add("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".jpg");
-                pendingDeletions.Remove("img" + (opI.id == 0 ? "" : (" (" + opI.id + ")")) + ".jpg");
+                opI.ImageGotFocus += FocusedOnPageItem;
+                opI.ImageLostFocus += UnfocusedOnPageItem;
+                pendingCreations.Add(opI.GetFileName());
+                pendingDeletions.Remove(opI.GetFileName());
             }
         }
 

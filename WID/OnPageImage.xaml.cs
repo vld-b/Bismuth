@@ -34,6 +34,9 @@ namespace WID
         public bool hasBeenModifiedSinceSave;
         public bool isNewImage { get; private set; }
 
+        public EventHandler? ImageGotFocus;
+        public EventHandler? ImageLostFocus;
+
         public OnPageImage(int id, double top, double left, WriteableBitmap imgSource, NotebookPage containingPage, ScrollViewer pageContainer, bool isNewImage)
         {
             this.InitializeComponent();
@@ -73,16 +76,23 @@ namespace WID
             Canvas.SetLeft(this, left);
         }
 
+        public NotebookPage RemoveImageFromPage()
+        {
+            containingPage.RemoveImageFromPage(this);
+            containingPage.hasBeenModifiedSinceSave = true;
+            return containingPage;
+        }
+
         public string GetFileName() => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg";
 
         private void FocusImage(object sender, RoutedEventArgs e)
         {
-
+            ImageGotFocus?.Invoke(this, EventArgs.Empty);
         }
 
         private void LoseFocus(object sender, RoutedEventArgs e)
         {
-
+            ImageLostFocus?.Invoke(this, EventArgs.Empty);
         }
 
         private void StartDraggingImage(object sender, PointerRoutedEventArgs e)
@@ -90,6 +100,7 @@ namespace WID
             e.Handled = true;
             pageContainer.HorizontalScrollMode = ScrollMode.Disabled;
             pageContainer.VerticalScrollMode = ScrollMode.Disabled;
+            btResize.Focus(FocusState.Pointer); // Needed to redirect focus to the OnPageImage
 
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);

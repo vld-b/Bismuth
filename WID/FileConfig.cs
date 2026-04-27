@@ -164,8 +164,8 @@ namespace WID
             StorageFolder folder,
             int pageIndex,
             ScrollViewer scrollViewer,
-            EventHandler startTyping,
-            EventHandler stopTyping,
+            EventHandler focusedOnPageItem,
+            EventHandler unfocusedOnPageItem,
             UndoRedoSystem undoRedoSystem,
             PageState pageState
             )
@@ -212,8 +212,8 @@ namespace WID
                     txt.LoadFromStream(stream);
                 }
                 page.AddTextToPage(txt);
-                txt.TextBoxGotFocus += startTyping;
-                txt.TextBoxLostFocus += stopTyping;
+                txt.TextBoxGotFocus += focusedOnPageItem;
+                txt.TextBoxLostFocus += unfocusedOnPageItem;
             }
 
             foreach (ImageData imgData in pageMapping[pageIndex].images)
@@ -241,6 +241,8 @@ namespace WID
                 img.Width = imgData.width;
                 img.Height = imgData.height;
                 page.AddImageToPage(img);
+                img.ImageGotFocus += focusedOnPageItem;
+                img.ImageLostFocus += unfocusedOnPageItem;
             }
 
             await page.LoadFromFile(ink);
@@ -273,11 +275,11 @@ namespace WID
 
                     foreach (TextData txt in deletedConfig.textBoxes)
                     {
-                        ReregisterTextId(txt.id);
+                        DeleteTextWithId(txt.id);
                     }
                     foreach (ImageData img in deletedConfig.images)
                     {
-                        ReregisterImageId(img.id);
+                        DeleteImageWithId(img.id);
                     }
 
                     pageMapping.RemoveAt(i);
@@ -290,7 +292,7 @@ namespace WID
                 usablePageIDs.Add(id);
         }
 
-        public void ReregisterTextId(int id)
+        public void DeleteTextWithId(int id)
         {
             if (id == maxTextID)
                 --maxTextID;
@@ -298,7 +300,7 @@ namespace WID
                 usableTextIDs.Add(id);
         }
 
-        public void ReregisterImageId(int id)
+        public void DeleteImageWithId(int id)
         {
             if (id == maxImageID)
                 --maxImageID;

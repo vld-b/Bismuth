@@ -250,6 +250,12 @@ namespace WID
             this.selectionRect = null;
         }
 
+        public void RemoveImageFromPage(OnPageImage img)
+        {
+            images.Remove(img);
+            contentCanvas.Children.Remove(img);
+        }
+
         public void RemoveTextFromPage(OnPageText text)
         {
             textBoxes.Remove(text);
