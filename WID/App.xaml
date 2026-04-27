@@ -17,6 +17,7 @@
                         <RotateTransform Angle="180" />
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Foreground" Value="White" />
                 <Setter Property="RenderTransformOrigin" Value="0.5, 0.5" />
                 <Setter Property="FontSize" Value="36" />
                 <Setter Property="HorizontalAlignment" Value="Stretch" />

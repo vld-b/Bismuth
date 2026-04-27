@@ -727,8 +727,8 @@
                                 StepFrequency="1"
                                 SmallChange="1"
                                 LargeChange="2"
-                                Minimum="1"
-                                Maximum="24"
+                                Minimum="4"
+                                Maximum="96"
                                 />
                         </StackPanel>
                     </Border>

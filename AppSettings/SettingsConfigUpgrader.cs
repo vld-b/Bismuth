@@ -34,7 +34,7 @@ namespace AppSettings
 
             current.highlightColors = new ObservableCollection<Color>
             {
-                Colors.LightYellow,
+                Colors.Yellow,
                 Colors.Cyan,
                 Colors.LightPink,
                 Colors.LightGreen,
@@ -43,8 +43,8 @@ namespace AppSettings
 
             current.pencilColors = new ObservableCollection<Color>
             {
-                Colors.DarkGray,
-                Colors.AliceBlue,
+                Colors.SlateGray,
+                Colors.DeepSkyBlue,
                 Colors.DarkGreen,
                 Colors.Orange,
                 Colors.MediumVioletRed,
@@ -59,7 +59,7 @@ namespace AppSettings
                 Colors.OrangeRed,
             };
 
-            current.highlighterTipSize = 20d;
+            current.highlightTipSize = 20d;
             current.pencilTipSize = 4d;
             current.calligraphyTipSize = 4d;
 

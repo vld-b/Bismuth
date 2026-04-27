@@ -80,6 +80,8 @@ namespace WID
         private Task? savingTask;
 
         private NotebookPage? currentPage;
+        private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
+        private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
 
         public CanvasPage()
         {
@@ -96,6 +98,12 @@ namespace WID
             undoRedoSystem.RegisterRedoButton(btFloatRedo);
 
             undoRedoSystem.BindPendingFileOperationsList(pendingCreations, pendingDeletions, pendingMoves, pendingRenames);
+
+            btInkTool.Background = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
+            btInkTool.Foreground = new SolidColorBrush(App.AppSettings.drawingColors[0]);
+            btHighlightTool.Foreground = new SolidColorBrush(App.AppSettings.highlightColors[0]);
+            btPencilTool.Foreground = new SolidColorBrush(App.AppSettings.pencilColors[0]);
+            btCalligraphyTool.Foreground = new SolidColorBrush(App.AppSettings.calligraphyColors[0]);
         }
 
         private void SetTitlebar()
@@ -1033,9 +1041,32 @@ namespace WID
 
         private void ChangeInkColor(ColorPickerButton button, ChangeColorData changeData)
         {
-            if (changeData.shouldSave)
+            switch (currentInkingTool)
             {
-                App.AppSettings.drawingColors[changeData.buttonIndex] = changeData.color;
+                case CurrentInkingTool.Drawing:
+                    if (changeData.shouldSave)
+                        App.AppSettings.drawingColors[changeData.buttonIndex] = changeData.color;
+                    btInkTool.Foreground = new SolidColorBrush(changeData.color);
+                    currentColors.drawing = button.btIndex;
+                    break;
+                case CurrentInkingTool.Highlighter:
+                    if (changeData.shouldSave)
+                        App.AppSettings.highlightColors[changeData.buttonIndex] = changeData.color;
+                    btHighlightTool.Foreground = new SolidColorBrush(changeData.color);
+                    currentColors.highlight = button.btIndex;
+                    break;
+                case CurrentInkingTool.Pencil:
+                    if (changeData.shouldSave)
+                        App.AppSettings.pencilColors[changeData.buttonIndex] = changeData.color;
+                    btPencilTool.Foreground = new SolidColorBrush(changeData.color);
+                    currentColors.pencil = button.btIndex;
+                    break;
+                default:
+                    if (changeData.shouldSave)
+                        App.AppSettings.calligraphyColors[changeData.buttonIndex] = changeData.color;
+                    btCalligraphyTool.Foreground = new SolidColorBrush(changeData.color);
+                    currentColors.calligraphy = button.btIndex;
+                    break;
             }
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -1047,24 +1078,73 @@ namespace WID
 
         private void LoadColorBar(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.LoadColorsIntoStackPanel((SimpleColorPicker)sender, ChangeInkColor, scColorBar);
+            App.AppSettings.LoadColorsIntoStackPanel((SimpleColorPicker)sender, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+            ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
         }
 
         private void AddNewColor(object sender, RoutedEventArgs e)
         {
-            App.AppSettings.drawingColors.Add(cpColor.Color);
-            App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar);
+            switch (currentInkingTool)
+            {
+                case CurrentInkingTool.Drawing:
+                    App.AppSettings.drawingColors.Add(cpColor.Color);
+                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+                    scColorBar.UpdateButtonIndices();
+                    ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
+                    break;
+                case CurrentInkingTool.Highlighter:
+                    App.AppSettings.highlightColors.Add(cpColor.Color);
+                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Highlight);
+                    scColorBar.UpdateButtonIndices();
+                    ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
+                    break;
+                case CurrentInkingTool.Pencil:
+                    App.AppSettings.pencilColors.Add(cpColor.Color);
+                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Pencil);
+                    scColorBar.UpdateButtonIndices();
+                    ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
+                    break;
+                default:
+                    App.AppSettings.calligraphyColors.Add(cpColor.Color);
+                    App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Calligraphy);
+                    scColorBar.UpdateButtonIndices();
+                    ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
+                    break;
+            }
             flNewColor.Hide();
         }
 
         private void SetNewBrushWidth(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (!slTipSize.IsLoaded)
+            if (!slTipSize.IsLoaded || spPageView.Children.Count == 0)
                 return;
-            inkToolbar.InkDrawingAttributes.Size = new Windows.Foundation.Size(e.NewValue,e.NewValue);
-            InkToolChanged(inkToolbar, new object());
 
-            App.AppSettings.tipSize = e.NewValue;
+            InkDrawingAttributes attrs = ((NotebookPage)spPageView.Children[0]).inkPres.CopyDefaultDrawingAttributes();
+
+            switch (currentInkingTool)
+            {
+                case CurrentInkingTool.Drawing:
+                    App.AppSettings.tipSize = e.NewValue;
+                    attrs.Size = new Windows.Foundation.Size(e.NewValue, e.NewValue);
+                    break;
+                case CurrentInkingTool.Highlighter:
+                    App.AppSettings.highlightTipSize = e.NewValue;
+                    attrs.Size = new Windows.Foundation.Size(e.NewValue / 4d, e.NewValue);
+                    break;
+                case CurrentInkingTool.Pencil:
+                    App.AppSettings.pencilTipSize = e.NewValue;
+                    attrs.Size = new Windows.Foundation.Size(e.NewValue, e.NewValue);
+                    break;
+                default:
+                    App.AppSettings.calligraphyTipSize = e.NewValue;
+                    attrs.Size = new Windows.Foundation.Size(e.NewValue / 4d, e.NewValue);
+                    break;
+            }
+
+            foreach (NotebookPage page in spPageView.Children)
+            {
+                page.inkPres.UpdateDefaultDrawingAttributes(attrs);
+            }
         }
 
         private void LoadTipSize(object sender, RoutedEventArgs e)
@@ -1396,35 +1476,51 @@ namespace WID
 
             if (btSelectedTool.Name == btInkTool.Name)
             {
+                currentInkingTool = CurrentInkingTool.Drawing;
+                slTipSize.Value = App.AppSettings.tipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+                ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Circle,
                     DrawAsHighlighter = false,
-                    Color = Color.FromArgb(255, 0, 0, 0),
+                    Color = App.AppSettings.drawingColors[currentColors.drawing],
                     Size = new Windows.Foundation.Size(4, 4),
                 };
             } else if (btSelectedTool.Name == btHighlightTool.Name)
             {
+                currentInkingTool = CurrentInkingTool.Highlighter;
+                slTipSize.Value = App.AppSettings.highlightTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Highlight);
+                ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Rectangle,
                     DrawAsHighlighter = true,
-                    Color = Color.FromArgb(255, 255, 255, 0),
+                    Color = App.AppSettings.highlightColors[currentColors.highlight],
                     Size = new Windows.Foundation.Size(5, 20),
                 };
             } else if (btSelectedTool.Name == btPencilTool.Name)
             {
+                currentInkingTool = CurrentInkingTool.Pencil;
+                slTipSize.Value = App.AppSettings.pencilTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Pencil);
+                ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
-                attrs.Color = Color.FromArgb(255, 0, 0, 0);
+                attrs.Color = App.AppSettings.pencilColors[currentColors.pencil];
                 attrs.Size = new Windows.Foundation.Size(4, 4);
             } else
             {
+                currentInkingTool = CurrentInkingTool.Calligraphy;
+                slTipSize.Value = App.AppSettings.calligraphyTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Calligraphy);
+                ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     DrawAsHighlighter = false,
                     IgnorePressure = false,
-                    Color = Color.FromArgb(255, 0, 0, 0),
+                    Color = App.AppSettings.calligraphyColors[currentColors.calligraphy],
                     Size = new Windows.Foundation.Size(2, 8),
                     PenTipTransform = new Matrix3x2
                     {
@@ -1457,6 +1553,24 @@ namespace WID
             ToggleButton tb = (ToggleButton)sender;
             foreach (NotebookPage page in spPageView.Children)
                 page.protractor.IsVisible = (bool)tb.IsChecked!;
+        }
+    }
+
+    public enum CurrentInkingTool
+    {
+        Drawing,
+        Highlighter,
+        Pencil,
+        Calligraphy,
+    };
+
+    public class CurrentlySelectedColors
+    {
+        public int drawing, highlight, pencil, calligraphy;
+
+        public CurrentlySelectedColors()
+        {
+            drawing = highlight = pencil = calligraphy = 0;
         }
     }
 }

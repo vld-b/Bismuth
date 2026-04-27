@@ -42,7 +42,18 @@ namespace Shared
 
         SimpleColorPicker parent;
 
-        public bool hasBeenSelected = false;
+        public bool isSelected
+        {
+            get => BorderThickness == new Thickness(0);
+            set
+            {
+                if (value)
+                    BorderThickness = new Thickness(4);
+                else
+                    BorderThickness = new Thickness(0);
+            }
+        }
+
         public int btIndex = 0;
 
         public ColorPickerButton(SolidColorBrush Fill, SimpleColorPicker parent)
@@ -62,17 +73,15 @@ namespace Shared
         {
             foreach (ColorPickerButton bt in parent.Children)
             {
-                bt.BorderThickness = new Thickness(0);
                 if (bt != this)
-                    bt.hasBeenSelected = false;
+                    bt.isSelected = false;
             }
-            BorderThickness = new Thickness(4);
-            if (!hasBeenSelected)
+            if (isSelected)
             {
                 flyout.ShowAt(this);
                 flyout.Hide();
-                hasBeenSelected = true;
             }
+            isSelected = true;
 
             ChangeColor?.Invoke(this, new ChangeColorData(Fill.Color, btIndex, false));
         }

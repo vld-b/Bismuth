@@ -121,7 +121,7 @@ namespace AppSettings
         }
 
         private double _highlighterTipSize;
-        public double highlighterTipSize
+        public double highlightTipSize
         {
             get => _highlighterTipSize;
             set
@@ -261,19 +261,35 @@ namespace AppSettings
             return settings;
         }
 
-        public void LoadColorsIntoStackPanel(SimpleColorPicker panel, ChangeColorEvent method, SimpleColorPicker parent)
+        public void LoadColorsIntoStackPanel(SimpleColorPicker panel, ChangeColorEvent onChangeColor, SimpleColorPicker parent, ColorPalette palette)
         {
             panel.Children.Clear();
-            foreach (Color color in this.drawingColors)
+            ObservableCollection<Color> colorsToLoad;
+            switch (palette)
+            {
+                case ColorPalette.Drawing:
+                    colorsToLoad = drawingColors;
+                    break;
+                case ColorPalette.Highlight:
+                    colorsToLoad = highlightColors;
+                    break;
+                case ColorPalette.Pencil:
+                    colorsToLoad = pencilColors;
+                    break;
+                default:
+                    colorsToLoad = calligraphyColors;
+                    break;
+            }
+            foreach (Color color in colorsToLoad)
             {
                 ColorPickerButton button = new ColorPickerButton(new Windows.UI.Xaml.Media.SolidColorBrush(color), parent);
                 button.RemoveColor += (s, e) =>
                 {
-                    this.drawingColors.Remove(s.Fill.Color);
+                    colorsToLoad.Remove(s.Fill.Color);
                     panel.Children.Remove(s);
                     panel.UpdateButtonIndices();
                 };
-                button.ChangeColor += method;
+                button.ChangeColor += onChangeColor;
                 panel.Children.Add(button);
             }
             panel.UpdateButtonIndices();
@@ -305,5 +321,13 @@ namespace AppSettings
         Small,
         Medium,
         Large,
+    }
+
+    public enum ColorPalette
+    {
+        Drawing,
+        Highlight,
+        Pencil,
+        Calligraphy,
     }
 }
