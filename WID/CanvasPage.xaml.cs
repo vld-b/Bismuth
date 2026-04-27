@@ -1427,7 +1427,6 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Drawing;
                 newTipSizeSliderValue = App.AppSettings.tipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing, currentColors);
-                ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Circle,
@@ -1441,7 +1440,6 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Highlighter;
                 newTipSizeSliderValue = App.AppSettings.highlightTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight, currentColors);
-                ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Rectangle,
@@ -1455,7 +1453,6 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Pencil;
                 newTipSizeSliderValue = App.AppSettings.pencilTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil, currentColors);
-                ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
                 attrs.Color = App.AppSettings.pencilColors[currentColors.pencil];
@@ -1466,7 +1463,6 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Calligraphy;
                 newTipSizeSliderValue = App.AppSettings.calligraphyTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy, currentColors);
-                ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
                     DrawAsHighlighter = false,
