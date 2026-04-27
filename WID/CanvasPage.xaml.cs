@@ -258,7 +258,7 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, StartTyping, StopTyping, undoRedoSystem, pageState);
+                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
@@ -610,8 +610,8 @@ namespace WID
                     pendingDeletions.Add(textFileName);
 
                     page.AddTextToPage(onPageText);
-                    onPageText.TextBoxGotFocus += StartTyping;
-                    onPageText.TextBoxLostFocus += StopTyping;
+                    onPageText.TextBoxGotFocus += FocusedOnPageItem;
+                    onPageText.TextBoxLostFocus += UnfocusedOnPageItem;
                 }
 
                 foreach (ImageData image in currentPage.images)
@@ -862,8 +862,8 @@ namespace WID
             pendingDeletions.Remove("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddTextToPage(txt);
             undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, txt, undoRedoSystem));
-            txt.TextBoxGotFocus += StartTyping;
-            txt.TextBoxLostFocus += StopTyping;
+            txt.TextBoxGotFocus += FocusedOnPageItem;
+            txt.TextBoxLostFocus += UnfocusedOnPageItem;
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
@@ -906,17 +906,23 @@ namespace WID
             parent.Opacity = 0d;
         }
 
-        private void StartTyping(object? sender, EventArgs e)
+        private void FocusedOnPageItem(object? sender, EventArgs e)
         {
-            lastEditedText = (OnPageText?)sender;
-            ppTextTools.Opacity = 1d;
-            ppTextTools.IsHitTestVisible = true;
+            if (sender is OnPageText opt)
+            {
+                lastEditedText = opt;
+                ppTextTools.Opacity = 1d;
+                ppTextTools.IsHitTestVisible = true;
+            }
         }
 
-        private void StopTyping(object? sender, EventArgs e)
+        private void UnfocusedOnPageItem(object? sender, EventArgs e)
         {
-            ppTextTools.IsHitTestVisible = false;
-            ppTextTools.Opacity = 0d;
+            if (sender is OnPageText opt)
+            {
+                ppTextTools.IsHitTestVisible = false;
+                ppTextTools.Opacity = 0d;
+            }
         }
 
         private void ToggleBoldText(object sender, RoutedEventArgs e)
