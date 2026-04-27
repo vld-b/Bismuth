@@ -30,6 +30,7 @@ using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
+using Windows.Media.Protection;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
@@ -101,6 +102,7 @@ namespace WID
             undoRedoSystem.BindPendingFileOperationsList(pendingCreations, pendingDeletions, pendingMoves, pendingRenames);
 
             btInkTool.Background = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
+            ((Grid)btInkTool.Content).Translation = new Vector3(0f, -4f, 0f);
             btInkTool.Foreground = new SolidColorBrush(App.AppSettings.drawingColors[0]);
             btHighlightTool.Foreground = new SolidColorBrush(App.AppSettings.highlightColors[0]);
             btPencilTool.Foreground = new SolidColorBrush(App.AppSettings.pencilColors[0]);
@@ -1387,17 +1389,17 @@ namespace WID
         {
             Button btSelectedTool = (Button)sender;
 
-            SolidColorBrush accentColor = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
+            SolidColorBrush accentColorBrush = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
             foreach (UIElement el in spCustomInkToolbar.Children)
             {
                 if (el is Button btn)
                 {
-                    if (btn.Name == btSelectedTool.Name)
-                        btn.Background = accentColor;
-                    else
-                        btn.Background = null;
+                    btn.Background = null;
+                    ((Grid)btn.Content).Translation = new Vector3(0f, 0f, 0f);
                 }
             }
+            btSelectedTool.Background = accentColorBrush;
+            ((Grid)btSelectedTool.Content).Translation = new Vector3(0f, -4f, 0f);
 
             if (btSelectedTool.Name != btLassoTool.Name)
             {
@@ -1503,15 +1505,19 @@ namespace WID
         private void ToggleRuler(object sender, RoutedEventArgs e)
         {
             ToggleButton tb = (ToggleButton)sender;
+            bool isChecked = (bool)tb.IsChecked!;
+            ((Grid)tb.Content).Translation = isChecked ? new Vector3(0f, -4f, 0f) : new Vector3(0f, 0f, 0f);
             foreach (NotebookPage page in spPageView.Children)
-                page.ruler.IsVisible = (bool)tb.IsChecked!;
+                page.ruler.IsVisible = isChecked;
         }
 
         private void ToggleProtractor(object sender, RoutedEventArgs e)
         {
             ToggleButton tb = (ToggleButton)sender;
+            bool isChecked = (bool)tb.IsChecked!;
+            ((Grid)tb.Content).Translation = isChecked ? new Vector3(0f, -4f, 0f) : new Vector3(0f, 0f, 0f);
             foreach (NotebookPage page in spPageView.Children)
-                page.protractor.IsVisible = (bool)tb.IsChecked!;
+                page.protractor.IsVisible = isChecked;
         }
     }
 

@@ -582,6 +582,9 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
                                     <FontIcon
                                         Foreground="{Binding Foreground, ElementName=btInkTool}"
                                         Style="{StaticResource InkToolbarIcon}"
@@ -604,6 +607,9 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
                                     <FontIcon
                                         Foreground="{Binding Foreground, ElementName=btHighlightTool}"
                                         Style="{StaticResource InkToolbarIcon}"
@@ -626,6 +632,9 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
                                     <FontIcon
                                         Foreground="{Binding Foreground, ElementName=btPencilTool}"
                                         Style="{StaticResource InkToolbarIcon}"
@@ -648,6 +657,9 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
                                     <FontIcon
                                         Foreground="{Binding Foreground, ElementName=btCalligraphyTool}"
                                         Style="{StaticResource InkToolbarIcon}"
@@ -666,7 +678,15 @@
                                 Padding="0"
                                 BorderThickness="0"
                                 >
-                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
+                                    <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                                </Grid>
                             </Button>
                             <Button
                                 x:Name="btLassoTool"
@@ -677,7 +697,15 @@
                                 Padding="0"
                                 BorderThickness="0"
                                 >
-                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
+                                    <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                                </Grid>
                             </Button>
                             <ToggleButton
                                 Click="ToggleRuler"
@@ -685,7 +713,15 @@
                                 Height="48"
                                 Padding="0"
                                 >
-                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEd5E;" />
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEd5E;" />
+                                </Grid>
                             </ToggleButton>
                             <ToggleButton
                                 Click="ToggleProtractor"
@@ -693,7 +729,15 @@
                                 Height="48"
                                 Padding="0"
                                 >
-                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
+                                <Grid
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    >
+                                    <Grid.TranslationTransition>
+                                        <Vector3Transition />
+                                    </Grid.TranslationTransition>
+                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
+                                </Grid>
                             </ToggleButton>
                             <ScrollViewer
                                 Width="256"
