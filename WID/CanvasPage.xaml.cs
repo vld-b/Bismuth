@@ -1419,12 +1419,13 @@ namespace WID
                 Size = new Windows.Foundation.Size(4, 4),
             };
             InkInputProcessingMode inkMode = InkInputProcessingMode.Inking;
+            double newTipSizeSliderValue = 0;
 
             if (btSelectedTool.Name == btInkTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Drawing;
-                slTipSize.Value = App.AppSettings.tipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Drawing);
+                newTipSizeSliderValue = App.AppSettings.tipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing);
                 ((ColorPickerButton)scColorBar.Children[currentColors.drawing]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1437,8 +1438,8 @@ namespace WID
             else if (btSelectedTool.Name == btHighlightTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Highlighter;
-                slTipSize.Value = App.AppSettings.highlightTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Highlight);
+                newTipSizeSliderValue = App.AppSettings.highlightTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight);
                 ((ColorPickerButton)scColorBar.Children[currentColors.highlight]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1451,8 +1452,8 @@ namespace WID
             else if (btSelectedTool.Name == btPencilTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Pencil;
-                slTipSize.Value = App.AppSettings.pencilTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Pencil);
+                newTipSizeSliderValue = App.AppSettings.pencilTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil);
                 ((ColorPickerButton)scColorBar.Children[currentColors.pencil]).isSelected = true;
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
@@ -1462,8 +1463,8 @@ namespace WID
             else if (btSelectedTool.Name == btCalligraphyTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Calligraphy;
-                slTipSize.Value = App.AppSettings.calligraphyTipSize;
-                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, AppSettings.ColorPalette.Calligraphy);
+                newTipSizeSliderValue = App.AppSettings.calligraphyTipSize;
+                App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy);
                 ((ColorPickerButton)scColorBar.Children[currentColors.calligraphy]).isSelected = true;
                 attrs = new InkDrawingAttributes
                 {
@@ -1500,6 +1501,26 @@ namespace WID
                 page.inkPres.InputProcessingConfiguration.Mode = inkMode;
             }
             btSelectedTool.Foreground = new SolidColorBrush(attrs.Color);
+
+            DoubleAnimation sliderValueAnim = new DoubleAnimation
+            {
+                From = slTipSize.Value,
+                To = newTipSizeSliderValue,
+                EnableDependentAnimation = true,
+                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+            };
+
+            Storyboard sb = new Storyboard();
+            sb.Children.Add(sliderValueAnim);
+
+            Storyboard.SetTarget(sliderValueAnim, slTipSize);
+            Storyboard.SetTargetProperty(sliderValueAnim, "Value");
+
+            slTipSize.ValueChanged -= SetNewBrushWidth;
+            sb.Completed += (s, e) => slTipSize.ValueChanged += SetNewBrushWidth;
+
+            sb.Begin();
         }
 
         private void ToggleRuler(object sender, RoutedEventArgs e)
