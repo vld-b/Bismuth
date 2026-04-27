@@ -1466,6 +1466,16 @@ namespace WID
                 }
             }
 
+            if (btSelectedTool.Name != btLassoTool.Name)
+            {
+                pageState.DeselectStrokes();
+                foreach (NotebookPage page in spPageView.Children)
+                {
+                    page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                    page.RemoveManipulationRect();
+                }
+            }
+
             InkDrawingAttributes attrs = new InkDrawingAttributes
             {
                 PenTip = PenTipShape.Circle,
@@ -1473,6 +1483,7 @@ namespace WID
                 Color = Color.FromArgb(255, 0, 0, 0),
                 Size = new Windows.Foundation.Size(4, 4),
             };
+            InkInputProcessingMode inkMode = InkInputProcessingMode.Inking;
 
             if (btSelectedTool.Name == btInkTool.Name)
             {
@@ -1485,9 +1496,10 @@ namespace WID
                     PenTip = PenTipShape.Circle,
                     DrawAsHighlighter = false,
                     Color = App.AppSettings.drawingColors[currentColors.drawing],
-                    Size = new Windows.Foundation.Size(4, 4),
+                    Size = new Windows.Foundation.Size(App.AppSettings.tipSize, App.AppSettings.tipSize),
                 };
-            } else if (btSelectedTool.Name == btHighlightTool.Name)
+            }
+            else if (btSelectedTool.Name == btHighlightTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Highlighter;
                 slTipSize.Value = App.AppSettings.highlightTipSize;
@@ -1498,9 +1510,10 @@ namespace WID
                     PenTip = PenTipShape.Rectangle,
                     DrawAsHighlighter = true,
                     Color = App.AppSettings.highlightColors[currentColors.highlight],
-                    Size = new Windows.Foundation.Size(5, 20),
+                    Size = new Windows.Foundation.Size(App.AppSettings.highlightTipSize / 4d, App.AppSettings.highlightTipSize),
                 };
-            } else if (btSelectedTool.Name == btPencilTool.Name)
+            }
+            else if (btSelectedTool.Name == btPencilTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Pencil;
                 slTipSize.Value = App.AppSettings.pencilTipSize;
@@ -1509,8 +1522,9 @@ namespace WID
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
                 attrs.Color = App.AppSettings.pencilColors[currentColors.pencil];
-                attrs.Size = new Windows.Foundation.Size(4, 4);
-            } else
+                attrs.Size = new Windows.Foundation.Size(App.AppSettings.pencilTipSize, App.AppSettings.pencilTipSize);
+            }
+            else if (btSelectedTool.Name == btCalligraphyTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Calligraphy;
                 slTipSize.Value = App.AppSettings.calligraphyTipSize;
@@ -1521,7 +1535,7 @@ namespace WID
                     DrawAsHighlighter = false,
                     IgnorePressure = false,
                     Color = App.AppSettings.calligraphyColors[currentColors.calligraphy],
-                    Size = new Windows.Foundation.Size(2, 8),
+                    Size = new Windows.Foundation.Size(App.AppSettings.calligraphyTipSize / 4d, App.AppSettings.calligraphyTipSize),
                     PenTipTransform = new Matrix3x2
                     {
                         M11 = MathF.Cos(35f),
@@ -1533,10 +1547,18 @@ namespace WID
                     },
                 };
             }
+            else if (btSelectedTool.Name == btEraserTool.Name)
+                inkMode = InkInputProcessingMode.Erasing;
+            else
+            {
+                attrs = new InkDrawingAttributes();
+                inkMode = InkInputProcessingMode.None;
+            }
 
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.UpdateDefaultDrawingAttributes(attrs);
+                page.inkPres.InputProcessingConfiguration.Mode = inkMode;
             }
             btSelectedTool.Foreground = new SolidColorBrush(attrs.Color);
         }

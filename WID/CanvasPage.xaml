@@ -653,6 +653,26 @@
                                     <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEDFB;" />
                                 </Grid>
                             </Button>
+                            <Button
+                                x:Name="btEraserTool"
+                                Click="ChangeCurrentInkingTool"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                BorderThickness="0"
+                                >
+                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                            </Button>
+                            <Button
+                                x:Name="btLassoTool"
+                                Click="ChangeCurrentInkingTool"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                BorderThickness="0"
+                                >
+                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                            </Button>
                             <ToggleButton
                                 Click="ToggleRuler"
                                 Width="48"
