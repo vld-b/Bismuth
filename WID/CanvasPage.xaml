@@ -708,6 +708,12 @@
                                     </Button>
                                 </StackPanel>
                             </ScrollViewer>
+                            <Image
+                                Source="/Assets/StrokeThin.svg"
+                                Margin="8, 0"
+                                Width="32"
+                                Height="32"
+                                />
                             <Slider
                                 x:Name="slTipSize"
                                 Width="256"
@@ -721,6 +727,12 @@
                                 LargeChange="2"
                                 Minimum="4"
                                 Maximum="96"
+                                />
+                            <Image
+                                Source="/Assets/StrokeThick.svg"
+                                Margin="8, 0"
+                                Width="32"
+                                Height="32"
                                 />
                         </StackPanel>
                     </Border>
