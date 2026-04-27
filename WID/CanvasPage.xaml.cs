@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -1006,8 +1005,8 @@ namespace WID
             RemoveSearchedHighlights();
             RichEditBox current = lastEditedText!.TextBox;
 
-            Windows.UI.Color highlightBg = (Windows.UI.Color)App.Current.Resources["SystemColorHighlightColor"];
-            Windows.UI.Color highlightFg = (Windows.UI.Color)App.Current.Resources["SystemColorHighlightTextColor"];
+            Color highlightBg = (Color)App.Current.Resources["SystemColorHighlightColor"];
+            Color highlightFg = (Color)App.Current.Resources["SystemColorHighlightTextColor"];
 
             if (tbFindText != null)
             {
@@ -1025,8 +1024,8 @@ namespace WID
             RichEditBox current = lastEditedText!.TextBox;
 
             ITextRange docRange = current.Document.GetRange(0, TextConstants.MaxUnitCount);
-            Windows.UI.Color defaultBg = ((SolidColorBrush)current.Background).Color;
-            Windows.UI.Color defaultFg = ((SolidColorBrush)current.Foreground).Color;
+            Color defaultBg = ((SolidColorBrush)current.Background).Color;
+            Color defaultFg = ((SolidColorBrush)current.Foreground).Color;
 
             docRange.CharacterFormat.BackgroundColor = defaultBg;
             docRange.CharacterFormat.ForegroundColor = defaultFg;
@@ -1391,7 +1390,7 @@ namespace WID
             {
                 PenTip = PenTipShape.Circle,
                 DrawAsHighlighter = false,
-                Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                Color = Color.FromArgb(255, 0, 0, 0),
                 Size = new Windows.Foundation.Size(4, 4),
             };
 
@@ -1401,7 +1400,7 @@ namespace WID
                 {
                     PenTip = PenTipShape.Circle,
                     DrawAsHighlighter = false,
-                    Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                    Color = Color.FromArgb(255, 0, 0, 0),
                     Size = new Windows.Foundation.Size(4, 4),
                 };
             } else if (btSelectedTool.Name == btHighlightTool.Name)
@@ -1410,14 +1409,14 @@ namespace WID
                 {
                     PenTip = PenTipShape.Rectangle,
                     DrawAsHighlighter = true,
-                    Color = Windows.UI.Color.FromArgb(255, 255, 255, 0),
+                    Color = Color.FromArgb(255, 255, 255, 0),
                     Size = new Windows.Foundation.Size(5, 20),
                 };
             } else if (btSelectedTool.Name == btPencilTool.Name)
             {
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
-                attrs.Color = Windows.UI.Color.FromArgb(255, 0, 0, 0);
+                attrs.Color = Color.FromArgb(255, 0, 0, 0);
                 attrs.Size = new Windows.Foundation.Size(4, 4);
             } else
             {
@@ -1425,7 +1424,7 @@ namespace WID
                 {
                     DrawAsHighlighter = false,
                     IgnorePressure = false,
-                    Color = Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                    Color = Color.FromArgb(255, 0, 0, 0),
                     Size = new Windows.Foundation.Size(2, 8),
                     PenTipTransform = new Matrix3x2
                     {
