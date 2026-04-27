@@ -713,7 +713,7 @@
                                 Loaded="LoadTipSize"
                                 VerticalAlignment="Center"
                                 Grid.Column="1"
-                                Margin="8, 0, 0, 0"
+                                Margin="0, 0, 8, 0"
                                 ValueChanged="SetNewBrushWidth"
                                 StepFrequency="1"
                                 SmallChange="1"
