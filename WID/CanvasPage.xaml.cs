@@ -1444,5 +1444,19 @@ namespace WID
             }
             btSelectedTool.Foreground = new SolidColorBrush(attrs.Color);
         }
+
+        private void ToggleRuler(object sender, RoutedEventArgs e)
+        {
+            ToggleButton tb = (ToggleButton)sender;
+            foreach (NotebookPage page in spPageView.Children)
+                page.ruler.IsVisible = (bool)tb.IsChecked!;
+        }
+
+        private void ToggleProtractor(object sender, RoutedEventArgs e)
+        {
+            ToggleButton tb = (ToggleButton)sender;
+            foreach (NotebookPage page in spPageView.Children)
+                page.protractor.IsVisible = (bool)tb.IsChecked!;
+        }
     }
 }

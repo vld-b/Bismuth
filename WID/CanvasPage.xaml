@@ -654,13 +654,23 @@
                                 </Grid>
                             </Button>
                             <ToggleButton
+                                Click="ToggleRuler"
                                 Width="48"
                                 Height="48"
                                 Padding="0"
                                 >
                                 <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEd5E;" />
                             </ToggleButton>
+                            <ToggleButton
+                                Click="ToggleProtractor"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                >
+                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
+                            </ToggleButton>
                             <ScrollViewer
+                                Width="256"
                                 Grid.Column="0"
                                 VerticalScrollMode="Disabled"
                                 HorizontalScrollMode="Enabled"

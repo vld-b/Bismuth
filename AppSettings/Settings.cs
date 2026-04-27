@@ -57,6 +57,54 @@ namespace AppSettings
             }
         }
 
+        private ObservableCollection<Color> _highlightColors;
+        public ObservableCollection<Color> highlightColors
+        {
+            get => _highlightColors;
+            set
+            {
+                if (_highlightColors != value)
+                {
+                    _highlightColors = value;
+                    _highlightColors.CollectionChanged += (s, e) => RequestSave();
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
+        private ObservableCollection<Color> _pencilColors;
+        public ObservableCollection<Color> pencilColors
+        {
+            get => _pencilColors;
+            set
+            {
+                if (_pencilColors != value)
+                {
+                    _pencilColors = value;
+                    _pencilColors.CollectionChanged += (s, e) => RequestSave();
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
+        private ObservableCollection<Color> _calligraphyColors;
+        public ObservableCollection<Color> calligraphyColors
+        {
+            get => _calligraphyColors;
+            set
+            {
+                if (_calligraphyColors != value)
+                {
+                    _calligraphyColors = value;
+                    _calligraphyColors.CollectionChanged += (s, e) => RequestSave();
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private double _tipSize;
         public double tipSize
         {
@@ -66,6 +114,51 @@ namespace AppSettings
                 if (_tipSize != value)
                 {
                     _tipSize = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
+        private double _highlighterTipSize;
+        public double highlighterTipSize
+        {
+            get => _highlighterTipSize;
+            set
+            {
+                if (_highlighterTipSize != value)
+                {
+                    _highlighterTipSize = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
+        private double _pencilTipSize;
+        public double pencilTipSize
+        {
+            get => _pencilTipSize;
+            set
+            {
+                if (_pencilTipSize != value)
+                {
+                    _pencilTipSize = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
+        private double _calligraphyTipSize;
+        public double calligraphyTipSize
+        {
+            get => _calligraphyTipSize;
+            set
+            {
+                if (_calligraphyTipSize != value)
+                {
+                    _calligraphyTipSize = value;
                     if (configHasLoaded)
                         RequestSave();
                 }
@@ -99,6 +192,9 @@ namespace AppSettings
             configVersion = 0;
             inputDevices = CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Pen;
             _drawingColors = new ObservableCollection<Color>();
+            _highlightColors = new ObservableCollection<Color>();
+            _pencilColors = new ObservableCollection<Color>();
+            _calligraphyColors = new ObservableCollection<Color>();
         }
 
         public void RequestSave()

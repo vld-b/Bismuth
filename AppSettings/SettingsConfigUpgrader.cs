@@ -12,22 +12,63 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade4To5(current);
+            return Upgrade5To6(current);
+        }
+
+        private static Settings Upgrade5To6(Settings current)
+        {
+            if (current.configVersion < 6)
+                current = Upgrade4To5(current);
+
+            current.configVersion = 6;
+
+            return current;
         }
 
         private static Settings Upgrade4To5(Settings current)
         {
-            if (current.configVersion < 4)
+            if (current.configVersion < 5)
                 current = Upgrade3To4(current);
 
             current.configVersion = 5;
+
+            current.highlightColors = new ObservableCollection<Color>
+            {
+                Colors.LightYellow,
+                Colors.Cyan,
+                Colors.LightPink,
+                Colors.LightGreen,
+                Colors.IndianRed,
+            };
+
+            current.pencilColors = new ObservableCollection<Color>
+            {
+                Colors.DarkGray,
+                Colors.AliceBlue,
+                Colors.DarkGreen,
+                Colors.Orange,
+                Colors.MediumVioletRed,
+            };
+
+            current.calligraphyColors = new ObservableCollection<Color>
+            {
+                Colors.Black,
+                Colors.CadetBlue,
+                Colors.ForestGreen,
+                Colors.DarkOrange,
+                Colors.OrangeRed,
+            };
+
+            current.highlighterTipSize = 20d;
+            current.pencilTipSize = 4d;
+            current.calligraphyTipSize = 4d;
 
             return current;
         }
 
         private static Settings Upgrade3To4(Settings current)
         {
-            if (current.configVersion < 3)
+            if (current.configVersion < 4)
                 current = Upgrade2To3(current);
 
             current.configVersion = 4;
@@ -38,7 +79,7 @@ namespace AppSettings
 
         private static Settings Upgrade2To3(Settings current)
         {
-            if (current.configVersion < 2)
+            if (current.configVersion < 3)
                 current = Upgrade1To2(current);
 
             current.configVersion = 3;
@@ -49,7 +90,7 @@ namespace AppSettings
 
         private static Settings Upgrade1To2(Settings current)
         {
-            if (current.configVersion < 1)
+            if (current.configVersion < 2)
                 current = Upgrade0To1(current);
 
             current.configVersion = 2;
