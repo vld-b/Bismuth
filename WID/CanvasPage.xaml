@@ -663,7 +663,7 @@
                             </ToggleButton>
                             <ScrollViewer
                                 Width="256"
-                                Margin="8, 0"
+                                Margin="8, 0, 0, 0"
                                 VerticalScrollMode="Disabled"
                                 HorizontalScrollMode="Enabled"
                                 VerticalScrollBarVisibility="Disabled"
@@ -709,6 +709,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                             <Image
+                                IsHitTestVisible="False"
                                 Source="/Assets/StrokeThin.svg"
                                 Margin="8, 0"
                                 Width="32"
@@ -720,7 +721,6 @@
                                 Loaded="LoadTipSize"
                                 VerticalAlignment="Center"
                                 Grid.Column="1"
-                                Margin="0, 0, 8, 0"
                                 ValueChanged="SetNewBrushWidth"
                                 StepFrequency="1"
                                 SmallChange="1"
@@ -729,6 +729,7 @@
                                 Maximum="96"
                                 />
                             <Image
+                                IsHitTestVisible="False"
                                 Source="/Assets/StrokeThick.svg"
                                 Margin="8, 0"
                                 Width="32"
