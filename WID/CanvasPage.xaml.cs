@@ -359,10 +359,7 @@ namespace WID
             {
                 pendingCreations.Add(onPageItem.GetFileName());
                 pendingDeletions.Remove(onPageItem.GetFileName());
-                if (onPageItem is OnPageText text)
-                    text.hasBeenModifiedSinceSave = true;
-                else if (onPageItem is OnPageImage img)
-                    img.hasBeenModifiedSinceSave = true;
+                onPageItem.SetHasBeenModified(true);
             }
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);

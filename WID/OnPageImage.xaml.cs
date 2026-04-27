@@ -85,6 +85,11 @@ namespace WID
 
         public string GetFileName() => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg";
 
+        public void SetHasBeenModified(bool value)
+        {
+            hasBeenModifiedSinceSave = value;
+        }
+
         private void FocusImage(object sender, RoutedEventArgs e)
         {
             ImageGotFocus?.Invoke(this, EventArgs.Empty);

@@ -12,5 +12,6 @@ namespace WID
         public double GetLeft();
         public void SetPos(double top, double left);
         public string GetFileName();
+        public void SetHasBeenModified(bool value);
     }
 }

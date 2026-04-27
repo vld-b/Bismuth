@@ -86,6 +86,11 @@ namespace WID
 
         public string GetFileName() => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf";
 
+        public void SetHasBeenModified(bool value)
+        {
+            hasBeenModifiedSinceSave = value;
+        }
+
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
