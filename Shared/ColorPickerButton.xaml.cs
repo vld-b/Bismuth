@@ -99,7 +99,7 @@ namespace Shared
             ChangeColor?.Invoke(this, new ChangeColorData(args.NewColor, btIndex, true));
         }
 
-        public void AnimateScale(float scale)
+        public void AnimateScale(float scale, EasingFunctionBase easingFunction)
         {
             animBoard = new Storyboard();
 
@@ -108,7 +108,7 @@ namespace Shared
                 From = scaleTrans.ScaleX,
                 To = scale,
                 Duration = TimeSpan.FromMilliseconds(200),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+                EasingFunction = easingFunction,
             };
             Storyboard.SetTarget(scaleXAnim, scaleTrans);
             Storyboard.SetTargetProperty(scaleXAnim, "ScaleX");
@@ -118,7 +118,7 @@ namespace Shared
                 From = scaleTrans.ScaleX,
                 To = scale,
                 Duration = TimeSpan.FromMilliseconds(200),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+                EasingFunction = easingFunction,
             };
             Storyboard.SetTarget(scaleYAnim, scaleTrans);
             Storyboard.SetTargetProperty(scaleYAnim, "ScaleY");

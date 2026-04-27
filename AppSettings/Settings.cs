@@ -315,8 +315,10 @@ namespace AppSettings
         {
             for (int i = panel.Children.Count - 1; i >= 0; --i)
             {
+                if (ct.IsCancellationRequested)
+                    return;
                 ColorPickerButton btn = (ColorPickerButton)panel.Children[i];
-                btn.AnimateScale(0f);
+                btn.AnimateScale(0f, new Windows.UI.Xaml.Media.Animation.QuadraticEase { EasingMode = Windows.UI.Xaml.Media.Animation.EasingMode.EaseInOut });
                 await Task.Delay(40);
                 panel.Children.RemoveAt(i);
             }
@@ -357,7 +359,7 @@ namespace AppSettings
                     button.isSelected = true;
                 panel.Children.Add(button);
                 ++j;
-                button.AnimateScale(1f);
+                button.AnimateScale(1f, new Windows.UI.Xaml.Media.Animation.BackEase { Amplitude = 0.5d, EasingMode = Windows.UI.Xaml.Media.Animation.EasingMode.EaseOut });
                 await Task.Delay(40);
                 if (ct.IsCancellationRequested)
                     return;
