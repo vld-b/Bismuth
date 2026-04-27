@@ -38,6 +38,14 @@ namespace WID
             ["Large"] = HomeScreenThumbnailSize.Large,
         };
 
+        private readonly Dictionary<string, UndoRedoButtonsPlacement> undoRedoButtonsPlacement = new Dictionary<string, UndoRedoButtonsPlacement>
+        {
+            ["Top left"] = UndoRedoButtonsPlacement.TopLeft,
+            ["Top right"] = UndoRedoButtonsPlacement.TopRight,
+            ["Bottom left"] = UndoRedoButtonsPlacement.BottomLeft,
+            ["Bottom right"] = UndoRedoButtonsPlacement.BottomRight,
+        };
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -47,6 +55,7 @@ namespace WID
             cbInputTouch.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Touch) != 0;
 
             cbxHomeScreenThumbnailSize.SelectedItem = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
+            cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -71,6 +80,11 @@ namespace WID
         private void ChangeHomescreenThumbnailSize(object sender, SelectionChangedEventArgs e)
         {
             App.AppSettings.homescreenThumbnailSize = homescreenThumbnailSizes[(string)e.AddedItems[0]];
+        }
+
+        private void ChangeUndoRedoButtonsPlacement(object sender, SelectionChangedEventArgs e)
+        {
+            App.AppSettings.undoRedoButtonsPlacement = undoRedoButtonsPlacement[(string)e.AddedItems[0]];
         }
     }
 }

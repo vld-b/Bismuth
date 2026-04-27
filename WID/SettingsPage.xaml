@@ -73,6 +73,35 @@
                 </ComboBox>
             </StackPanel>
 
+            <Grid Height="64" />
+
+            <TextBlock
+                Text="Note-taking experience"
+                FontSize="32"
+                FontWeight="Bold"
+                />
+
+            <StackPanel
+                Orientation="Horizontal"
+                Spacing="8"
+                >
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Text="Undo/Redo buttons placement"
+                    FontSize="16"
+                    />
+
+                <ComboBox
+                    x:Name="cbxUndoRedoButtonsPlacement"
+                    SelectionChanged="ChangeUndoRedoButtonsPlacement"
+                    >
+                    <x:String>Top left</x:String>
+                    <x:String>Top right</x:String>
+                    <x:String>Bottom left</x:String>
+                    <x:String>Bottom right</x:String>
+                </ComboBox>
+            </StackPanel>
+
         </StackPanel>
         
     </ScrollViewer>

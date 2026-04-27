@@ -12,7 +12,17 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade5To6(current);
+            return Upgrade6To7(current);
+        }
+
+        private static Settings Upgrade6To7(Settings current)
+        {
+            if (current.configVersion < 7)
+                current = Upgrade5To6(current);
+
+            current.configVersion = 7;
+
+            return current;
         }
 
         private static Settings Upgrade5To6(Settings current)
@@ -21,6 +31,7 @@ namespace AppSettings
                 current = Upgrade4To5(current);
 
             current.configVersion = 6;
+            current.undoRedoButtonsPlacement = UndoRedoButtonsPlacement.TopLeft;
 
             return current;
         }

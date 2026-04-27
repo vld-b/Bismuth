@@ -180,6 +180,21 @@ namespace AppSettings
             }
         }
 
+        private UndoRedoButtonsPlacement _undoRedoButtonsPlacement;
+        public UndoRedoButtonsPlacement undoRedoButtonsPlacement
+        {
+            get => _undoRedoButtonsPlacement;
+            set
+            {
+                if (_undoRedoButtonsPlacement != value)
+                {
+                    _undoRedoButtonsPlacement = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -329,5 +344,13 @@ namespace AppSettings
         Highlight,
         Pencil,
         Calligraphy,
+    }
+
+    public enum UndoRedoButtonsPlacement
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight,
     }
 }

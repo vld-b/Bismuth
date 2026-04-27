@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using AppSettings;
+using Shared;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -1382,6 +1383,8 @@ namespace WID
         private void InkToolbarPopupLoaded(object sender, RoutedEventArgs e)
         {
             ToolPopupLoaded(sender, e);
+            Popup pp = (Popup)sender;
+            pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
         }
 
         private void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)
@@ -1515,6 +1518,36 @@ namespace WID
             ((Grid)tb.Content).Translation = isChecked ? new Vector3(0f, -4f, 0f) : new Vector3(0f, 0f, 0f);
             foreach (NotebookPage page in spPageView.Children)
                 page.protractor.IsVisible = isChecked;
+        }
+
+        private void AdjustUndoRedoButtonsPopupPosition(object sender, RoutedEventArgs e)
+        {
+            Popup pp = (Popup)sender;
+            if (
+                App.AppSettings.undoRedoButtonsPlacement == UndoRedoButtonsPlacement.TopLeft
+                ||
+                App.AppSettings.undoRedoButtonsPlacement == UndoRedoButtonsPlacement.TopRight
+                )
+            {
+                pp.VerticalAlignment = VerticalAlignment.Top;
+            } else
+            {
+                pp.VerticalAlignment = VerticalAlignment.Bottom;
+                pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
+            }
+            if (
+                App.AppSettings.undoRedoButtonsPlacement == UndoRedoButtonsPlacement.TopLeft
+                ||
+                App.AppSettings.undoRedoButtonsPlacement == UndoRedoButtonsPlacement.BottomLeft
+                )
+            {
+                pp.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+            else
+            {
+                pp.HorizontalAlignment = HorizontalAlignment.Right;
+                pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth;
+            }
         }
     }
 

@@ -507,6 +507,7 @@
                 </ScrollViewer>
 
                 <Popup
+                    Loaded="AdjustUndoRedoButtonsPopupPosition"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsOpen="True"
@@ -547,7 +548,6 @@
                 <Popup
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
-                    VerticalOffset="-64"
                     IsOpen="True"
                     Loaded="InkToolbarPopupLoaded"
                     >
@@ -663,7 +663,6 @@
                             </ToggleButton>
                             <ScrollViewer
                                 Width="256"
-                                Grid.Column="0"
                                 VerticalScrollMode="Disabled"
                                 HorizontalScrollMode="Enabled"
                                 VerticalScrollBarVisibility="Disabled"
