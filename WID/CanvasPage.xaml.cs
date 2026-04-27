@@ -1508,7 +1508,7 @@ namespace WID
                 To = newTipSizeSliderValue,
                 EnableDependentAnimation = true,
                 Duration = new Duration(TimeSpan.FromMilliseconds(500)),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseInOut },
             };
 
             Storyboard sb = new Storyboard();
