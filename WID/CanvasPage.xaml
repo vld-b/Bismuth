@@ -437,7 +437,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <GridView
                         x:Name="gvThumbnails"
                         Grid.Row="0"
@@ -547,7 +547,7 @@
                 <Popup
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
-                    VerticalOffset="-32"
+                    VerticalOffset="-64"
                     IsOpen="True"
                     Loaded="InkToolbarPopupLoaded"
                     >
@@ -755,61 +755,5 @@
                 </Popup>
             </Grid>
         </SplitView>
-
-        <Grid
-            Grid.Row="3"
-            HorizontalAlignment="Center"
-            >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            
-            <InkToolbar
-                x:Name="inkToolbar"
-                Grid.Column="0"
-                Margin="0, 0, 8, 0"
-                ActiveToolChanged="InkToolChanged"
-                InkDrawingAttributesChanged="InkToolChanged"
-                InitialControls="PensOnly"
-                HorizontalAlignment="Right"
-                >
-                <InkToolbarEraserButton
-                    Checked="EraserChecked"
-                    Unchecked="EraserUnchecked"
-                    >
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
-                </InkToolbarEraserButton>
-                <InkToolbarCustomToolButton
-                    Checked="LassoSelected"
-                    Unchecked="LassoUnselected"
-                    >
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
-                </InkToolbarCustomToolButton>
-                <InkToolbarCustomToggleButton
-                    Checked="RulerChecked"
-                    Unchecked="RulerUnchecked"
-                    >
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xECC6;" />
-                </InkToolbarCustomToggleButton>
-                <InkToolbarCustomToggleButton
-                    Checked="ProtractorChecked"
-                    Unchecked="ProtractorUnchecked"
-                    >
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
-                </InkToolbarCustomToggleButton>
-            </InkToolbar>
-
-            <Grid
-                Grid.Column="1"
-                Margin="8, 0, 0, 0"
-                HorizontalAlignment="Left"
-                >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="256" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-            </Grid>
-        </Grid>
     </Grid>
 </Page>

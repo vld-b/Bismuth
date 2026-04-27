@@ -81,6 +81,7 @@ namespace WID
 
         private NotebookPage? currentPage;
         private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
+        private InkDrawingAttributes attrs = new InkDrawingAttributes();
         private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
 
         public CanvasPage()
@@ -104,6 +105,15 @@ namespace WID
             btHighlightTool.Foreground = new SolidColorBrush(App.AppSettings.highlightColors[0]);
             btPencilTool.Foreground = new SolidColorBrush(App.AppSettings.pencilColors[0]);
             btCalligraphyTool.Foreground = new SolidColorBrush(App.AppSettings.calligraphyColors[0]);
+
+            currentInkingTool = CurrentInkingTool.Drawing;
+            attrs = new InkDrawingAttributes
+            {
+                PenTip = PenTipShape.Circle,
+                DrawAsHighlighter = false,
+                Color = App.AppSettings.drawingColors[currentColors.drawing],
+                Size = new Windows.Foundation.Size(App.AppSettings.tipSize, App.AppSettings.tipSize),
+            };
         }
 
         private void SetTitlebar()
@@ -250,10 +260,10 @@ namespace WID
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
-                        page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                        page.SetupForDrawing(attrs, currentInkingTool);
 
                     else
-                        this.Loaded += (s, e) => page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                        this.Loaded += (s, e) => page.SetupForDrawing(attrs, currentInkingTool);
                     spPageView.Children.Add(page);
 
                     pbFileStatus.Value = i + 1;
@@ -322,7 +332,7 @@ namespace WID
 
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
 
-            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+            page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
             {
@@ -352,7 +362,7 @@ namespace WID
                 pendingDeletions.Remove("img" + (image.id == 0 ? "" : (" (" + image.id + ")")) + ".jpg");
                 image.hasBeenModifiedSinceSave = true;
             }
-            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+            page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
             BringIntoViewOptions options = new BringIntoViewOptions
             {
@@ -378,7 +388,7 @@ namespace WID
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
             undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
 
-            page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+            page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
 
             config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
@@ -449,7 +459,7 @@ namespace WID
                     }
                 }
 
-                page.SetupForDrawing((bool)inkToolbar.GetToolButton(InkToolbarTool.Eraser).IsChecked!, inkToolbar);
+                page.SetupForDrawing(attrs, currentInkingTool);
                 spPageView.Children.Add(page);
 
                 // Remove background from pending deletions so it doesn't get deleted when it should be present
@@ -646,62 +656,6 @@ namespace WID
             undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             popup.Hide();
-        }
-
-        private void InkToolChanged(InkToolbar sender, object args)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
-            }
-        }
-
-        private void RulerChecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.ruler.IsVisible = true;
-            }
-        }
-
-        private void RulerUnchecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.ruler.IsVisible = false;
-            }
-        }
-
-        private void ProtractorChecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.protractor.IsVisible = true;
-            }
-        }
-
-        private void ProtractorUnchecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.protractor.IsVisible = false;
-            }
-        }
-
-        private void EraserChecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
-            }
-        }
-
-        private void EraserUnchecked(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
-            }
         }
 
         private void OpenPageOverview(object sender, RoutedEventArgs e)
@@ -1070,7 +1024,6 @@ namespace WID
             }
             foreach (NotebookPage page in spPageView.Children)
             {
-                InkDrawingAttributes attrs = page.inkPres.CopyDefaultDrawingAttributes();
                 attrs.Color = changeData.color;
                 page.inkPres.UpdateDefaultDrawingAttributes(attrs);
             }
@@ -1119,8 +1072,6 @@ namespace WID
             if (!slTipSize.IsLoaded || spPageView.Children.Count == 0)
                 return;
 
-            InkDrawingAttributes attrs = ((NotebookPage)spPageView.Children[0]).inkPres.CopyDefaultDrawingAttributes();
-
             switch (currentInkingTool)
             {
                 case CurrentInkingTool.Drawing:
@@ -1151,8 +1102,6 @@ namespace WID
         {
             Slider slider = (Slider)sender;
             slider.Value = App.AppSettings.tipSize;
-            inkToolbar.InkDrawingAttributes.Size = new Windows.Foundation.Size(slider.Value, slider.Value);
-            InkToolChanged(inkToolbar, new object());
         }
 
         private async void PasteObject(object sender, RoutedEventArgs e)
@@ -1398,22 +1347,6 @@ namespace WID
             exportingDialog.Hide();
         }
 
-        private void LassoSelected(object sender, RoutedEventArgs e)
-        {
-            foreach (NotebookPage page in spPageView.Children)
-                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
-        }
-
-        private void LassoUnselected(object sender, RoutedEventArgs e)
-        {
-            pageState.DeselectStrokes();
-            foreach (NotebookPage page in spPageView.Children)
-            {
-                page.inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
-                page.RemoveManipulationRect();
-            }
-        }
-
         private void DeleteCurrentlySelectedStrokes(object sender, RoutedEventArgs e)
         {
             undoRedoSystem.AddToUndoStack(new UndoDeleteStroke(pageState.selectedStrokes!, pageState.currentlyActivePage!.inkPres, undoRedoSystem));
@@ -1439,9 +1372,9 @@ namespace WID
         {
             foreach (InkStroke stroke in pageState.selectedStrokes!)
             {
-                InkDrawingAttributes attrs = stroke.DrawingAttributes;
-                attrs.Color = args.NewColor;
-                stroke.DrawingAttributes = attrs;
+                InkDrawingAttributes strokeAttrs = stroke.DrawingAttributes;
+                strokeAttrs.Color = args.NewColor;
+                stroke.DrawingAttributes = strokeAttrs;
             }
         }
 
@@ -1476,7 +1409,7 @@ namespace WID
                 }
             }
 
-            InkDrawingAttributes attrs = new InkDrawingAttributes
+            attrs = new InkDrawingAttributes
             {
                 PenTip = PenTipShape.Circle,
                 DrawAsHighlighter = false,
@@ -1548,9 +1481,13 @@ namespace WID
                 };
             }
             else if (btSelectedTool.Name == btEraserTool.Name)
+            {
+                currentInkingTool = CurrentInkingTool.Eraser;
                 inkMode = InkInputProcessingMode.Erasing;
+            }
             else
             {
+                currentInkingTool = CurrentInkingTool.Lasso;
                 attrs = new InkDrawingAttributes();
                 inkMode = InkInputProcessingMode.None;
             }
@@ -1584,6 +1521,8 @@ namespace WID
         Highlighter,
         Pencil,
         Calligraphy,
+        Eraser,
+        Lasso,
     };
 
     public class CurrentlySelectedColors

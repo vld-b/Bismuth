@@ -167,12 +167,16 @@ namespace WID
             Children.Insert(0, bgImg);
         }
 
-        public void SetupForDrawing(bool shouldErase, InkToolbar inkToolbar)
+        public void SetupForDrawing(InkDrawingAttributes attrs, CurrentInkingTool currentInkingTool)
         {
             inkPres.InputDeviceTypes = App.AppSettings.inputDevices;
-            if (shouldErase)
+            if (currentInkingTool == CurrentInkingTool.Eraser)
                 inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Erasing;
-            inkPres.UpdateDefaultDrawingAttributes(inkToolbar.InkDrawingAttributes);
+            else if (currentInkingTool == CurrentInkingTool.Lasso)
+                inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+            else
+                inkPres.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+            inkPres.UpdateDefaultDrawingAttributes(attrs);
         }
 
         public async Task LoadLastPageFromConfig(NotebookConfig notebookConfig, StorageFolder notebookDir)
