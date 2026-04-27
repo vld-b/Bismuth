@@ -101,8 +101,7 @@ namespace WID
 
             undoRedoSystem.BindPendingFileOperationsList(pendingCreations, pendingDeletions, pendingMoves, pendingRenames);
 
-            btInkTool.Background = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
-            ((Grid)btInkTool.Content).Translation = new Vector3(0f, -4f, 0f);
+            btInkTool.isSelected = true;
             btInkTool.Foreground = new SolidColorBrush(App.AppSettings.drawingColors[0]);
             btHighlightTool.Foreground = new SolidColorBrush(App.AppSettings.highlightColors[0]);
             btPencilTool.Foreground = new SolidColorBrush(App.AppSettings.pencilColors[0]);
@@ -1387,19 +1386,17 @@ namespace WID
 
         private void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)
         {
-            Button btSelectedTool = (Button)sender;
+            CustomInkToolbarTool btSelectedTool = (CustomInkToolbarTool)sender;
 
             SolidColorBrush accentColorBrush = (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"];
             foreach (UIElement el in spCustomInkToolbar.Children)
             {
-                if (el is Button btn)
+                if (el is CustomInkToolbarTool btn)
                 {
-                    btn.Background = null;
-                    ((Grid)btn.Content).Translation = new Vector3(0f, 0f, 0f);
+                    btn.isSelected = false;
                 }
             }
-            btSelectedTool.Background = accentColorBrush;
-            ((Grid)btSelectedTool.Content).Translation = new Vector3(0f, -4f, 0f);
+            btSelectedTool.isSelected = true;
 
             if (btSelectedTool.Name != btLassoTool.Name)
             {

@@ -569,144 +569,66 @@
                             Spacing="2"
                             Margin="2"
                             >
-                            <Button
+                            <local:CustomInkToolbarTool
                                 x:Name="btInkTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon
-                                        Foreground="{Binding Foreground, ElementName=btInkTool}"
-                                        Style="{StaticResource InkToolbarIcon}"
-                                        FontFamily="Segoe Fluent Icons"
-                                        Glyph="&#xE88F;"
-                                        />
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xE76D;" />
-                                </Grid>
-                            </Button>
-                            <Button
+                                <FontIcon
+                                    Foreground="{x:Bind btInkTool.Foreground, Mode=OneWay}"
+                                    Style="{StaticResource InkToolbarIcon}"
+                                    FontFamily="Segoe Fluent Icons"
+                                    Glyph="&#xE88F;"
+                                    />
+                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xE76D;" />
+                            </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
                                 x:Name="btHighlightTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon
-                                        Foreground="{Binding Foreground, ElementName=btHighlightTool}"
-                                        Style="{StaticResource InkToolbarIcon}"
-                                        FontFamily="Segoe Fluent Icons"
-                                        Glyph="&#xE891;"
-                                        />
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xE7E6;" />
-                                </Grid>
-                            </Button>
-                            <Button
+                                <FontIcon
+                                    Foreground="{x:Bind btHighlightTool.Foreground, Mode=OneWay}"
+                                    Style="{StaticResource InkToolbarIcon}"
+                                    FontFamily="Segoe Fluent Icons"
+                                    Glyph="&#xE891;"
+                                    />
+                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xE7E6;" />
+                            </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
                                 x:Name="btPencilTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon
-                                        Foreground="{Binding Foreground, ElementName=btPencilTool}"
-                                        Style="{StaticResource InkToolbarIcon}"
-                                        FontFamily="Segoe Fluent Icons"
-                                        Glyph="&#xF0C6;"
-                                        />
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xED63;" />
-                                </Grid>
-                            </Button>
-                            <Button
+                                <FontIcon
+                                    Foreground="{x:Bind btPencilTool.Foreground, Mode=OneWay}"
+                                    Style="{StaticResource InkToolbarIcon}"
+                                    FontFamily="Segoe Fluent Icons"
+                                    Glyph="&#xF0C6;"
+                                    />
+                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xED63;" />
+                            </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
                                 x:Name="btCalligraphyTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon
-                                        Foreground="{Binding Foreground, ElementName=btCalligraphyTool}"
-                                        Style="{StaticResource InkToolbarIcon}"
-                                        FontFamily="Segoe Fluent Icons"
-                                        Glyph="&#xF0C7;"
-                                        />
-                                    <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEDFB;" />
-                                </Grid>
-                            </Button>
-                            <Button
+                                <FontIcon
+                                    Foreground="{x:Bind btCalligraphyTool.Foreground, Mode=OneWay}"
+                                    Style="{StaticResource InkToolbarIcon}"
+                                    FontFamily="Segoe Fluent Icons"
+                                    Glyph="&#xF0C7;"
+                                    />
+                                <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xEDFB;" />
+                            </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
                                 x:Name="btEraserTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
-                                </Grid>
-                            </Button>
-                            <Button
+                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                            </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
                                 x:Name="btLassoTool"
-                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
-                                Width="48"
-                                Height="48"
-                                Padding="0"
-                                BorderThickness="0"
                                 >
-                                <Grid
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    >
-                                    <Grid.TranslationTransition>
-                                        <Vector3Transition />
-                                    </Grid.TranslationTransition>
-                                    <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
-                                </Grid>
-                            </Button>
+                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                            </local:CustomInkToolbarTool>
                             <ToggleButton
                                 Click="ToggleRuler"
                                 Width="48"
