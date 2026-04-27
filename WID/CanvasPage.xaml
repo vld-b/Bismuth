@@ -571,6 +571,7 @@
                             >
                             <Button
                                 x:Name="btInkTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
@@ -592,6 +593,7 @@
                             </Button>
                             <Button
                                 x:Name="btHighlightTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
@@ -613,6 +615,7 @@
                             </Button>
                             <Button
                                 x:Name="btPencilTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
@@ -634,6 +637,7 @@
                             </Button>
                             <Button
                                 x:Name="btCalligraphyTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
@@ -655,6 +659,7 @@
                             </Button>
                             <Button
                                 x:Name="btEraserTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
@@ -665,6 +670,7 @@
                             </Button>
                             <Button
                                 x:Name="btLassoTool"
+                                Background="Transparent"
                                 Click="ChangeCurrentInkingTool"
                                 Width="48"
                                 Height="48"
