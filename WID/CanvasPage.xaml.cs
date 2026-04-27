@@ -355,15 +355,14 @@ namespace WID
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
             if (page.hasBg)
                 pendingDeletions.Remove(config!.pageMapping.Last().GetBgName());
-            foreach (OnPageText text in page.textBoxes)
+            foreach (IOnPageItem onPageItem in page.onPageItems)
             {
-                pendingDeletions.Remove("text" + (text.id == 0 ? "" : (" (" + text.id + ")")) + ".rtf");
-                text.hasBeenModifiedSinceSave = true;
-            }
-            foreach (OnPageImage image in page.images)
-            {
-                pendingDeletions.Remove("img" + (image.id == 0 ? "" : (" (" + image.id + ")")) + ".jpg");
-                image.hasBeenModifiedSinceSave = true;
+                pendingCreations.Add(onPageItem.GetFileName());
+                pendingDeletions.Remove(onPageItem.GetFileName());
+                if (onPageItem is OnPageText text)
+                    text.hasBeenModifiedSinceSave = true;
+                else if (onPageItem is OnPageImage img)
+                    img.hasBeenModifiedSinceSave = true;
             }
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
@@ -606,10 +605,6 @@ namespace WID
                         }
                     }
 
-                    string textFileName = "text" + (onPageText.id == 0 ? "" : (" (" + onPageText.id + ")")) + ".rtf";
-                    pendingCreations.Add(textFileName);
-                    pendingDeletions.Add(textFileName);
-
                     page.AddTextToPage(onPageText);
                     onPageText.TextBoxGotFocus += FocusedOnPageItem;
                     onPageText.TextBoxLostFocus += UnfocusedOnPageItem;
@@ -652,8 +647,6 @@ namespace WID
                     page.AddImageToPage(onPageImage);
                     onPageImage.ImageGotFocus += FocusedOnPageItem;
                     onPageImage.ImageLostFocus += UnfocusedOnPageItem;
-
-                    pendingDeletions.Remove("img" + (onPageImage.id == 0 ? "" : (" (" + onPageImage.id + ")")) + ".jpg");
                 }
 
                 AddPage(page);
@@ -783,14 +776,8 @@ namespace WID
                 {
                     NotebookPage deletedPage = (NotebookPage)spPageView.Children[i];
 
-                    foreach (OnPageText txt in deletedPage.textBoxes)
-                    {
-                        pendingDeletions.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
-                    }
-                    foreach (OnPageImage img in deletedPage.images)
-                    {
-                        pendingDeletions.Add("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg");
-                    }
+                    foreach (IOnPageItem onPageItem in deletedPage.onPageItems)
+                        pendingDeletions.Add(onPageItem.GetFileName());
 
                     spPageView.Children.RemoveAt(i);
                     break;

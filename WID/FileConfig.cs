@@ -98,64 +98,65 @@ namespace WID
             currentConfig.hasTemplate = page.hasPattern;
             pageMapping.Add(currentConfig);
 
-            foreach (OnPageText txt in page.textBoxes)
+            foreach (IOnPageItem onPageItem in page.onPageItems)
             {
-                if (txt.hasBeenModifiedSinceSave || isExporting)
+                if (onPageItem is OnPageText txt)
                 {
-                    StorageFile rtfFile = await destFolder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
-                    using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
-                        txt.SaveToStream(stream);
-                }
-
-                currentConfig.textBoxes.Add(new TextData(
-                    txt.id,
-                    page.id,
-                    txt.Width,
-                    txt.Height,
-                    Canvas.GetTop(txt),
-                    Canvas.GetLeft(txt))
-                    );
-            }
-
-            foreach (OnPageImage img in page.images)
-            {
-                ImageData imgData = new ImageData(
-                    img.id,
-                    img.containingPage.id,
-                    img.Width,
-                    img.Height,
-                    Canvas.GetTop(img),
-                    Canvas.GetLeft(img)
-                    );
-                currentConfig.images.Add(imgData);
-                if (!img.isNewImage && !isExporting) // Only save image if necessary
-                    continue;
-
-                StorageFile currentImgFile = await destFolder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
-                using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
-                {
-                    BitmapEncoder enc = await BitmapEncoder.CreateAsync(
-                        BitmapEncoder.JpegEncoderId,
-                        stream
-                        );
-
-                    byte[] pixels;
-                    using (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
+                    if (txt.hasBeenModifiedSinceSave || isExporting)
                     {
-                        pixels = new byte[pixelStream.Length];
-                        await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
+                        StorageFile rtfFile = await destFolder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
+                        using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
+                            txt.SaveToStream(stream);
                     }
-                    enc.SetPixelData(
-                        BitmapPixelFormat.Bgra8,
-                        BitmapAlphaMode.Premultiplied,
-                        (uint)img.wbmp.PixelWidth,
-                        (uint)img.wbmp.PixelHeight,
-                        96,
-                        96,
-                        pixels
-                        );
 
-                    await enc.FlushAsync();
+                    currentConfig.textBoxes.Add(new TextData(
+                        txt.id,
+                        page.id,
+                        txt.Width,
+                        txt.Height,
+                        Canvas.GetTop(txt),
+                        Canvas.GetLeft(txt))
+                        );
+                } else if (onPageItem is OnPageImage img)
+                {
+                    ImageData imgData = new ImageData(
+                        img.id,
+                        img.containingPage.id,
+                        img.Width,
+                        img.Height,
+                        Canvas.GetTop(img),
+                        Canvas.GetLeft(img)
+                        );
+                    currentConfig.images.Add(imgData);
+                    if (!img.isNewImage && !isExporting) // Only save image if necessary
+                        continue;
+
+                    StorageFile currentImgFile = await destFolder.CreateFileAsync("img" + (img.id == 0 ? "" : (" (" + img.id + ")")) + ".jpg", CreationCollisionOption.ReplaceExisting);
+                    using (IRandomAccessStream stream = await currentImgFile.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        BitmapEncoder enc = await BitmapEncoder.CreateAsync(
+                            BitmapEncoder.JpegEncoderId,
+                            stream
+                            );
+
+                        byte[] pixels;
+                        using (Stream pixelStream = img.wbmp.PixelBuffer.AsStream())
+                        {
+                            pixels = new byte[pixelStream.Length];
+                            await pixelStream.ReadExactlyAsync(pixels, 0, pixels.Length);
+                        }
+                        enc.SetPixelData(
+                            BitmapPixelFormat.Bgra8,
+                            BitmapAlphaMode.Premultiplied,
+                            (uint)img.wbmp.PixelWidth,
+                            (uint)img.wbmp.PixelHeight,
+                            96,
+                            96,
+                            pixels
+                            );
+
+                        await enc.FlushAsync();
+                    }
                 }
             }
         }

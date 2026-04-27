@@ -47,8 +47,7 @@ namespace WID
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public Image? bgImg { get; private set; }
-        public List<OnPageText> textBoxes { get; private set; } = new List<OnPageText>();
-        public List<OnPageImage> images { get; private set; } = new List<OnPageImage>();
+        public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
 
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -227,13 +226,13 @@ namespace WID
 
         public void AddTextToPage(OnPageText text)
         {
-            textBoxes.Add(text);
+            onPageItems.Add(text);
             contentCanvas.Children.Add(text);
         }
 
         public void AddImageToPage(OnPageImage img)
         {
-            images.Add(img);
+            onPageItems.Add(img);
             contentCanvas.Children.Add(img);
         }
 
@@ -252,13 +251,13 @@ namespace WID
 
         public void RemoveImageFromPage(OnPageImage img)
         {
-            images.Remove(img);
+            onPageItems.Remove(img);
             contentCanvas.Children.Remove(img);
         }
 
         public void RemoveTextFromPage(OnPageText text)
         {
-            textBoxes.Remove(text);
+            onPageItems.Remove(text);
             contentCanvas.Children.Remove(text);
         }
 
