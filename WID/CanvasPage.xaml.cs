@@ -1071,7 +1071,7 @@ namespace WID
 
         private void SetNewBrushWidth(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (!slTipSize.IsLoaded || spPageView.Children.Count == 0)
+            if (!slTipSize.IsLoaded)
                 return;
 
             switch (currentInkingTool)
