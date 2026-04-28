@@ -1402,7 +1402,13 @@ namespace WID
         {
             ToolPopupLoaded(sender, e);
             Popup pp = (Popup)sender;
-            pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
+            if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
+                pp.VerticalAlignment = VerticalAlignment.Top;
+            else if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Bottom)
+            {
+                pp.VerticalAlignment = VerticalAlignment.Bottom;
+                pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
+            }
         }
 
         private async void ChangeCurrentInkingTool(object sender, RoutedEventArgs e)

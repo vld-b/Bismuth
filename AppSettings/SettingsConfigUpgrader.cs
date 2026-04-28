@@ -12,7 +12,17 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade6To7(current);
+            return Upgrade7To8(current);
+        }
+
+        private static Settings Upgrade7To8(Settings current)
+        {
+            if (current.configVersion < 8)
+                current = Upgrade6To7(current);
+
+            current.configVersion = 8;
+
+            return current;
         }
 
         private static Settings Upgrade6To7(Settings current)
@@ -21,6 +31,7 @@ namespace AppSettings
                 current = Upgrade5To6(current);
 
             current.configVersion = 7;
+            current.inkToolbarPlacement = InkToolbarPlacement.Top;
 
             return current;
         }

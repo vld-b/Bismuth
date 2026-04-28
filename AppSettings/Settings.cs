@@ -196,6 +196,21 @@ namespace AppSettings
             }
         }
 
+        private InkToolbarPlacement _inkToolbarPlacement;
+        public InkToolbarPlacement inkToolbarPlacement
+        {
+            get => _inkToolbarPlacement;
+            set
+            {
+                if (_inkToolbarPlacement != value)
+                {
+                    _inkToolbarPlacement = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -410,5 +425,11 @@ namespace AppSettings
         TopRight,
         BottomLeft,
         BottomRight,
+    }
+
+    public enum InkToolbarPlacement
+    {
+        Bottom,
+        Top,
     }
 }

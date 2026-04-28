@@ -46,6 +46,12 @@ namespace WID
             ["Bottom right"] = UndoRedoButtonsPlacement.BottomRight,
         };
 
+        private readonly Dictionary<string, InkToolbarPlacement> inkToolbarPlacement = new Dictionary<string, InkToolbarPlacement>
+        {
+            ["Top"] = InkToolbarPlacement.Top,
+            ["Bottom"] = InkToolbarPlacement.Bottom,
+        };
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -56,6 +62,7 @@ namespace WID
 
             cbxHomeScreenThumbnailSize.SelectedItem = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
             cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
+            cbxInkToolbarPlacement.SelectedItem = inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -85,6 +92,11 @@ namespace WID
         private void ChangeUndoRedoButtonsPlacement(object sender, SelectionChangedEventArgs e)
         {
             App.AppSettings.undoRedoButtonsPlacement = undoRedoButtonsPlacement[(string)e.AddedItems[0]];
+        }
+
+        private void ChangeInkToolbarPlacement(object sender, SelectionChangedEventArgs e)
+        {
+            App.AppSettings.inkToolbarPlacement = inkToolbarPlacement[(string)e.AddedItems[0]];
         }
     }
 }
