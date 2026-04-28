@@ -20,60 +20,28 @@
         >
         <StackPanel
             Orientation="Vertical"
-            Spacing="64"
+            Spacing="32"
             >
             <StackPanel
-                Orientation="Vertical"
-                Spacing="12"
-                >
-                <TextBlock
-                    Text="Input devices"
-                    FontSize="32"
-                    FontWeight="Bold"
-                    />
-                <CheckBox
-                    x:Name="cbInputMouse"
-                    Content="Mouse"
-                    Checked="InputDeviceChecked"
-                    Unchecked="InputDeviceUnchecked"
-                    />
-                <CheckBox
-                    x:Name="cbInputPen"
-                    Content="Pen"
-                    Checked="InputDeviceChecked"
-                    Unchecked="InputDeviceUnchecked"
-                    />
-                <CheckBox
-                    x:Name="cbInputTouch"
-                    Content="Touch"
-                    Checked="InputDeviceChecked"
-                    Unchecked="InputDeviceUnchecked"
-                    />
-            </StackPanel>
-
-            <StackPanel
-                Orientation="Vertical"
-                Spacing="12"
+                Style="{StaticResource SettingsPageSectionPanel}"
                 >
                 <TextBlock
                     Text="Home screen"
-                    FontSize="32"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingsPageSectionHeader}"
                     />
 
                 <StackPanel
-                    Orientation="Horizontal"
-                    Spacing="8"
+                    Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        VerticalAlignment="Center"
                         Text="Thumbnail size"
-                        FontSize="16"
+                        Style="{StaticResource SettingsPageOption}"
                         />
 
                     <ComboBox
                         x:Name="cbxHomeScreenThumbnailSize"
                         SelectionChanged="ChangeHomescreenThumbnailSize"
+                        Style="{StaticResource SettingsPageComboBox}"
                         >
                         <x:String>Small</x:String>
                         <x:String>Medium</x:String>
@@ -83,28 +51,52 @@
             </StackPanel>
 
             <StackPanel
-                Orientation="Vertical"
-                Spacing="12"
+                Style="{StaticResource SettingsPageSectionPanel}"
                 >
                 <TextBlock
                     Text="Note-taking experience"
-                    FontSize="32"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingsPageSectionHeader}"
                     />
 
                 <StackPanel
-                    Orientation="Horizontal"
-                    Spacing="8"
+                    Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        VerticalAlignment="Center"
+                        Text="Input devices"
+                        Style="{StaticResource SettingsPageOption}"
+                        />
+                    <CheckBox
+                        x:Name="cbInputMouse"
+                        Content="Mouse"
+                        Checked="InputDeviceChecked"
+                        Unchecked="InputDeviceUnchecked"
+                        />
+                    <CheckBox
+                        x:Name="cbInputPen"
+                        Content="Pen"
+                        Checked="InputDeviceChecked"
+                        Unchecked="InputDeviceUnchecked"
+                        />
+                    <CheckBox
+                        x:Name="cbInputTouch"
+                        Content="Touch"
+                        Checked="InputDeviceChecked"
+                        Unchecked="InputDeviceUnchecked"
+                        />
+                </StackPanel>
+
+                <StackPanel
+                    Style="{StaticResource SettingsPageOptionPanel}"
+                    >
+                    <TextBlock
                         Text="Ink toolbar placement"
-                        FontSize="16"
+                        Style="{StaticResource SettingsPageOption}"
                         />
 
                     <ComboBox
                         x:Name="cbxInkToolbarPlacement"
                         SelectionChanged="ChangeInkToolbarPlacement"
+                        Style="{StaticResource SettingsPageComboBox}"
                         >
                         <x:String>Top</x:String>
                         <x:String>Bottom</x:String>
@@ -112,18 +104,17 @@
                 </StackPanel>
 
                 <StackPanel
-                    Orientation="Horizontal"
-                    Spacing="8"
+                    Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        VerticalAlignment="Center"
                         Text="Undo/Redo buttons placement"
-                        FontSize="16"
+                        Style="{StaticResource SettingsPageOption}"
                         />
 
                     <ComboBox
                         x:Name="cbxUndoRedoButtonsPlacement"
                         SelectionChanged="ChangeUndoRedoButtonsPlacement"
+                        Style="{StaticResource SettingsPageComboBox}"
                         >
                         <x:String>Top left</x:String>
                         <x:String>Top right</x:String>

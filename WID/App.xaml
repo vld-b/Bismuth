@@ -23,6 +23,29 @@
                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                 <Setter Property="VerticalAlignment" Value="Stretch" />
             </Style>
+            
+            <Style x:Key="SettingsPageOption" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+                <Setter Property="FontSize" Value="20" />
+            </Style>
+            
+            <Style x:Key="SettingsPageSectionHeader" TargetType="TextBlock" BasedOn="{StaticResource SettingsPageOption}">
+                <Setter Property="FontSize" Value="32" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+            
+            <Style x:Key="SettingsPageSectionPanel" TargetType="StackPanel">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Spacing" Value="12" />
+            </Style>
+
+            <Style x:Key="SettingsPageOptionPanel" TargetType="StackPanel">
+                <Setter Property="Orientation" Value="Vertical" />
+                <Setter Property="Spacing" Value="6" />
+            </Style>
+
+            <Style x:Key="SettingsPageComboBox" TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                <Setter Property="Width" Value="256" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
