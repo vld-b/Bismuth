@@ -100,6 +100,7 @@ namespace WID
         {
             loadingTask = LoadUserData();
             await apStartupAnim.PlayAsync(0, 0, false);
+#if !DEBUG
             bool animationHasPlayedOnce = false;
             while (!(loadingTask.IsCompleted && animationHasPlayedOnce))
             { // !loadingTask.IsCompleted || !animationHasPlayedOnce becomes
@@ -111,6 +112,7 @@ namespace WID
                 else
                     await Task.Delay(200);
             }
+#endif
             await loadingTask;
             Frame.Navigate(typeof(MainPage), notebookData, new DrillInNavigationTransitionInfo());
             notebookData = null;
