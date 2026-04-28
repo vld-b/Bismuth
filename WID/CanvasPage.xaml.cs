@@ -1437,6 +1437,7 @@ namespace WID
                 Size = new Windows.Foundation.Size(4, 4),
             };
             InkInputProcessingMode inkMode = InkInputProcessingMode.Inking;
+            SelectionMode selectionMode = SelectionMode.Lasso;
             double newTipSizeSliderValue = 0;
             Task? colorsLoading = null;
 
@@ -1503,17 +1504,24 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Eraser;
                 inkMode = InkInputProcessingMode.Erasing;
             }
-            else
+            else if (btSelectedTool.Name == btLassoTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Lasso;
                 attrs = new InkDrawingAttributes();
                 inkMode = InkInputProcessingMode.None;
+            } else
+            {
+                currentInkingTool = CurrentInkingTool.Object;
+                attrs = new InkDrawingAttributes();
+                inkMode = InkInputProcessingMode.None;
+                selectionMode = SelectionMode.Object;
             }
 
             foreach (NotebookPage page in spPageView.Children)
             {
                 page.inkPres.UpdateDefaultDrawingAttributes(attrs);
                 page.inkPres.InputProcessingConfiguration.Mode = inkMode;
+                page.selectionMode = selectionMode;
             }
             btSelectedTool.Foreground = new SolidColorBrush(attrs.Color);
 
@@ -1597,5 +1605,6 @@ namespace WID
         Calligraphy,
         Eraser,
         Lasso,
+        Object,
     };
 }

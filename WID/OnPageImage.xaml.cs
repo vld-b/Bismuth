@@ -90,6 +90,13 @@ namespace WID
             hasBeenModifiedSinceSave = value;
         }
 
+        public void SetIsSelectable(bool isSelectable)
+        {
+            IsHitTestVisible = isSelectable;
+            btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
+            bdImage.BorderThickness = isSelectable ? new Thickness(4d) : new Thickness(0d);
+        }
+
         private void FocusImage(object sender, RoutedEventArgs e)
         {
             ImageGotFocus?.Invoke(this, EventArgs.Empty);

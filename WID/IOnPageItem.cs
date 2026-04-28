@@ -13,5 +13,6 @@ namespace WID
         public void SetPos(double top, double left);
         public string GetFileName();
         public void SetHasBeenModified(bool value);
+        public void SetIsSelectable(bool isSelectable);
     }
 }

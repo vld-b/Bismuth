@@ -10,11 +10,13 @@
     LostFocus="LoseFocus"
     Background="Transparent"
     ManipulationMode="TranslateX,TranslateY"
+    IsHitTestVisible="False"
     >
 
     <Border
+        x:Name="bdImage"
         BorderBrush="{StaticResource SystemAccentColor}"
-        BorderThickness="4"
+        BorderThickness="0"
         CornerRadius="4"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
@@ -29,6 +31,7 @@
 
             <Button
                 x:Name="btResize"
+                Visibility="Collapsed"
                 BorderBrush="{StaticResource SystemAccentColor}"
                 BorderThickness="4"
                 HorizontalAlignment="Right"

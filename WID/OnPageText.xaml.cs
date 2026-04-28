@@ -84,6 +84,14 @@ namespace WID
             Canvas.SetLeft(this, left);
         }
 
+        public void SetIsSelectable(bool isSelectable)
+        {
+            IsHitTestVisible = isSelectable;
+            btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
+            btMove.Visibility = btResize.Visibility;
+            bdText.BorderThickness = isSelectable ? new Thickness(4d) : new Thickness(0d);
+        }
+
         public string GetFileName() => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf";
 
         public void SetHasBeenModified(bool value)

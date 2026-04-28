@@ -674,6 +674,12 @@
                                 >
                                 <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
                             </local:CustomInkToolbarTool>
+                            <local:CustomInkToolbarTool
+                                x:Name="btObjectTool"
+                                Click="ChangeCurrentInkingTool"
+                                >
+                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xEF20;" />
+                            </local:CustomInkToolbarTool>
                             <ToggleButton
                                 Click="ToggleRuler"
                                 Width="48"

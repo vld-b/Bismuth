@@ -60,6 +60,32 @@ namespace WID
         private Polyline? selectionLasso;
         private ManipulateInkRect? selectionRect;
         private PageState pageState;
+        private SelectionMode _selectionMode;
+        public SelectionMode selectionMode
+        {
+            get => _selectionMode;
+            set
+            {
+                if (_selectionMode != value)
+                {
+                    _selectionMode = value;
+                    if (_selectionMode == SelectionMode.Lasso)
+                    {
+                        foreach (IOnPageItem onPageItem in onPageItems)
+                            onPageItem.SetIsSelectable(false);
+                        inkCanvas.IsHitTestVisible = true;
+                        inkCanvas.InkPresenter.InputDeviceTypes = App.AppSettings.inputDevices;
+                    }
+                    else if (_selectionMode == SelectionMode.Object)
+                    {
+                        foreach (IOnPageItem onPageItem in onPageItems)
+                            onPageItem.SetIsSelectable(true);
+                        inkCanvas.IsHitTestVisible = false;
+                        inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
+                    }
+                }
+            }
+        }
 
         private CanvasControl? _templateCanvas;
         public CanvasControl? templateCanvas
@@ -245,7 +271,7 @@ namespace WID
                 pageState.selectedStrokes = null;
             }
             pageState.currentlyActivePage = null;
-            contentCanvas.Children.Remove(selectionRect);
+            cvManipulationRects.Children.Remove(selectionRect);
             this.selectionRect = null;
         }
 
@@ -292,12 +318,15 @@ namespace WID
         {
             if (selectionRect is not null)
             {
-                contentCanvas.Children.Remove(selectionRect);
+                cvManipulationRects.Children.Remove(selectionRect);
                 selectionRect = null; 
             }
             pageState.selectedStrokes?.Clear();
             pageState.selectedStrokes = null;
             pageState.currentlyActivePage = this;
+
+            if (selectionMode != SelectionMode.Lasso)
+                return;
 
             selectionLasso = new Polyline
             {
@@ -312,18 +341,21 @@ namespace WID
 
         private void ContinueLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
         {
-            selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
+            selectionLasso?.Points.Add(e.CurrentPoint.RawPosition);
         }
 
         private void EndLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
         {
+            if (selectionMode != SelectionMode.Lasso)
+                return;
+
             selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
             inkPres.StrokeContainer.SelectWithPolyLine(selectionLasso.Points);
             
             pageState.selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
             if (pageState.selectedStrokes.Count == 0)
             {
-                contentCanvas.Children.Remove(selectionLasso!);
+                pageContent.Children.Remove(selectionLasso!);
                 selectionLasso = null;
                 pageState.DeselectStrokes();
                 return;
@@ -334,10 +366,10 @@ namespace WID
 
             pageState.ShowInkSelectionPopup();
 
-            contentCanvas.Children.Remove(selectionLasso!);
+            pageContent.Children.Remove(selectionLasso!);
             selectionLasso = null;
             this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
-            contentCanvas.Children.Add(this.selectionRect);
+            cvManipulationRects.Children.Add(this.selectionRect);
         }
     }
 
@@ -345,25 +377,31 @@ namespace WID
     {
         public List<InkStroke>? selectedStrokes = null;
         public NotebookPage? currentlyActivePage = null;
-        public Popup? pp;
+        public Popup? ppInkManipulation;
 
-        public PageState(Popup? pp)
+        public PageState(Popup? ppInkManipulation)
         {
-            this.pp = pp;
+            this.ppInkManipulation = ppInkManipulation;
         }
 
         public void ShowInkSelectionPopup()
         {
-            pp!.Opacity = 1d;
-            pp!.IsHitTestVisible = true;
+            ppInkManipulation!.Opacity = 1d;
+            ppInkManipulation!.IsHitTestVisible = true;
         }
 
         public void DeselectStrokes()
         {
             selectedStrokes = null;
             currentlyActivePage = null;
-            pp!.Opacity = 0d;
-            pp!.IsHitTestVisible = false;
+            ppInkManipulation!.Opacity = 0d;
+            ppInkManipulation!.IsHitTestVisible = false;
         }
+    }
+
+    public enum SelectionMode
+    {
+        Lasso,
+        Object,
     }
 }

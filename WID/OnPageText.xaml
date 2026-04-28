@@ -10,11 +10,13 @@
     GotFocus="StartWriting"
     LostFocus="StopWriting"
     ManipulationMode="TranslateX,TranslateY"
+    IsHitTestVisible="False"
     >
 
     <Border
+        x:Name="bdText"
         BorderBrush="{StaticResource SystemAccentColor}"
-        BorderThickness="4"
+        BorderThickness="0"
         CornerRadius="4"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
@@ -34,6 +36,7 @@
 
             <Button
                 x:Name="btMove"
+                Visibility="Collapsed"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Foreground="Black"
@@ -46,6 +49,7 @@
 
             <Button
                 x:Name="btResize"
+                Visibility="Collapsed"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Foreground="Black"

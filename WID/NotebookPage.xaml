@@ -14,10 +14,6 @@
     CornerRadius="40"
     >
 
-    <InkCanvas
-        x:Name="inkCanvas"
-        />
-
     <Canvas
         x:Name="pageContent"
         HorizontalAlignment="Stretch"
@@ -25,4 +21,15 @@
         Margin="0"
         />
     
+    <InkCanvas
+        x:Name="inkCanvas"
+        />
+
+    <Canvas
+        x:Name="cvManipulationRects"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Margin="0"
+        />
+
 </Grid>
