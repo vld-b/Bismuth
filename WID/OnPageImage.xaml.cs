@@ -29,6 +29,7 @@ namespace WID
 
         private double widthToHeight;
         private Point? mousePos;
+        private double oldX, oldY = -1d;
         public NotebookPage containingPage { get; private set;  }
         public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
@@ -71,10 +72,10 @@ namespace WID
 
         public double GetLeft() => Canvas.GetLeft(this);
 
-        public void SetPos(double top, double left)
+        public void SetPos(double left, double top)
         {
-            Canvas.SetTop(this, top);
             Canvas.SetLeft(this, left);
+            Canvas.SetTop(this, top);
         }
 
         public NotebookPage RemoveImageFromPage()
@@ -115,6 +116,8 @@ namespace WID
             pageContainer.VerticalScrollMode = ScrollMode.Disabled;
             btResize.Focus(FocusState.Pointer); // Needed to redirect focus to the OnPageImage
 
+            oldX = GetLeft();
+            oldY = GetTop();
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
             this.hasBeenModifiedSinceSave = true;
@@ -148,6 +151,9 @@ namespace WID
             e.Handled = true;
             pageContainer.HorizontalScrollMode = ScrollMode.Enabled;
             pageContainer.VerticalScrollMode = ScrollMode.Enabled;
+            containingPage.undoRedoSystem.AddToUndoStack(new UndoMoveOnPageElement(this, oldX, oldY, containingPage.undoRedoSystem));
+            oldX = -1d;
+            oldY = -1d;
             mousePos = null;
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }

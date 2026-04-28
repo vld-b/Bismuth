@@ -55,7 +55,7 @@ namespace WID
         public InkPresenterRuler ruler { get; private set; }
         public InkPresenterProtractor protractor { get; private set; }
 
-        private UndoRedoSystem undoRedoSystem;
+        public UndoRedoSystem undoRedoSystem { get; private set; }
 
         private Polyline? selectionLasso;
         private ManipulateInkRect? selectionRect;

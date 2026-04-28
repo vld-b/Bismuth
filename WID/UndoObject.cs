@@ -294,4 +294,29 @@ namespace WID
 
         public UndoRemoveOnPageElement(Panel parent, IOnPageItem el, UndoRedoSystem containingSystem) : base(parent, el, containingSystem) { }
     }
+
+    public sealed class UndoMoveOnPageElement : UndoObject
+    {
+        IOnPageItem item;
+        double oldX, oldY, newX, newY;
+
+        public override void Undo()
+        {
+            item.SetPos(oldX, oldY);
+        }
+
+        public override void Redo()
+        {
+            item.SetPos(newX, newY);
+        }
+
+        public UndoMoveOnPageElement(IOnPageItem item, double oldX, double oldY, UndoRedoSystem containingSystem) : base(containingSystem)
+        {
+            this.item = item;
+            this.oldX = oldX;
+            this.oldY = oldY;
+            newX = item.GetLeft();
+            newY = item.GetTop();
+        }
+    }
 }

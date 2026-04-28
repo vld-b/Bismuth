@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
@@ -32,6 +33,7 @@ namespace WID
         public RichEditBox TextBox;
         private Point? mousePos;
         private NotebookPage containingPage;
+        private double oldX, oldY = -1d;
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public EventHandler? TextBoxGotFocus;
         public EventHandler? TextBoxLostFocus;
@@ -79,10 +81,10 @@ namespace WID
 
         public double GetLeft() => Canvas.GetLeft(this);
 
-        public void SetPos(double top, double left)
+        public void SetPos(double left, double top)
         {
-            Canvas.SetTop(this, top);
             Canvas.SetLeft(this, left);
+            Canvas.SetTop(this, top);
         }
 
         public void SetIsSelectable(bool isSelectable)
@@ -106,6 +108,8 @@ namespace WID
             pageContainer.HorizontalScrollMode = ScrollMode.Disabled;
             pageContainer.VerticalScrollMode = ScrollMode.Disabled;
 
+            oldX = GetLeft();
+            oldY = GetTop();
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
         }
@@ -137,6 +141,9 @@ namespace WID
             e.Handled = true;
             pageContainer.HorizontalScrollMode = ScrollMode.Enabled;
             pageContainer.VerticalScrollMode = ScrollMode.Enabled;
+            containingPage.undoRedoSystem.AddToUndoStack(new UndoMoveOnPageElement(this, oldX, oldY, containingPage.undoRedoSystem));
+            oldX = -1d;
+            oldY = -1d;
             mousePos = null;
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }

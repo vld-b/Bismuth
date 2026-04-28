@@ -851,6 +851,8 @@ namespace WID
             undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, txt, undoRedoSystem));
             txt.TextBoxGotFocus += FocusedOnPageItem;
             txt.TextBoxLostFocus += UnfocusedOnPageItem;
+
+            ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
@@ -873,8 +875,18 @@ namespace WID
 
         private void ToolPopupLoaded(object sender, RoutedEventArgs e)
         {
-            Popup popup = (Popup)sender;
-            popup.HorizontalOffset = -((FrameworkElement)popup.Child).ActualWidth / 2;
+            Popup pp = (Popup)sender;
+            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth / 2;
+            if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
+            {
+                pp.VerticalAlignment = VerticalAlignment.Bottom;
+                pp.VerticalOffset = -((FrameworkElement)pp.Child).ActualHeight;
+            }
+            else
+            {
+                pp.VerticalAlignment = VerticalAlignment.Top;
+                pp.VerticalOffset = 0d;
+            }
         }
 
         private void ToolPopupFocused(object sender, RoutedEventArgs e)
@@ -1160,6 +1172,7 @@ namespace WID
                 opI.ImageLostFocus += UnfocusedOnPageItem;
                 pendingCreations.Add(opI.GetFileName());
                 pendingDeletions.Remove(opI.GetFileName());
+                undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, opI, undoRedoSystem));
             }
         }
 
@@ -1400,8 +1413,8 @@ namespace WID
 
         private void InkToolbarPopupLoaded(object sender, RoutedEventArgs e)
         {
-            ToolPopupLoaded(sender, e);
             Popup pp = (Popup)sender;
+            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth / 2;
             if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
                 pp.VerticalAlignment = VerticalAlignment.Top;
             else if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Bottom)
