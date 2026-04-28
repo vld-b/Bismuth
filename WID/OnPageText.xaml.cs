@@ -120,19 +120,17 @@ namespace WID
             {
                 e.Handled = true;
 
-                double oldY = Canvas.GetTop(this);
+                double oldX = GetLeft();
+                double oldY = GetTop();
+                Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height-this.Height, Canvas.GetTop(this) + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
-                Canvas.SetLeft(this, Canvas.GetLeft(this) + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X);
+                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, GetTop() + currentPos.Y - mousePos.Value.Y)));
+                Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, GetLeft() + currentPos.X - mousePos.Value.X)));
 
-                if (oldY != Canvas.GetTop(this))
-                {
-                    mousePos = e.GetCurrentPoint(containingPage).Position;
-                } else
-                {
-                    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
-                }
-
+                if (oldY != GetTop())
+                    mousePos = new Point(mousePos.Value.X, currentPos.Y);
+                if (oldX != GetLeft())
+                    mousePos = new Point(currentPos.X, mousePos.Value.Y);
             }
         }
 
@@ -160,18 +158,15 @@ namespace WID
             {
                 double oldHeight = this.Height;
                 double oldWidth = this.Width;
+                Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                this.Height = Math.Max(50, Math.Min(containingPage.Height - Canvas.GetTop(this), this.Height + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y));
-                this.Width = Math.Max(50, this.Width + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X);
+                this.Height = Math.Max(50, Math.Min(containingPage.Height - GetTop(), this.Height + currentPos.Y - mousePos.Value.Y));
+                this.Width = Math.Max(50, Math.Min(containingPage.Width - GetLeft(), this.Width + currentPos.X - mousePos.Value.X));
 
                 if (oldWidth != this.Width)
-                {
-                    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
-                }
+                    mousePos = new Point(currentPos.X, mousePos.Value.Y);
                 if (oldHeight != this.Height)
-                {
-                    mousePos = new Point(mousePos.Value.X, e.GetCurrentPoint(containingPage).Position.Y);
-                }
+                    mousePos = new Point(mousePos.Value.X, currentPos.Y);
             }
         }
 
