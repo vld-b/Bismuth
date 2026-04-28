@@ -15,8 +15,8 @@
 
     <Border
         x:Name="bdImage"
-        BorderBrush="{StaticResource SystemAccentColor}"
-        BorderThickness="0"
+        BorderBrush="Transparent"
+        BorderThickness="4"
         CornerRadius="4"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"

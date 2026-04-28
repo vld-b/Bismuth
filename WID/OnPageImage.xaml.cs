@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -94,7 +95,7 @@ namespace WID
         {
             IsHitTestVisible = isSelectable;
             btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
-            bdImage.BorderThickness = isSelectable ? new Thickness(4d) : new Thickness(0d);
+            bdImage.BorderBrush = isSelectable ? (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"] : new SolidColorBrush(Colors.Transparent);
         }
 
         private void FocusImage(object sender, RoutedEventArgs e)

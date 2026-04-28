@@ -9,6 +9,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -89,7 +90,7 @@ namespace WID
             IsHitTestVisible = isSelectable;
             btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
             btMove.Visibility = btResize.Visibility;
-            bdText.BorderThickness = isSelectable ? new Thickness(4d) : new Thickness(0d);
+            bdText.BorderBrush = isSelectable ? (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"] : new SolidColorBrush(Colors.Transparent);
         }
 
         public string GetFileName() => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf";
