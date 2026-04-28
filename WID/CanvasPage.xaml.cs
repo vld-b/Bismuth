@@ -1161,7 +1161,7 @@ namespace WID
                 OnPageImage opI = new OnPageImage(
                     config!.GetNewImageID(),
                     Math.Min(pageOffset, currentPage!.Height - 500d),
-                    (currentPage!.Width - wbmp.PixelWidth) * .5d,
+                    (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
                     wbmp,
                     currentPage!,
                     svPageZoom,
@@ -1173,6 +1173,8 @@ namespace WID
                 pendingCreations.Add(opI.GetFileName());
                 pendingDeletions.Remove(opI.GetFileName());
                 undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, opI, undoRedoSystem));
+
+                ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
             }
         }
 
