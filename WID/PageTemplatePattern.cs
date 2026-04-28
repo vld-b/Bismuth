@@ -272,7 +272,7 @@ namespace WID
         protected float CalculateVerticalOffset(double pageHeight, int objectsToDrawHorizontally)
         {
             float distanceToMargin = (float)(pageHeight - objectsToDrawHorizontally * desiredSpacing);
-            return distanceToMargin * 0.5f;
+            return distanceToMargin * .5f;
         }
 
         public void DrawLinesOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
