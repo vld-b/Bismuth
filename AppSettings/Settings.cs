@@ -374,7 +374,7 @@ namespace AppSettings
                     button.isSelected = true;
                 panel.Children.Add(button);
                 ++j;
-                button.AnimateScale(1f, new Windows.UI.Xaml.Media.Animation.BackEase { Amplitude = 0.5d, EasingMode = Windows.UI.Xaml.Media.Animation.EasingMode.EaseOut });
+                button.AnimateScale(1f, new Windows.UI.Xaml.Media.Animation.BackEase { Amplitude = .5d, EasingMode = Windows.UI.Xaml.Media.Animation.EasingMode.EaseOut });
                 await Task.Delay(40);
                 if (ct.IsCancellationRequested)
                     return;

@@ -135,7 +135,7 @@ namespace WID
                 {
                     AnimationDesired = false,
                     VerticalAlignmentRatio = 0d,
-                    HorizontalAlignmentRatio = 0.5d,
+                    HorizontalAlignmentRatio = .5d,
                 });
             svPageZoom.ChangeView(null, null, (float)(Window.Current.CoreWindow.Bounds.Width / lastPage.Width));
 
@@ -341,7 +341,7 @@ namespace WID
             {
                 AnimationDesired = true,
                 VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
+                HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
         }
@@ -367,7 +367,7 @@ namespace WID
             {
                 AnimationDesired = true,
                 VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
+                HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
         }
@@ -403,7 +403,7 @@ namespace WID
             {
                 AnimationDesired = true,
                 VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
+                HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
         }
@@ -473,7 +473,7 @@ namespace WID
             {
                 AnimationDesired = true,
                 VerticalAlignmentRatio = 0.1d,
-                HorizontalAlignmentRatio = 0.5d,
+                HorizontalAlignmentRatio = .5d,
             };
             spPageView.Children.Last().StartBringIntoView(options);
             popup.Hide();
@@ -841,7 +841,7 @@ namespace WID
                 500d,
                 500d,
                 Math.Min(pageOffset, currentPage!.Height - 500d), 
-                (currentPage.Width - 500d) / 2,
+                (currentPage.Width - 500d) * .5d,
                 currentPage,
                 svPageZoom
                 );
@@ -865,8 +865,8 @@ namespace WID
                     page.StartBringIntoView(new BringIntoViewOptions
                     {
                         AnimationDesired = true,
-                        VerticalAlignmentRatio = 0.1d,
-                        HorizontalAlignmentRatio = 0.5d,
+                        VerticalAlignmentRatio = .1d,
+                        HorizontalAlignmentRatio = .5d,
                     });
                     break;
                 }
@@ -876,7 +876,7 @@ namespace WID
         private void ToolPopupLoaded(object sender, RoutedEventArgs e)
         {
             Popup pp = (Popup)sender;
-            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth / 2;
+            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth * .5d;
             if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
             {
                 pp.VerticalAlignment = VerticalAlignment.Bottom;
@@ -1161,7 +1161,7 @@ namespace WID
                 OnPageImage opI = new OnPageImage(
                     config!.GetNewImageID(),
                     Math.Min(pageOffset, currentPage!.Height - 500d),
-                    (currentPage!.Width - wbmp.PixelWidth) * 0.5d,
+                    (currentPage!.Width - wbmp.PixelWidth) * .5d,
                     wbmp,
                     currentPage!,
                     svPageZoom,
@@ -1414,7 +1414,7 @@ namespace WID
         private void InkToolbarPopupLoaded(object sender, RoutedEventArgs e)
         {
             Popup pp = (Popup)sender;
-            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth / 2;
+            pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth * .5d;
             if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
                 pp.VerticalAlignment = VerticalAlignment.Top;
             else if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Bottom)
