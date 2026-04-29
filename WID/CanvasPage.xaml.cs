@@ -254,6 +254,8 @@ namespace WID
             tbAppTitle.Text += Utils.GetNotebookNameFromFolder(file!);
             ShowFileStatus();
 
+            NotebookPage? lastPage = null;
+
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
@@ -264,6 +266,8 @@ namespace WID
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
                     NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
+                    if (i == config!.pageMapping.Count - 1)
+                        lastPage = page;
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
@@ -296,9 +300,9 @@ namespace WID
             }
 
 
-            if (spPageView.Children.Count > 0)
+            if (lastPage is not null)
             {
-                ((NotebookPage)spPageView.Children.Last()).LayoutUpdated += ScrollToLastPage;
+                lastPage.LayoutUpdated += ScrollToLastPage;
                 ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
                 if (anim is not null)
                 {
