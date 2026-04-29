@@ -87,6 +87,10 @@ namespace WID
         private InkDrawingAttributes attrs = new InkDrawingAttributes();
         private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
 
+        private double toolOptionsNormalWidth;
+        private double inkStackpanelNormalWidth;
+        private double inkToolbarNormalHorzontalOffset;
+
         public CanvasPage()
         {
             InitializeComponent();
@@ -1426,6 +1430,7 @@ namespace WID
         {
             Popup pp = (Popup)sender;
             pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth * .5d;
+            inkToolbarNormalHorzontalOffset = pp.HorizontalOffset;
             if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Top)
                 pp.VerticalAlignment = VerticalAlignment.Top;
             else if (App.AppSettings.inkToolbarPlacement == InkToolbarPlacement.Bottom)
@@ -1476,6 +1481,7 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Drawing;
                 newTipSizeSliderValue = App.AppSettings.tipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Drawing, currentColors);
+                SetToolOptionsVisibilityWithAnimation(true);
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Circle,
@@ -1489,6 +1495,7 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Highlighter;
                 newTipSizeSliderValue = App.AppSettings.highlightTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Highlight, currentColors);
+                SetToolOptionsVisibilityWithAnimation(true);
                 attrs = new InkDrawingAttributes
                 {
                     PenTip = PenTipShape.Rectangle,
@@ -1502,6 +1509,7 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Pencil;
                 newTipSizeSliderValue = App.AppSettings.pencilTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Pencil, currentColors);
+                SetToolOptionsVisibilityWithAnimation(true);
                 attrs = InkDrawingAttributes.CreateForPencil();
                 attrs.IgnorePressure = false;
                 attrs.Color = App.AppSettings.pencilColors[currentColors.pencil];
@@ -1512,6 +1520,7 @@ namespace WID
                 currentInkingTool = CurrentInkingTool.Calligraphy;
                 newTipSizeSliderValue = App.AppSettings.calligraphyTipSize;
                 colorsLoading = App.AppSettings.LoadColorsIntoStackPanel(scColorBar, ChangeInkColor, scColorBar, ColorPalette.Calligraphy, currentColors);
+                SetToolOptionsVisibilityWithAnimation(true);
                 attrs = new InkDrawingAttributes
                 {
                     DrawAsHighlighter = false,
@@ -1533,18 +1542,21 @@ namespace WID
             {
                 currentInkingTool = CurrentInkingTool.Eraser;
                 inkMode = InkInputProcessingMode.Erasing;
+                SetToolOptionsVisibilityWithAnimation(false);
             }
             else if (btSelectedTool.Name == btLassoTool.Name)
             {
                 currentInkingTool = CurrentInkingTool.Lasso;
                 attrs = new InkDrawingAttributes();
                 inkMode = InkInputProcessingMode.None;
+                SetToolOptionsVisibilityWithAnimation(false);
             } else
             {
                 currentInkingTool = CurrentInkingTool.Object;
                 attrs = new InkDrawingAttributes();
                 inkMode = InkInputProcessingMode.None;
                 selectionMode = SelectionMode.Object;
+                SetToolOptionsVisibilityWithAnimation(false);
             }
 
             foreach (NotebookPage page in spPageView.Children)
@@ -1576,6 +1588,54 @@ namespace WID
             sb.Begin();
             if (colorsLoading is not null)
                 await colorsLoading;
+        }
+
+        private void SetToolOptionsVisibilityWithAnimation(bool shouldBeVisible)
+        {
+            bool areToolOptionsVisible = spCustomInkToolbar.Children.Last() == spToolOptions;
+            if (shouldBeVisible == areToolOptionsVisible)
+                return;
+
+            if (shouldBeVisible)
+                spCustomInkToolbar.Children.Add(spToolOptions);
+
+            double inkStackpanelCompressedWidth = inkStackpanelNormalWidth - toolOptionsNormalWidth;
+            DoubleAnimation widthAnim = new DoubleAnimation
+            {
+                From = shouldBeVisible ? inkStackpanelCompressedWidth : inkStackpanelNormalWidth,
+                To = shouldBeVisible ? inkStackpanelNormalWidth : inkStackpanelCompressedWidth,
+                EnableDependentAnimation = true,
+                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut },
+            };
+
+            double inkToolbarCompressedHorizontalOffset = -inkStackpanelCompressedWidth * .5d;
+            DoubleAnimation offsetAnim = new DoubleAnimation
+            {
+                From = shouldBeVisible ? inkToolbarCompressedHorizontalOffset : inkToolbarNormalHorzontalOffset,
+                To = shouldBeVisible ? inkToolbarNormalHorzontalOffset : inkToolbarCompressedHorizontalOffset,
+                EnableDependentAnimation = true,
+                Duration = new Duration(TimeSpan.FromMilliseconds(500)),
+                EasingFunction = new QuarticEase { EasingMode = EasingMode.EaseInOut },
+            };
+
+            Storyboard sb = new Storyboard();
+            sb.Children.Add(widthAnim);
+            sb.Children.Add(offsetAnim);
+
+            Storyboard.SetTarget(widthAnim, spCustomInkToolbar);
+            Storyboard.SetTargetProperty(widthAnim, "Width");
+
+            Storyboard.SetTarget(offsetAnim, ppInkToolbar);
+            Storyboard.SetTargetProperty(offsetAnim, "HorizontalOffset");
+
+            sb.Begin();
+
+            sb.Completed += (s, e) =>
+            {
+                if (!shouldBeVisible)
+                    spCustomInkToolbar.Children.Remove(spToolOptions);
+            };
         }
 
         private void ToggleRuler(object sender, RoutedEventArgs e)
@@ -1624,6 +1684,16 @@ namespace WID
                 pp.HorizontalAlignment = HorizontalAlignment.Right;
                 pp.HorizontalOffset = -((FrameworkElement)pp.Child).ActualWidth;
             }
+        }
+
+        private void SetToolOptionsNormalWidth(object sender, RoutedEventArgs e)
+        {
+            toolOptionsNormalWidth = spToolOptions.ActualWidth;
+        }
+
+        private void SetInkToolbarStackpanelNormalWidth(object sender, RoutedEventArgs e)
+        {
+            inkStackpanelNormalWidth = spCustomInkToolbar.ActualWidth;
         }
     }
 

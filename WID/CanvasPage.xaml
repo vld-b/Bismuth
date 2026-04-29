@@ -597,6 +597,7 @@
                 </Popup>
 
                 <Popup
+                    x:Name="ppInkToolbar"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
                     IsOpen="True"
@@ -616,6 +617,7 @@
                         </Border.Background>
                         <StackPanel
                             x:Name="spCustomInkToolbar"
+                            Loaded="SetInkToolbarStackpanelNormalWidth"
                             Orientation="Horizontal"
                             Spacing="2"
                             Margin="2"
@@ -718,80 +720,88 @@
                                     <FontIcon Style="{StaticResource InkToolbarIcon}" FontFamily="Segoe Fluent Icons" Glyph="&#xF0B4;" />
                                 </Grid>
                             </ToggleButton>
-                            <ScrollViewer
-                                Width="256"
-                                Margin="8, 0, 0, 0"
-                                VerticalScrollMode="Disabled"
-                                HorizontalScrollMode="Enabled"
-                                VerticalScrollBarVisibility="Disabled"
-                                HorizontalScrollBarVisibility="Hidden"
+                            <StackPanel
+                                x:Name="spToolOptions"
+                                Loaded="SetToolOptionsNormalWidth"
+                                Orientation="Horizontal"
+                                Spacing="2"
+                                Margin="0"
                                 >
-                                <StackPanel
-                                    Orientation="Horizontal"
-                                    Spacing="8"
+                                <ScrollViewer
+                                    Width="256"
+                                    Margin="8, 0, 0, 0"
+                                    VerticalScrollMode="Disabled"
+                                    HorizontalScrollMode="Enabled"
+                                    VerticalScrollBarVisibility="Disabled"
+                                    HorizontalScrollBarVisibility="Hidden"
                                     >
-                                    <shared:SimpleColorPicker
-                                        x:Name="scColorBar"
-                                        Loaded="LoadColorBar"
-                                        />
-                                    <Button
-                                        Padding="0"
-                                        Width="32"
-                                        Height="32"
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        Spacing="8"
                                         >
-                                        <FontIcon
+                                        <shared:SimpleColorPicker
+                                            x:Name="scColorBar"
+                                            Loaded="LoadColorBar"
+                                            />
+                                        <Button
+                                            Padding="0"
                                             Width="32"
                                             Height="32"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe Fluent Icons"
-                                            Glyph="&#xE109;"
-                                            />
-                                        <Button.Flyout>
-                                            <Flyout
-                                                x:Name="flNewColor"
-                                                >
-                                                <StackPanel>
-                                                    <muxc:ColorPicker
-                                                        x:Name="cpColor"
-                                                        />
-                                                    <Button
-                                                        Content="Add color"
-                                                        Click="AddNewColor"
-                                                        />
-                                                </StackPanel>
-                                            </Flyout>
-                                        </Button.Flyout>
-                                    </Button>
-                                </StackPanel>
-                            </ScrollViewer>
-                            <Image
-                                IsHitTestVisible="False"
-                                Source="/Assets/StrokeThin.svg"
-                                Margin="8, 0"
-                                Width="32"
-                                Height="32"
-                                />
-                            <Slider
-                                x:Name="slTipSize"
-                                Width="256"
-                                Loaded="LoadTipSize"
-                                VerticalAlignment="Center"
-                                Grid.Column="1"
-                                ValueChanged="SetNewBrushWidth"
-                                StepFrequency="1"
-                                SmallChange="1"
-                                LargeChange="2"
-                                Minimum="4"
-                                Maximum="96"
-                                />
-                            <Image
-                                IsHitTestVisible="False"
-                                Source="/Assets/StrokeThick.svg"
-                                Margin="8, 0"
-                                Width="32"
-                                Height="32"
-                                />
+                                            >
+                                            <FontIcon
+                                                Width="32"
+                                                Height="32"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe Fluent Icons"
+                                                Glyph="&#xE109;"
+                                                />
+                                            <Button.Flyout>
+                                                <Flyout
+                                                    x:Name="flNewColor"
+                                                    >
+                                                    <StackPanel>
+                                                        <muxc:ColorPicker
+                                                            x:Name="cpColor"
+                                                            />
+                                                        <Button
+                                                            Content="Add color"
+                                                            Click="AddNewColor"
+                                                            />
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </StackPanel>
+                                </ScrollViewer>
+                                <Image
+                                    IsHitTestVisible="False"
+                                    Source="/Assets/StrokeThin.svg"
+                                    Margin="8, 0"
+                                    Width="32"
+                                    Height="32"
+                                    />
+                                <Slider
+                                    x:Name="slTipSize"
+                                    Width="256"
+                                    Loaded="LoadTipSize"
+                                    VerticalAlignment="Center"
+                                    Grid.Column="1"
+                                    ValueChanged="SetNewBrushWidth"
+                                    StepFrequency="1"
+                                    SmallChange="1"
+                                    LargeChange="2"
+                                    Minimum="4"
+                                    Maximum="96"
+                                    />
+                                <Image
+                                    IsHitTestVisible="False"
+                                    Source="/Assets/StrokeThick.svg"
+                                    Margin="8, 0"
+                                    Width="32"
+                                    Height="32"
+                                    />
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </Popup>
