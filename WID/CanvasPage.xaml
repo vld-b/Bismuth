@@ -530,7 +530,7 @@
                                 Padding="4"
                                 >
                                 <Image
-                                    Source="/Assets/Colorwheel.svg"
+                                    Source="/Assets/Colorwheel.png"
                                     IsHitTestVisible="False"
                                     />
                                 <Button.Flyout>
