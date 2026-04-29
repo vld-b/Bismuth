@@ -853,6 +853,7 @@ namespace WID
             txt.TextBoxLostFocus += UnfocusedOnPageItem;
 
             ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
+            txt.SetIsSelectable(true);
         }
 
         private void NavigateToPage(object sender, TappedRoutedEventArgs e)
@@ -1175,6 +1176,7 @@ namespace WID
                 undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, opI, undoRedoSystem));
 
                 ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
+                opI.SetIsSelectable(true);
             }
         }
 
