@@ -36,6 +36,7 @@ namespace WID
         private double oldX, oldY = -1d;
         private double oldWidth, oldHeight = -1d;
         public bool hasBeenModifiedSinceSave { get; set; } = false;
+        private bool hasLoadedFromFile = false;
         public EventHandler? TextBoxGotFocus;
         public EventHandler? TextBoxLostFocus;
         public ScrollViewer pageContainer { get; private set; }
@@ -123,6 +124,7 @@ namespace WID
             oldY = GetTop();
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
+            hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueDraggingText(object sender, PointerRoutedEventArgs e)
@@ -163,6 +165,7 @@ namespace WID
             oldHeight = this.Height;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
+            hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueResizeText(object sender, PointerRoutedEventArgs e)
@@ -204,7 +207,10 @@ namespace WID
 
         private void ReceivedTextInput(object sender, RoutedEventArgs e)
         {
-            this.hasBeenModifiedSinceSave = true;
+            if (hasLoadedFromFile)
+                hasBeenModifiedSinceSave = true;
+            else
+                hasLoadedFromFile = true;
             containingPage.hasBeenModifiedSinceSave = true;
         }
     }
