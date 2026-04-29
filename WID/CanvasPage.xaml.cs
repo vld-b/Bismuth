@@ -1392,8 +1392,15 @@ namespace WID
             pageState.DeselectStrokes();
         }
 
+        private void SetColorwheelButtonHeight(object sender, RoutedEventArgs e)
+        {
+            btChangeSelectedStrokesColor.Height = btDeleteSelectedStrokes.ActualHeight;
+            btChangeSelectedStrokesColor.Width = btChangeSelectedStrokesColor.Height;
+        }
+
         private void StartChangeSelectedInkColor(object sender, RoutedEventArgs e)
         {
+            ppSelectionTools.Opacity = 1d;
             recoloredStrokes = new List<RecoloredStroke>();
             foreach (InkStroke s in pageState.selectedStrokes!)
                 recoloredStrokes.Add(new RecoloredStroke(s, s.DrawingAttributes.Color));

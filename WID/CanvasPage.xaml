@@ -526,8 +526,13 @@
                             Margin="10"
                             >
                             <Button
-                                Content=" "
+                                x:Name="btChangeSelectedStrokesColor"
+                                Padding="4"
                                 >
+                                <Image
+                                    Source="/Assets/Colorwheel.svg"
+                                    IsHitTestVisible="False"
+                                    />
                                 <Button.Flyout>
                                     <Flyout>
                                         <muxc:ColorPicker
@@ -542,6 +547,7 @@
                             </Button>
                             <Button
                                 x:Name="btDeleteSelectedStrokes"
+                                Loaded="SetColorwheelButtonHeight"
                                 Click="DeleteCurrentlySelectedStrokes"
                                 Foreground="Red"
                                 >
