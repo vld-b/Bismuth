@@ -83,6 +83,7 @@ namespace WID
         private Task? savingTask;
 
         private NotebookPage? currentPage;
+        private NotebookPage? lastPage;
         private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
         private InkDrawingAttributes attrs = new InkDrawingAttributes();
         private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
@@ -131,8 +132,7 @@ namespace WID
 
         private void ScrollToLastPage(object? sender, object e)
         {
-            NotebookPage lastPage = (NotebookPage)spPageView.Children.Last();
-            lastPage.LayoutUpdated -= ScrollToLastPage;
+            lastPage!.LayoutUpdated -= ScrollToLastPage;
 
             lastPage.StartBringIntoView(
                 new BringIntoViewOptions
@@ -141,7 +141,7 @@ namespace WID
                     VerticalAlignmentRatio = 0d,
                     HorizontalAlignmentRatio = .5d,
                 });
-            svPageZoom.ChangeView(null, null, (float)(Window.Current.CoreWindow.Bounds.Width / lastPage.Width));
+            lastPage = null;
 
             finishedLoading = true;
         }
@@ -253,8 +253,6 @@ namespace WID
 
             tbAppTitle.Text += Utils.GetNotebookNameFromFolder(file!);
             ShowFileStatus();
-
-            NotebookPage? lastPage = null;
 
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             if ((new FileInfo(configFile.Path)).Length != 0)
