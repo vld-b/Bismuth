@@ -30,6 +30,7 @@ namespace WID
         private double widthToHeight;
         private Point? mousePos;
         private double oldX, oldY = -1d;
+        private double oldWidth, oldHeight = -1d;
         public NotebookPage containingPage { get; private set;  }
         public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
@@ -78,6 +79,23 @@ namespace WID
             Canvas.SetTop(this, top);
         }
 
+        public double GetWidth() => this.Width;
+
+        public double GetHeight() => this.Height;
+
+        public void SetDimensions(double width, double height)
+        {
+            this.Width = width;
+            this.Height = height;
+        }
+
+        public void SetIsSelectable(bool isSelectable)
+        {
+            IsHitTestVisible = isSelectable;
+            btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
+            bdImage.BorderBrush = isSelectable ? (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"] : new SolidColorBrush(Colors.Transparent);
+        }
+
         public NotebookPage RemoveImageFromPage()
         {
             containingPage.RemoveImageFromPage(this);
@@ -90,13 +108,6 @@ namespace WID
         public void SetHasBeenModified(bool value)
         {
             hasBeenModifiedSinceSave = value;
-        }
-
-        public void SetIsSelectable(bool isSelectable)
-        {
-            IsHitTestVisible = isSelectable;
-            btResize.Visibility = isSelectable ? Visibility.Visible : Visibility.Collapsed;
-            bdImage.BorderBrush = isSelectable ? (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"] : new SolidColorBrush(Colors.Transparent);
         }
 
         private void FocusImage(object sender, RoutedEventArgs e)
@@ -157,6 +168,8 @@ namespace WID
 
         private void StartResizeImage(object sender, PointerRoutedEventArgs e)
         {
+            oldWidth = this.Width;
+            oldHeight = this.Height;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
             this.hasBeenModifiedSinceSave = true;
@@ -189,6 +202,9 @@ namespace WID
         {
             mousePos = null;
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
+            containingPage.undoRedoSystem.AddToUndoStack(new UndoResizeOnPageElement(this, oldWidth, oldHeight, containingPage.undoRedoSystem));
+            oldWidth = -1d;
+            oldHeight = -1d;
         }
     }
 }

@@ -34,6 +34,7 @@ namespace WID
         private Point? mousePos;
         private NotebookPage containingPage;
         private double oldX, oldY = -1d;
+        private double oldWidth, oldHeight = -1d;
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public EventHandler? TextBoxGotFocus;
         public EventHandler? TextBoxLostFocus;
@@ -85,6 +86,16 @@ namespace WID
         {
             Canvas.SetLeft(this, left);
             Canvas.SetTop(this, top);
+        }
+
+        public double GetWidth() => this.Width;
+
+        public double GetHeight() => this.Height;
+
+        public void SetDimensions(double width, double height)
+        {
+            this.Width = width;
+            this.Height = height;
         }
 
         public void SetIsSelectable(bool isSelectable)
@@ -148,6 +159,8 @@ namespace WID
 
         private void StartResizeText(object sender, PointerRoutedEventArgs e)
         {
+            oldWidth = this.Width;
+            oldHeight = this.Height;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
         }
@@ -174,6 +187,9 @@ namespace WID
         {
             mousePos = null;
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
+            containingPage.undoRedoSystem.AddToUndoStack(new UndoResizeOnPageElement(this, oldWidth, oldHeight, containingPage.undoRedoSystem));
+            oldWidth = -1d;
+            oldHeight = -1d;
         }
 
         private void StartWriting(object sender, RoutedEventArgs e)

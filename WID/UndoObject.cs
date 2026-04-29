@@ -319,4 +319,29 @@ namespace WID
             newY = item.GetTop();
         }
     }
+
+    public sealed class UndoResizeOnPageElement : UndoObject
+    {
+        IOnPageItem item;
+        double oldWidth, oldHeight, newWidth, newHeight;
+
+        public override void Undo()
+        {
+            item.SetDimensions(oldWidth, oldHeight);
+        }
+
+        public override void Redo()
+        {
+            item.SetDimensions(newWidth, newHeight);
+        }
+
+        public UndoResizeOnPageElement(IOnPageItem item, double oldWidth, double oldHeight, UndoRedoSystem containingSystem) : base(containingSystem)
+        {
+            this.item = item;
+            this.oldWidth = oldWidth;
+            this.oldHeight = oldHeight;
+            newWidth = item.GetWidth();
+            newHeight = item.GetHeight();
+        }
+    }
 }

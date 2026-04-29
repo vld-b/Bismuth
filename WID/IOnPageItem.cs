@@ -12,6 +12,9 @@ namespace WID
         public double GetTop();
         public double GetLeft();
         public void SetPos(double left, double top);
+        public double GetWidth();
+        public double GetHeight();
+        public void SetDimensions(double width, double height);
         public string GetFileName();
         public void SetHasBeenModified(bool value);
         public void SetIsSelectable(bool isSelectable);
