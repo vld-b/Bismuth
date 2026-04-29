@@ -353,7 +353,7 @@ namespace WID
         private void AddPage(NotebookPage page)
         {
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
+            //undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
@@ -389,7 +389,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
+            //undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
 
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
@@ -471,7 +471,7 @@ namespace WID
 
             }
 
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
+            //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             BringIntoViewOptions options = new BringIntoViewOptions
             {
@@ -652,7 +652,7 @@ namespace WID
 
                 AddPage(page);
             }
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
+            //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             popup.Hide();
         }
