@@ -114,6 +114,12 @@ namespace WID
             return bmp;
         }
 
+        public static void Add<T>(this List<T> origin, List<T> source)
+        {
+            foreach (T item in source)
+                origin.Add(item);
+        }
+
         public static string GetNotebookNameFromFolder(StorageFolder folder)
         {
             return folder.DisplayName[..(folder.DisplayName.Length - 9)];

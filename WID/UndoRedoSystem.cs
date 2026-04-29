@@ -76,7 +76,7 @@ namespace WID
 
             List<NotebookPage> pages = new List<NotebookPage>();
             pages.Add(page);
-            undoStack.Push(new UndoAddPages(pages, parent, this));
+            //undoStack.Push(new UndoAddPages(pages, parent, this));
         }
 
         public void RegisterUndoButton(Control activator)

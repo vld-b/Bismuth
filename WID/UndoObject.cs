@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
@@ -157,32 +158,68 @@ namespace WID
         }
     }
 
-    public sealed class UndoAddPages : UndoObject
-    {
-        public IList<NotebookPage> pages { get; private set; }
-        public Panel parent { get; private set; }
+    //public sealed class UndoAddPages : UndoObject
+    //{
+    //    public IList<NotebookPage> pages { get; private set; }
+    //    public Panel parent { get; private set; }
 
-        private int pageIndex = -1;
+    //    List<StorageFile> affectedMoves = new List<StorageFile>();
+    //    List<RenameItem> affectedRenames = new List<RenameItem>();
+    //    private int pageIndex = -1;
 
-        public override void Undo()
-        {
-            pageIndex = parent.Children.IndexOf(pages[0]);
-            foreach (NotebookPage page in pages)
-                parent.Children.Remove(page);
-        }
+    //    public override void Undo()
+    //    {
+    //        pageIndex = parent.Children.IndexOf(pages[0]);
+    //        affectedMoves.Clear();
+    //        affectedRenames.Clear();
+    //        foreach (NotebookPage page in pages)
+    //        {
+    //            parent.Children.Remove(page);
+    //            containingSystem.pendingCreations.Remove(page.inkFileName);
+    //            containingSystem.pendingDeletions.Add(page.inkFileName);
+    //            if (page.hasBg)
+    //            {
+    //                containingSystem.pendingDeletions.Add(page.bgFileName);
+    //                containingSystem.pendingMoves.RemoveAll((f) =>
+    //                {
+    //                    bool shouldDelete = f.Name == page.bgFileName;
+    //                    if (shouldDelete)
+    //                        affectedMoves.Add(f);
+    //                    return shouldDelete;
+    //                });
+    //                containingSystem.pendingRenames.RemoveAll((rn) =>
+    //                {
+    //                    bool shouldDelete = rn.to == page.bgFileName;
+    //                    if (shouldDelete)
+    //                        affectedRenames.Add(rn);
+    //                    return shouldDelete;
+    //                });
+    //            }
+    //        }
+    //    }
 
-        public override void Redo()
-        {
-            for (int i = 0; i < pages.Count; ++i)
-                parent.Children.Insert(pageIndex+i, pages[i]);
-        }
+    //    public override void Redo()
+    //    {
+    //        for (int i = 0; i < pages.Count; ++i)
+    //        {
+    //            parent.Children.Insert(pageIndex+i, pages[i]);
+    //            containingSystem.pendingCreations.Add(pages[i].inkFileName);
+    //            containingSystem.pendingDeletions.Remove(pages[i].inkFileName);
+    //            if (pages[i].hasBg)
+    //            {
+    //                containingSystem.pendingDeletions.Remove(pages[i].bgFileName);
+    //            }
+    //        }
+    //        containingSystem.pendingMoves.Add(affectedMoves);
+    //        containingSystem.pendingRenames.Add(affectedRenames);
+    //    }
 
-        public UndoAddPages(IList<NotebookPage> pages, Panel parent, UndoRedoSystem containingSystem) : base(containingSystem)
-        {
-            this.pages = pages;
-            this.parent = parent;
-        }
-    }
+    //    public UndoAddPages(IList<NotebookPage> pages, Panel parent, UndoRedoSystem containingSystem) : base(containingSystem)
+    //    {
+    //        this.pages = pages;
+    //        this.parent = parent;
+    //    }
+    //}
 
     public sealed class UndoMoveStrokes : UndoObject, ICanUpdateStrokeReferences
     {

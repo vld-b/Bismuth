@@ -333,7 +333,7 @@ namespace WID
                 hasBeenModifiedSinceSave = true,
             };
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
-            undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
+            //undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
 
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
@@ -786,7 +786,7 @@ namespace WID
                 ++i;
             }
 
-            config!.DeletePageWithId(args.id);
+            config!.DeletePageWithId(args.id); // Takes care of deleting text and image ids as well
 
             pendingDeletions.Add("page" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".gif");
             pendingDeletions.Add("bg" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".png");

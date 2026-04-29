@@ -40,13 +40,12 @@ namespace WID
     public sealed partial class NotebookPage : Grid
     {
         public int id { get; private set; }
-        public bool hasBg
-        {
-            get => bgImg is not null;
-        }
+        public bool hasBg { get => bgImg is not null; }
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         public BitmapImage? bgImage { get; private set; }
         public Image? bgImg { get; private set; }
+        public string inkFileName { get => "page" + (id == 0 ? "" : (" (" + id + ")")) + ".gif"; }
+        public string bgFileName { get => "bg" + (id == 0 ? "" : (" (" + id + ")")) + ".png"; }
         public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
 
         public Canvas contentCanvas { get; private set; }
