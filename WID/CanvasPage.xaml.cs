@@ -941,16 +941,22 @@ namespace WID
             }
         }
 
+        private void OnPageTextHasChanged()
+        {
+            lastEditedText!.hasBeenModifiedSinceSave = true;
+            lastEditedText!.TextBox.Focus(FocusState.Programmatic);
+        }
+
         private void ToggleBoldText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void ToggleItalicText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Italic = Windows.UI.Text.FormatEffect.Toggle;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void ToggleUnderlinedText(object sender, RoutedEventArgs e)
@@ -959,25 +965,25 @@ namespace WID
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = Windows.UI.Text.UnderlineType.Single;
             else
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = UnderlineType.None;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void ToggleStrikethroughText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void ToggleSuperscriptText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Superscript = FormatEffect.Toggle;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void ToggleSubscriptText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            OnPageTextHasChanged();
         }
 
         private void DecreaseFontSize(object sender, RoutedEventArgs e)
@@ -985,8 +991,9 @@ namespace WID
             if (lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size > 2f)
             {
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size -= 2f;
-                lastEditedText!.hasBeenModifiedSinceSave = true;
+                OnPageTextHasChanged();
             }
+            lastEditedText!.TextBox.Focus(FocusState.Programmatic); // Focus TextBox anyway
         }
 
         private void IncreaseFontSize(object sender, RoutedEventArgs e)
@@ -994,8 +1001,9 @@ namespace WID
             if (lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size > 2f)       // Cannot happen with addition, but crashes the app if
             {                                                                               // text containing multiple font sizes is selected
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size += 2f;
-                lastEditedText!.hasBeenModifiedSinceSave = true;
+                OnPageTextHasChanged();
             }
+            lastEditedText!.TextBox.Focus(FocusState.Programmatic); // Focus TextBox anyway
         }
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
