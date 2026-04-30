@@ -75,7 +75,6 @@ namespace WID
         public NotebookPage RemoveTextFromPage()
         {
             containingPage.RemoveTextFromPage(this);
-            containingPage.hasBeenModifiedSinceSave = true;
             return containingPage;
         }
 
@@ -211,7 +210,6 @@ namespace WID
                 hasBeenModifiedSinceSave = true;
             else
                 hasLoadedFromFile = true;
-            containingPage.hasBeenModifiedSinceSave = true;
         }
     }
 }
