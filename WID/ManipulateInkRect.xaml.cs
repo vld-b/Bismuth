@@ -66,6 +66,8 @@ namespace WID
             //pageContainer.HorizontalScrollMode = ScrollMode.Disabled;
             //pageContainer.VerticalScrollMode = ScrollMode.Disabled;
 
+            oldX = (float)Canvas.GetLeft(this);
+            oldY = (float)Canvas.GetTop(this);
             mousePos = e.GetCurrentPoint(containingPage).Position;
             originalPos = new Vector2((float)Canvas.GetLeft(this), (float)Canvas.GetTop(this));
             ((UIElement)sender).CapturePointer(e.Pointer);
@@ -92,9 +94,9 @@ namespace WID
                 //    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
                 //}
 
-                foreach (MovedStroke stroke in selectedStrokes)
+                foreach (MovedStroke movedStroke in selectedStrokes)
                 {
-                    stroke.stroke.PointTransform = stroke.oldTransform * Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this) - oldX, (float)Canvas.GetTop(this) - oldY));
+                    movedStroke.stroke.PointTransform = movedStroke.oldTransform * Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this) - oldX, (float)Canvas.GetTop(this) - oldY));
                 }
             }
         }
@@ -106,16 +108,18 @@ namespace WID
             //pageContainer.VerticalScrollMode = ScrollMode.Enabled;
             if (mousePos != e.GetCurrentPoint(containingPage).Position)
             {
-                foreach (MovedStroke stroke in selectedStrokes)
-                    stroke.newTransform = stroke.stroke.PointTransform;
+                foreach (MovedStroke movedStroke in selectedStrokes)
+                    movedStroke.newTransform = movedStroke.stroke.PointTransform;
                 undoRedoSystem.AddToUndoStack(new UndoMoveStrokes(selectedStrokes, undoRedoSystem));
             }
 
             mousePos = null;
             originalPos = null;
 
-            foreach (MovedStroke stroke in selectedStrokes)
-                stroke.newTransform = stroke.stroke.PointTransform;
+            List<MovedStroke> newMovedStroke = new List<MovedStroke>();
+            foreach (MovedStroke movedStroke in selectedStrokes)
+                newMovedStroke.Add(new MovedStroke(movedStroke.stroke, movedStroke.stroke.PointTransform, Matrix3x2.Identity));
+            selectedStrokes = newMovedStroke;
 
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
