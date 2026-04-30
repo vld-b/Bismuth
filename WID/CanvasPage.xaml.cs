@@ -1148,7 +1148,30 @@ namespace WID
 
             DataPackageView clip = Clipboard.GetContent();
 
-            if (clip.Contains(StandardDataFormats.Bitmap))
+            double pageOffset = GetCurrentPage();
+
+            if (currentPage!.inkPres.StrokeContainer.CanPasteFromClipboard())
+            {
+                try
+                {
+                    Windows.Foundation.Point inkPos = new Windows.Foundation.Point(0, pageOffset);
+                    Windows.Foundation.Rect strokesRect = currentPage!.inkPres.StrokeContainer.PasteFromClipboard(inkPos);
+                    List<Windows.Foundation.Point> rectPoints = new List<Windows.Foundation.Point>();
+                    rectPoints.Add(new Windows.Foundation.Point(strokesRect.Left, strokesRect.Top));
+                    rectPoints.Add(new Windows.Foundation.Point(strokesRect.Left, strokesRect.Bottom));
+                    rectPoints.Add(new Windows.Foundation.Point(strokesRect.Right, strokesRect.Bottom));
+                    rectPoints.Add(new Windows.Foundation.Point(strokesRect.Right, strokesRect.Top));
+                    currentPage!.RemoveManipulationRect();
+                    currentPage!.SelectInkWithPolyline(rectPoints);
+                    undoRedoSystem.AddToUndoStack(new UndoAddStroke(pageState.selectedStrokes!, currentPage!.inkPres, undoRedoSystem));
+                    ChangeCurrentInkingTool(btLassoTool, new RoutedEventArgs());
+                }
+                catch
+                {
+                    await Utils.ShowTeachingTip(ttInfoPopup, "Could not paste ink❌", "", 3000);
+                }
+            }
+            else if (clip.Contains(StandardDataFormats.Bitmap))
             {
                 RandomAccessStreamReference stream = await clip.GetBitmapAsync();
                 BitmapImage bmp = new BitmapImage();
@@ -1164,7 +1187,6 @@ namespace WID
                     await wbmp.SetSourceAsync(randomStream);
                 }
 
-                double pageOffset = GetCurrentPage();
                 OnPageImage opI = new OnPageImage(
                     config!.GetNewImageID(),
                     Math.Min(pageOffset, currentPage!.Height - 500d),
@@ -1404,6 +1426,22 @@ namespace WID
             btChangeSelectedStrokesColor.Width = btChangeSelectedStrokesColor.Height;
         }
 
+        private async void CopyStrokesToClipboard(object sender, RoutedEventArgs e)
+        {
+            pageState.currentlyActivePage!.inkPres.StrokeContainer.CopySelectedToClipboard();
+            await Utils.ShowTeachingTip(ttInfoPopup, "Copied ink to clipboard ✅", "", 3000);
+        }
+
+        private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
+        {
+            foreach (InkStroke stroke in pageState.selectedStrokes!)
+            {
+                InkDrawingAttributes strokeAttrs = stroke.DrawingAttributes;
+                strokeAttrs.Color = args.NewColor;
+                stroke.DrawingAttributes = strokeAttrs;
+            }
+        }
+
         private void StartChangeSelectedInkColor(object sender, RoutedEventArgs e)
         {
             ppSelectionTools.Opacity = 1d;
@@ -1416,16 +1454,6 @@ namespace WID
         {
             undoRedoSystem.AddToUndoStack(new UndoRecolorStrokes(recoloredStrokes!, cpInkColor.Color, undoRedoSystem));
             recoloredStrokes = null;
-        }
-
-        private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)
-        {
-            foreach (InkStroke stroke in pageState.selectedStrokes!)
-            {
-                InkDrawingAttributes strokeAttrs = stroke.DrawingAttributes;
-                strokeAttrs.Color = args.NewColor;
-                stroke.DrawingAttributes = strokeAttrs;
-            }
         }
 
         private void InkToolbarPopupLoaded(object sender, RoutedEventArgs e)

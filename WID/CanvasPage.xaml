@@ -526,6 +526,11 @@
                             Margin="10"
                             >
                             <Button
+                                Click="CopyStrokesToClipboard"
+                                >
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8C8;" />
+                            </Button>
+                            <Button
                                 x:Name="btChangeSelectedStrokesColor"
                                 Padding="4"
                                 >

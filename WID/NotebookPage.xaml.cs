@@ -224,16 +224,46 @@ namespace WID
             }
         }
 
+        public void SelectInkWithPolyline(IEnumerable<Point> points)
+        {
+            if (pageState.selectedStrokes is not null)
+            {
+                RemoveManipulationRect();
+                pageState.DeselectStrokes();
+            }
+            inkPres.StrokeContainer.SelectWithPolyLine(points);
+
+            pageState.selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
+            if (pageState.selectedStrokes.Count == 0)
+            {
+                pageContent.Children.Remove(selectionLasso!);
+                selectionLasso = null;
+                pageState.DeselectStrokes();
+                return;
+            }
+            Rect selectionRect = pageState.selectedStrokes[0].BoundingRect;
+            foreach (InkStroke stroke in pageState.selectedStrokes)
+                selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
+
+            pageState.currentlyActivePage = this;
+            pageState.ShowInkSelectionPopup();
+
+            pageContent.Children.Remove(selectionLasso!);
+            selectionLasso = null;
+            this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
+            cvManipulationRects.Children.Add(this.selectionRect);
+        }
+
         public async Task CollectText() // TODO: Implement collecting text from textboxes and from ink
         {
-            InkAnalyzer analyzer = new InkAnalyzer();
-            analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
-            InkAnalysisResult result = await analyzer.AnalyzeAsync();
+            //InkAnalyzer analyzer = new InkAnalyzer();
+            //analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
+            //InkAnalysisResult result = await analyzer.AnalyzeAsync();
 
-            if (result.Status != InkAnalysisStatus.Updated)
-                return;
+            //if (result.Status != InkAnalysisStatus.Updated)
+            //    return;
 
-            IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+            //IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
         }
 
         private void UpdateTemplateBackground()
@@ -349,26 +379,7 @@ namespace WID
                 return;
 
             selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
-            inkPres.StrokeContainer.SelectWithPolyLine(selectionLasso.Points);
-            
-            pageState.selectedStrokes = inkPres.StrokeContainer.GetStrokes().Where(s => s.Selected).ToList();
-            if (pageState.selectedStrokes.Count == 0)
-            {
-                pageContent.Children.Remove(selectionLasso!);
-                selectionLasso = null;
-                pageState.DeselectStrokes();
-                return;
-            }
-            Rect selectionRect = pageState.selectedStrokes[0].BoundingRect;
-            foreach (InkStroke stroke in pageState.selectedStrokes)
-                selectionRect = RectHelper.Union(selectionRect, stroke.BoundingRect);
-
-            pageState.ShowInkSelectionPopup();
-
-            pageContent.Children.Remove(selectionLasso!);
-            selectionLasso = null;
-            this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
-            cvManipulationRects.Children.Add(this.selectionRect);
+            SelectInkWithPolyline(selectionLasso!.Points);
         }
     }
 
