@@ -74,7 +74,7 @@ namespace WID
 
         public NotebookPage RemoveTextFromPage()
         {
-            containingPage.RemoveTextFromPage(this);
+            containingPage.RemoveOnPageItemFromPage(this);
             return containingPage;
         }
 

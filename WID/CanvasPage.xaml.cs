@@ -258,6 +258,7 @@ namespace WID
             if ((new FileInfo(configFile.Path)).Length != 0)
             {
                 config = NotebookUpgrader.UpgradeToLastVersion((await NotebookConfig.DeserializeFile(configFile))!);
+                undoRedoSystem.notebookConfig = config;
 
                 pbFileStatus.Maximum = config!.pageMapping.Count;
 
@@ -608,7 +609,7 @@ namespace WID
                         }
                     }
 
-                    page.AddTextToPage(onPageText);
+                    page.AddOnPageItemToPage(onPageText);
                     onPageText.TextBoxGotFocus += FocusedOnPageItem;
                     onPageText.TextBoxLostFocus += UnfocusedOnPageItem;
                 }
@@ -647,7 +648,7 @@ namespace WID
                         );
                     onPageImage.Width = image.width;
                     onPageImage.Height = image.height;
-                    page.AddImageToPage(onPageImage);
+                    page.AddOnPageItemToPage(onPageImage);
                     onPageImage.ImageGotFocus += FocusedOnPageItem;
                     onPageImage.ImageLostFocus += UnfocusedOnPageItem;
                 }
@@ -853,8 +854,8 @@ namespace WID
                 );
             pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             pendingDeletions.Remove("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
-            currentPage!.AddTextToPage(txt);
-            undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, txt, undoRedoSystem));
+            currentPage!.AddOnPageItemToPage(txt);
+            undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, txt, undoRedoSystem));
             txt.TextBoxGotFocus += FocusedOnPageItem;
             txt.TextBoxLostFocus += UnfocusedOnPageItem;
 
@@ -976,7 +977,7 @@ namespace WID
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
         {
             NotebookPage textBoxPage = lastEditedText!.RemoveTextFromPage();
-            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage.contentCanvas, lastEditedText!, undoRedoSystem));
+            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage, lastEditedText!, undoRedoSystem));
             config!.DeleteTextWithId(lastEditedText!.id);
             string textBoxFileName = lastEditedText!.GetFileName();
             pendingCreations.Remove(textBoxFileName);
@@ -989,7 +990,7 @@ namespace WID
         private void DeleteCurrentImage(object sender, RoutedEventArgs e)
         {
             NotebookPage imgPage = lastEditedImage!.RemoveImageFromPage();
-            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(imgPage.contentCanvas, lastEditedImage, undoRedoSystem));
+            undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(imgPage, lastEditedImage, undoRedoSystem));
             config!.DeleteImageWithId(lastEditedImage!.id);
             string imgFileName = lastEditedImage!.GetFileName();
             pendingCreations.Remove(imgFileName);
@@ -1196,12 +1197,12 @@ namespace WID
                     svPageZoom,
                     true
                     );
-                currentPage!.AddImageToPage(opI);
+                currentPage!.AddOnPageItemToPage(opI);
                 opI.ImageGotFocus += FocusedOnPageItem;
                 opI.ImageLostFocus += UnfocusedOnPageItem;
                 pendingCreations.Add(opI.GetFileName());
                 pendingDeletions.Remove(opI.GetFileName());
-                undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!.contentCanvas, opI, undoRedoSystem));
+                undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, opI, undoRedoSystem));
 
                 ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
                 opI.SetIsSelectable(true);

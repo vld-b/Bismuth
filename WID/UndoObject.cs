@@ -293,26 +293,35 @@ namespace WID
 
     public class UndoAddOnPageElement : UndoObject
     {
-        private Panel parent;
+        private NotebookPage parentPage;
         private IOnPageItem el;
 
         public override void Undo()
         {
-            parent.Children.Remove((UIElement)el);
+            parentPage.RemoveOnPageItemFromPage(el);
             containingSystem.pendingCreations.Remove(el.GetFileName());
             containingSystem.pendingDeletions.Add(el.GetFileName());
+            if (el is OnPageText txt)
+                containingSystem.notebookConfig!.DeleteTextWithId(txt.id);
+            else if (el is OnPageImage img)
+                containingSystem.notebookConfig!.DeleteImageWithId(img.id);
         }
 
         public override void Redo()
         {
-            parent.Children.Add((UIElement)el);
+            parentPage.AddOnPageItemToPage(el);
             containingSystem.pendingCreations.Add(el.GetFileName());
             containingSystem.pendingDeletions.Remove(el.GetFileName());
+            // On redoing, the id's don't have to be reassigned because IOnPageItem would receive the same id. config file has to be notified anyway
+            if (el is OnPageText txt)
+                containingSystem.notebookConfig!.GetNewTextID();
+            else if (el is OnPageImage img)
+                containingSystem.notebookConfig!.GetNewImageID();
         }
 
-        public UndoAddOnPageElement(Panel parent, IOnPageItem el, UndoRedoSystem containingSystem) : base(containingSystem)
+        public UndoAddOnPageElement(NotebookPage parentPage, IOnPageItem el, UndoRedoSystem containingSystem) : base(containingSystem)
         {
-            this.parent = parent;
+            this.parentPage = parentPage;
             this.el = el;
         }
     }
@@ -329,7 +338,7 @@ namespace WID
             base.Undo();
         }
 
-        public UndoRemoveOnPageElement(Panel parent, IOnPageItem el, UndoRedoSystem containingSystem) : base(parent, el, containingSystem) { }
+        public UndoRemoveOnPageElement(NotebookPage parentPage, IOnPageItem el, UndoRedoSystem containingSystem) : base(parentPage, el, containingSystem) { }
     }
 
     public sealed class UndoMoveOnPageElement : UndoObject

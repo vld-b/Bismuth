@@ -19,6 +19,7 @@ namespace WID
         protected readonly List<Control> undoBtns = new List<Control>();
         protected readonly List<Control> redoBtns = new List<Control>();
 
+        public NotebookConfig? notebookConfig;
         public List<string> pendingCreations { get; private set; } = new List<string>();
         public List<string> pendingDeletions { get; private set; } = new List<string>();
         public List<StorageFile> pendingMoves { get; private set; } = new List<StorageFile>();

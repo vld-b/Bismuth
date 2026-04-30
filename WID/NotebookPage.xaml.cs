@@ -280,16 +280,22 @@ namespace WID
             this.templateCanvas = c;
         }
 
-        public void AddTextToPage(OnPageText text)
+        public void RemoveOnPageItemFromPage(IOnPageItem item)
         {
-            onPageItems.Add(text);
-            contentCanvas.Children.Add(text);
+            onPageItems.Remove(item);
+            if (item is OnPageText txt)
+                contentCanvas.Children.Remove(txt);
+            else if (item is OnPageImage img)
+                contentCanvas.Children.Remove(img);
         }
 
-        public void AddImageToPage(OnPageImage img)
+        public void AddOnPageItemToPage(IOnPageItem item)
         {
-            onPageItems.Add(img);
-            contentCanvas.Children.Add(img);
+            onPageItems.Add(item);
+            if (item is OnPageText txt)
+                contentCanvas.Children.Add(txt);
+            else if (item is OnPageImage img)
+                contentCanvas.Children.Add(img);
         }
 
         public void RemoveManipulationRect()
@@ -303,18 +309,6 @@ namespace WID
             pageState.currentlyActivePage = null;
             cvManipulationRects.Children.Remove(selectionRect);
             this.selectionRect = null;
-        }
-
-        public void RemoveImageFromPage(OnPageImage img)
-        {
-            onPageItems.Remove(img);
-            contentCanvas.Children.Remove(img);
-        }
-
-        public void RemoveTextFromPage(OnPageText text)
-        {
-            onPageItems.Remove(text);
-            contentCanvas.Children.Remove(text);
         }
 
         public async Task LoadFromStream(IInputStream stream)

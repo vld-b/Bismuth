@@ -212,7 +212,7 @@ namespace WID
                 {
                     txt.LoadFromStream(stream);
                 }
-                page.AddTextToPage(txt);
+                page.AddOnPageItemToPage(txt);
                 txt.TextBoxGotFocus += focusedOnPageItem;
                 txt.TextBoxLostFocus += unfocusedOnPageItem;
             }
@@ -241,7 +241,7 @@ namespace WID
                     );
                 img.Width = imgData.width;
                 img.Height = imgData.height;
-                page.AddImageToPage(img);
+                page.AddOnPageItemToPage(img);
                 img.ImageGotFocus += focusedOnPageItem;
                 img.ImageLostFocus += unfocusedOnPageItem;
             }

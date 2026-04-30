@@ -98,7 +98,7 @@ namespace WID
 
         public NotebookPage RemoveImageFromPage()
         {
-            containingPage.RemoveImageFromPage(this);
+            containingPage.RemoveOnPageItemFromPage(this);
             containingPage.hasBeenModifiedSinceSave = true;
             return containingPage;
         }
