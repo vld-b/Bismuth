@@ -991,8 +991,11 @@ namespace WID
 
         private void IncreaseFontSize(object sender, RoutedEventArgs e)
         {
-            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size += 2f;
-            lastEditedText!.hasBeenModifiedSinceSave = true;
+            if (lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size > 2f)       // Cannot happen with addition, but crashes the app if
+            {                                                                               // text containing multiple font sizes is selected
+                lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size += 2f;
+                lastEditedText!.hasBeenModifiedSinceSave = true;
+            }
         }
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)

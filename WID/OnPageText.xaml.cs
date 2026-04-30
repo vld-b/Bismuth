@@ -53,6 +53,10 @@ namespace WID
             this.containingPage = containingPage;
             this.pageContainer = pageContainer;
 
+            ITextCharacterFormat format = reb.Document.GetDefaultCharacterFormat();
+            format.Size = 27f;
+            reb.Document.SetDefaultCharacterFormat(format);
+
             btMove.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingText), true);
             btMove.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingText), true);
             btMove.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopDraggingText), true);

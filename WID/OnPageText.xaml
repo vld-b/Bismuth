@@ -27,7 +27,6 @@
                 TextWrapping="Wrap"
                 IsReadOnly="False"
                 IsSpellCheckEnabled="False"
-                FontSize="36"
                 Foreground="Black"
                 Background="Transparent"
                 TextChanged="ReceivedTextInput"
