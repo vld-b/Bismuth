@@ -29,12 +29,11 @@ namespace WID
 
         private double widthToHeight;
         private Point? mousePos;
-        private double oldX, oldY = -1d;
-        private double oldWidth, oldHeight = -1d;
+        private double oldX = -1d, oldY = -1d;
+        private double oldWidth = -1d, oldHeight = -1d;
         public NotebookPage containingPage { get; private set;  }
         public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
-        public bool hasBeenModifiedSinceSave;
         public bool isNewImage { get; private set; }
 
         public EventHandler? ImageGotFocus;
@@ -58,7 +57,6 @@ namespace WID
             this.pageContainer = pageContainer;
 
             this.isNewImage = isNewImage;
-            this.hasBeenModifiedSinceSave = false;
 
             img.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(StartDraggingImage), true);
             img.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(ContinueDraggingImage), true);
@@ -105,10 +103,7 @@ namespace WID
 
         public string GetFileName() => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg";
 
-        public void SetHasBeenModified(bool value)
-        {
-            hasBeenModifiedSinceSave = value;
-        }
+        public void SetHasBeenModified(bool value) { }
 
         private void FocusImage(object sender, RoutedEventArgs e)
         {
@@ -131,7 +126,6 @@ namespace WID
             oldY = GetTop();
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            this.hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueDraggingImage(object sender, PointerRoutedEventArgs e)
@@ -172,7 +166,6 @@ namespace WID
             oldHeight = this.Height;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            this.hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueResizeImage(object sender, PointerRoutedEventArgs e)

@@ -425,6 +425,16 @@
                                 >
                                 Subscript
                             </Button>
+                            <RepeatButton
+                                Click="DecreaseFontSize"
+                                >
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8E7;" />
+                            </RepeatButton>
+                            <RepeatButton
+                                Click="IncreaseFontSize"
+                                >
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8E8;" />
+                            </RepeatButton>
                             <TextBox
                                 x:Name="tbFindText"
                                 Width="200"

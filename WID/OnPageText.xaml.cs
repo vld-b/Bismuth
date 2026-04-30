@@ -33,8 +33,8 @@ namespace WID
         public RichEditBox TextBox;
         private Point? mousePos;
         private NotebookPage containingPage;
-        private double oldX, oldY = -1d;
-        private double oldWidth, oldHeight = -1d;
+        private double oldX = -1d, oldY = -1d;
+        private double oldWidth = -1d, oldHeight = -1d;
         public bool hasBeenModifiedSinceSave { get; set; } = false;
         private bool hasLoadedFromFile = false;
         public EventHandler? TextBoxGotFocus;
@@ -123,7 +123,6 @@ namespace WID
             oldY = GetTop();
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueDraggingText(object sender, PointerRoutedEventArgs e)
@@ -164,7 +163,6 @@ namespace WID
             oldHeight = this.Height;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            hasBeenModifiedSinceSave = true;
         }
 
         private void ContinueResizeText(object sender, PointerRoutedEventArgs e)

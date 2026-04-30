@@ -944,11 +944,13 @@ namespace WID
         private void ToggleBoldText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void ToggleItalicText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Italic = Windows.UI.Text.FormatEffect.Toggle;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void ToggleUnderlinedText(object sender, RoutedEventArgs e)
@@ -957,21 +959,40 @@ namespace WID
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = Windows.UI.Text.UnderlineType.Single;
             else
                 lastEditedText!.TextBox.Document.Selection.CharacterFormat.Underline = UnderlineType.None;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void ToggleStrikethroughText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Strikethrough = FormatEffect.Toggle;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void ToggleSuperscriptText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Superscript = FormatEffect.Toggle;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void ToggleSubscriptText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Subscript = FormatEffect.Toggle;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
+        }
+
+        private void DecreaseFontSize(object sender, RoutedEventArgs e)
+        {
+            if (lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size > 2f)
+            {
+                lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size -= 2f;
+                lastEditedText!.hasBeenModifiedSinceSave = true;
+            }
+        }
+
+        private void IncreaseFontSize(object sender, RoutedEventArgs e)
+        {
+            lastEditedText!.TextBox.Document.Selection.CharacterFormat.Size += 2f;
+            lastEditedText!.hasBeenModifiedSinceSave = true;
         }
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)
