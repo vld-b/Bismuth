@@ -398,17 +398,6 @@ namespace WID
             images = new List<ImageData>();
         }
 
-        public PageConfig(int id, double width, double height, bool hasBg, List<TextData> textBoxes)
-        {
-            this.id = id;
-            this.fileName = "page" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".gif";
-            this.width = width;
-            this.height = height;
-            this.hasBg = hasBg;
-            this.textBoxes = textBoxes;
-            this.images = new List<ImageData>();
-        }
-
         public string GetBgName()
         {
             return "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png";
