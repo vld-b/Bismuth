@@ -177,7 +177,7 @@ namespace WID
             if (pageMapping[pageIndex].hasBg)
             {
                 BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
-                    await folder.GetFileAsync(pageMapping[pageIndex].GetBgName()),
+                    await folder.GetFileAsync(pageMapping[pageIndex].BgName),
                     (int)pageMapping[pageIndex].width
                     );
                 page = new NotebookPage(pageMapping[pageIndex].id, bgImage, undoRedoSystem, pageState);
@@ -398,10 +398,7 @@ namespace WID
             images = new List<ImageData>();
         }
 
-        public string GetBgName()
-        {
-            return "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png";
-        }
+        public string BgName { get => "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png"; }
     }
 
     public class TextData

@@ -361,7 +361,7 @@ namespace WID
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
             if (page.hasBg)
-                pendingDeletions.Remove(config!.pageMapping.Last().GetBgName());
+                pendingDeletions.Remove(config!.pageMapping.Last().BgName);
             foreach (IOnPageItem onPageItem in page.onPageItems)
             {
                 pendingCreations.Add(onPageItem.FileName);
@@ -400,9 +400,9 @@ namespace WID
             config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
             pendingMoves.Add(safeBgFile);
-            pendingRenames.Add(new RenameItem(safeBgFile, config.pageMapping.Last().GetBgName()));
+            pendingRenames.Add(new RenameItem(safeBgFile, config.pageMapping.Last().BgName));
             // Remove background from pending deletions so it doesn't get deleted when it should be present
-            pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
+            pendingDeletions.Remove(config.pageMapping.Last().BgName);
             pendingDeletions.Remove(config.pageMapping.Last().fileName);
 
 
@@ -449,10 +449,10 @@ namespace WID
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
-                    if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.pageMapping.Last().GetBgName()))
-                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().GetBgName());
+                    if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.pageMapping.Last().BgName))
+                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName);
                     else
-                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().GetBgName(), CreationCollisionOption.ReplaceExisting);
+                        bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName, CreationCollisionOption.ReplaceExisting);
                     pendingMoves.Add(bgFile);
 
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
@@ -469,7 +469,7 @@ namespace WID
                 spPageView.Children.Add(page);
 
                 // Remove background from pending deletions so it doesn't get deleted when it should be present
-                pendingDeletions.Remove(config.pageMapping.Last().GetBgName());
+                pendingDeletions.Remove(config.pageMapping.Last().BgName);
                 pendingDeletions.Remove(config.pageMapping.Last().fileName);
 
             }
@@ -517,7 +517,7 @@ namespace WID
                 if (currentPage.hasBg)
                 {
                     BitmapImage img = new BitmapImage();
-                    ZipArchiveEntry? bgEntry = archive.GetEntry(currentPage.GetBgName());
+                    ZipArchiveEntry? bgEntry = archive.GetEntry(currentPage.BgName);
                     if (bgEntry is not null)
                     {
                         using (Stream bgStream = bgEntry.Open())

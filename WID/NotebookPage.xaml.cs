@@ -218,7 +218,7 @@ namespace WID
             if (notebookConfig.pageMapping.Last().hasBg)
             {
                 bgImage = await Utils.GetBMPFromFileWithWidth(
-                    await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().GetBgName()),
+                    await notebookDir.GetFileAsync(notebookConfig.pageMapping.Last().BgName),
                     (int)notebookConfig.pageMapping.Last().width
                     );
                 this.LoadBackground(bgImage);
