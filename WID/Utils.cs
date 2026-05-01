@@ -15,17 +15,17 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace WID
 {
     public static class Utils
     {
-        public static T Pop<T>(this List<T> list, int index)
+        public static void Add<T>(this List<T> origin, List<T> source)
         {
-            T val = list[index];
-            list.RemoveAt(index);
-            return val;
+            foreach (T item in source)
+                origin.Add(item);
         }
 
         public async static Task CreatePending(List<string> items, StorageFolder folder)
@@ -52,51 +52,6 @@ namespace WID
             items.Clear();
         }
 
-        public async static Task MovePending(List<StorageFile> items, StorageFolder folder)
-        {
-            foreach (StorageFile item in items)
-            {
-                if (File.Exists(folder.Path + "\\" + item.Name))
-                {
-                    await (await folder.GetFileAsync(item.Name)).DeleteAsync();
-                }
-                await item.MoveAsync(folder);
-            }
-            items.Clear();
-        }
-
-        public async static Task RenamePending(List<RenameItem> items)
-        {
-            foreach (RenameItem item in items)
-            {
-                string targetPath = (await item.file.GetParentAsync()).Path + "\\" + item.to;
-                if (File.Exists(targetPath))
-                {
-                    File.Delete(targetPath);
-                }
-                await item.file.RenameAsync(item.to);
-            }
-            items.Clear();
-        }
-
-        public async static Task ShowTeachingTip(TeachingTip tt, string title, string subtitle, int msDelay)
-        {
-            tt.Title = title;
-            tt.Subtitle = subtitle;
-            tt.IsOpen = true;
-            await Task.Delay(msDelay);
-            tt.IsOpen = false;
-        }
-
-        public static ContentDialog ShowLoadingPopup(string title)
-        {
-            ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
-            dialog.Opened += (s, e) => ((Microsoft.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
-            dialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
-            _ = dialog.ShowAsync();
-            return dialog;
-        }
-
         public static async Task<BitmapImage> GetBMPFromFile(StorageFile bgFile)
         {
             BitmapImage bmp = new BitmapImage();
@@ -114,15 +69,61 @@ namespace WID
             return bmp;
         }
 
-        public static void Add<T>(this List<T> origin, List<T> source)
-        {
-            foreach (T item in source)
-                origin.Add(item);
-        }
-
         public static string GetNotebookNameFromFolder(StorageFolder folder)
         {
             return folder.DisplayName[..(folder.DisplayName.Length - 9)];
+        }
+
+        public async static Task MovePending(List<StorageFile> items, StorageFolder folder)
+        {
+            foreach (StorageFile item in items)
+            {
+                if (File.Exists(folder.Path + "\\" + item.Name))
+                {
+                    await (await folder.GetFileAsync(item.Name)).DeleteAsync();
+                }
+                await item.MoveAsync(folder);
+            }
+            items.Clear();
+        }
+
+        public static T Pop<T>(this List<T> list, int index)
+        {
+            T val = list[index];
+            list.RemoveAt(index);
+            return val;
+        }
+
+        public async static Task RenamePending(List<RenameItem> items)
+        {
+            foreach (RenameItem item in items)
+            {
+                string targetPath = (await item.file.GetParentAsync()).Path + "\\" + item.to;
+                if (File.Exists(targetPath))
+                {
+                    File.Delete(targetPath);
+                }
+                await item.file.RenameAsync(item.to);
+            }
+            items.Clear();
+        }
+
+        public static ContentDialog ShowLoadingPopup(string title)
+        {
+            ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
+            dialog.Opened += (s, e) => ((Microsoft.UI.Xaml.Controls.ProgressBar)dialog.Content).IsIndeterminate = true;
+            dialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
+            _ = dialog.ShowAsync();
+            return dialog;
+        }
+
+        public async static Task ShowTeachingTip(TeachingTip tt, string title, string subtitle, int msDelay)
+        {
+            tt.Title = title;
+            tt.Subtitle = subtitle;
+            tt.IsOpen = true;
+            await Task.Delay(msDelay);
+            tt.IsOpen = false;
         }
     }
 
