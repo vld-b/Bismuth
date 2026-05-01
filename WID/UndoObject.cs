@@ -299,8 +299,8 @@ namespace WID
         public override void Undo()
         {
             parentPage.RemoveOnPageItemFromPage(el);
-            containingSystem.pendingCreations.Remove(el.GetFileName());
-            containingSystem.pendingDeletions.Add(el.GetFileName());
+            containingSystem.pendingCreations.Remove(el.FileName);
+            containingSystem.pendingDeletions.Add(el.FileName);
             if (el is OnPageText txt)
                 containingSystem.notebookConfig!.DeleteTextWithId(txt.id);
             else if (el is OnPageImage img)
@@ -310,8 +310,8 @@ namespace WID
         public override void Redo()
         {
             parentPage.AddOnPageItemToPage(el);
-            containingSystem.pendingCreations.Add(el.GetFileName());
-            containingSystem.pendingDeletions.Remove(el.GetFileName());
+            containingSystem.pendingCreations.Add(el.FileName);
+            containingSystem.pendingDeletions.Remove(el.FileName);
             // On redoing, the id's don't have to be reassigned because IOnPageItem would receive the same id. config file has to be notified anyway
             if (el is OnPageText txt)
                 containingSystem.notebookConfig!.GetNewTextID();
@@ -361,8 +361,8 @@ namespace WID
             this.item = item;
             this.oldX = oldX;
             this.oldY = oldY;
-            newX = item.GetLeft();
-            newY = item.GetTop();
+            newX = item.Left;
+            newY = item.Top;
         }
     }
 
@@ -386,8 +386,8 @@ namespace WID
             this.item = item;
             this.oldWidth = oldWidth;
             this.oldHeight = oldHeight;
-            newWidth = item.GetWidth();
-            newHeight = item.GetHeight();
+            newWidth = item.Width;
+            newHeight = item.Height;
         }
     }
 }

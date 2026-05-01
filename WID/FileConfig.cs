@@ -445,10 +445,7 @@ namespace WID
             this.left = left;
         }
 
-        public string GetFileName()
-        {
-            return "text" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".rtf";
-        }
+        public string FileName { get => "text" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".rtf"; }
     }
 
     public class ImageData
@@ -480,10 +477,7 @@ namespace WID
             this.left = left;
         }
 
-        public string GetFileName()
-        {
-            return "img" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".jpg";
-        }
+        public string FileName { get => "img" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".jpg"; }
     }
 
     public class DefaultTemplate

@@ -364,9 +364,9 @@ namespace WID
                 pendingDeletions.Remove(config!.pageMapping.Last().GetBgName());
             foreach (IOnPageItem onPageItem in page.onPageItems)
             {
-                pendingCreations.Add(onPageItem.GetFileName());
-                pendingDeletions.Remove(onPageItem.GetFileName());
-                onPageItem.SetHasBeenModified(true);
+                pendingCreations.Add(onPageItem.FileName);
+                pendingDeletions.Remove(onPageItem.FileName);
+                onPageItem.HasBeenModified = true;
             }
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
@@ -597,7 +597,7 @@ namespace WID
                         page,
                         svPageZoom
                         );
-                    ZipArchiveEntry? textEntry = archive.GetEntry(text.GetFileName());
+                    ZipArchiveEntry? textEntry = archive.GetEntry(text.FileName);
                     if (textEntry is not null)
                     {
                         MemoryStream memStream = new MemoryStream();
@@ -616,7 +616,7 @@ namespace WID
 
                 foreach (ImageData image in currentPage.images)
                 {
-                    ZipArchiveEntry? imageEntry = archive.GetEntry(image.GetFileName());
+                    ZipArchiveEntry? imageEntry = archive.GetEntry(image.FileName);
                     if (imageEntry is null)
                         continue;
 
@@ -781,7 +781,7 @@ namespace WID
                     NotebookPage deletedPage = (NotebookPage)spPageView.Children[i];
 
                     foreach (IOnPageItem onPageItem in deletedPage.onPageItems)
-                        pendingDeletions.Add(onPageItem.GetFileName());
+                        pendingDeletions.Add(onPageItem.FileName);
 
                     spPageView.Children.RemoveAt(i);
                     break;
@@ -1089,7 +1089,7 @@ namespace WID
             NotebookPage textBoxPage = lastEditedText!.RemoveTextFromPage();
             undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage, lastEditedText!, undoRedoSystem));
             config!.DeleteTextWithId(lastEditedText!.id);
-            string textBoxFileName = lastEditedText!.GetFileName();
+            string textBoxFileName = lastEditedText!.FileName;
             pendingCreations.Remove(textBoxFileName);
             pendingDeletions.Add(textBoxFileName);
             lastEditedText = null;
@@ -1102,7 +1102,7 @@ namespace WID
             NotebookPage imgPage = lastEditedImage!.RemoveImageFromPage();
             undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(imgPage, lastEditedImage, undoRedoSystem));
             config!.DeleteImageWithId(lastEditedImage!.id);
-            string imgFileName = lastEditedImage!.GetFileName();
+            string imgFileName = lastEditedImage!.FileName;
             pendingCreations.Remove(imgFileName);
             pendingDeletions.Add(imgFileName);
             lastEditedImage = null;
@@ -1310,8 +1310,8 @@ namespace WID
                 currentPage!.AddOnPageItemToPage(opI);
                 opI.ImageGotFocus += FocusedOnPageItem;
                 opI.ImageLostFocus += UnfocusedOnPageItem;
-                pendingCreations.Add(opI.GetFileName());
-                pendingDeletions.Remove(opI.GetFileName());
+                pendingCreations.Add(opI.FileName);
+                pendingDeletions.Remove(opI.FileName);
                 undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, opI, undoRedoSystem));
 
                 ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());

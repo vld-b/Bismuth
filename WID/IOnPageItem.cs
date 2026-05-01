@@ -9,14 +9,14 @@ namespace WID
 {
     public interface IOnPageItem
     {
-        public double GetTop();
-        public double GetLeft();
+        public double Top { get; }
+        public double Left { get; }
         public void SetPos(double left, double top);
-        public double GetWidth();
-        public double GetHeight();
+        public double Width { get; }
+        public double Height { get; }
         public void SetDimensions(double width, double height);
-        public string GetFileName();
-        public void SetHasBeenModified(bool value);
+        public string FileName { get; }
+        public bool HasBeenModified { set; }
         public void SetIsSelectable(bool isSelectable);
     }
 }

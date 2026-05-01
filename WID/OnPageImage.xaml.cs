@@ -67,19 +67,16 @@ namespace WID
             btResize.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(StopResizeImage), true);
         }
 
-        public double GetTop() => Canvas.GetTop(this);
+        public double Top { get => Canvas.GetTop(this); }
 
-        public double GetLeft() => Canvas.GetLeft(this);
+        public double Left { get => Canvas.GetLeft(this); }
+
 
         public void SetPos(double left, double top)
         {
             Canvas.SetLeft(this, left);
             Canvas.SetTop(this, top);
         }
-
-        public double GetWidth() => this.Width;
-
-        public double GetHeight() => this.Height;
 
         public void SetDimensions(double width, double height)
         {
@@ -101,9 +98,9 @@ namespace WID
             return containingPage;
         }
 
-        public string GetFileName() => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg";
+        public string FileName { get => "img" + (id == 0 ? "" : (" (" + id + ")")) + ".jpg"; }
 
-        public void SetHasBeenModified(bool value) { }
+        public bool HasBeenModified { set { } }
 
         private void FocusImage(object sender, RoutedEventArgs e)
         {
@@ -122,8 +119,8 @@ namespace WID
             pageContainer.VerticalScrollMode = ScrollMode.Disabled;
             btResize.Focus(FocusState.Pointer); // Needed to redirect focus to the OnPageImage
 
-            oldX = GetLeft();
-            oldY = GetTop();
+            oldX = Left;
+            oldY = Top;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
         }
@@ -134,16 +131,16 @@ namespace WID
             {
                 e.Handled = true;
 
-                double oldX = GetLeft();
-                double oldY = GetTop();
+                double oldX = Left;
+                double oldY = Top;
                 Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, GetTop() + currentPos.Y - mousePos.Value.Y)));
-                Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, GetLeft() + currentPos.X - mousePos.Value.X)));
+                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, Top + currentPos.Y - mousePos.Value.Y)));
+                Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, Left + currentPos.X - mousePos.Value.X)));
 
-                if (oldY != GetTop())
+                if (oldY != Top)
                     mousePos = new Point(mousePos.Value.X, currentPos.Y);
-                if (oldX != GetLeft())
+                if (oldX != Left)
                     mousePos = new Point(currentPos.X, mousePos.Value.Y);
             }
         }
@@ -177,8 +174,8 @@ namespace WID
 
                 double newHeight = this.Height + currentPos.Y - mousePos.Value.Y;
                 double newWidth = newHeight * widthToHeight;
-                double maxHeight = containingPage.Height - GetTop();
-                double maxWidth = containingPage.Width - GetLeft();
+                double maxHeight = containingPage.Height - Top;
+                double maxWidth = containingPage.Width - Left;
 
                 if (50d <= newHeight && newHeight <= maxHeight && newWidth <= maxWidth)
                 {

@@ -82,19 +82,15 @@ namespace WID
             return containingPage;
         }
 
-        public double GetTop() => Canvas.GetTop(this);
+        public double Top { get => Canvas.GetTop(this); }
 
-        public double GetLeft() => Canvas.GetLeft(this);
+        public double Left { get => Canvas.GetLeft(this); }
 
         public void SetPos(double left, double top)
         {
             Canvas.SetLeft(this, left);
             Canvas.SetTop(this, top);
         }
-
-        public double GetWidth() => this.Width;
-
-        public double GetHeight() => this.Height;
 
         public void SetDimensions(double width, double height)
         {
@@ -110,12 +106,9 @@ namespace WID
             bdText.BorderBrush = isSelectable ? (SolidColorBrush)Application.Current.Resources["SystemControlHighlightAccentBrush"] : new SolidColorBrush(Colors.Transparent);
         }
 
-        public string GetFileName() => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf";
+        public string FileName { get => "text" + (id == 0 ? "" : (" (" + id + ")")) + ".rtf"; }
 
-        public void SetHasBeenModified(bool value)
-        {
-            hasBeenModifiedSinceSave = value;
-        }
+        public bool HasBeenModified { set { this.hasBeenModifiedSinceSave = value; } }
 
         private void StartDraggingText(object sender, PointerRoutedEventArgs e)
         {
@@ -123,8 +116,8 @@ namespace WID
             pageContainer.HorizontalScrollMode = ScrollMode.Disabled;
             pageContainer.VerticalScrollMode = ScrollMode.Disabled;
 
-            oldX = GetLeft();
-            oldY = GetTop();
+            oldX = Left;
+            oldY = Top;
             mousePos = e.GetCurrentPoint(containingPage).Position;
             ((UIElement)sender).CapturePointer(e.Pointer);
         }
@@ -135,16 +128,16 @@ namespace WID
             {
                 e.Handled = true;
 
-                double oldX = GetLeft();
-                double oldY = GetTop();
+                double oldX = Left;
+                double oldY = Top;
                 Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, GetTop() + currentPos.Y - mousePos.Value.Y)));
-                Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, GetLeft() + currentPos.X - mousePos.Value.X)));
+                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, Top + currentPos.Y - mousePos.Value.Y)));
+                Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, Left + currentPos.X - mousePos.Value.X)));
 
-                if (oldY != GetTop())
+                if (oldY != Top)
                     mousePos = new Point(mousePos.Value.X, currentPos.Y);
-                if (oldX != GetLeft())
+                if (oldX != Left)
                     mousePos = new Point(currentPos.X, mousePos.Value.Y);
             }
         }
@@ -177,8 +170,8 @@ namespace WID
                 double oldWidth = this.Width;
                 Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                this.Height = Math.Max(50, Math.Min(containingPage.Height - GetTop(), this.Height + currentPos.Y - mousePos.Value.Y));
-                this.Width = Math.Max(50, Math.Min(containingPage.Width - GetLeft(), this.Width + currentPos.X - mousePos.Value.X));
+                this.Height = Math.Max(50, Math.Min(containingPage.Height - Top, this.Height + currentPos.Y - mousePos.Value.Y));
+                this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, this.Width + currentPos.X - mousePos.Value.X));
 
                 if (oldWidth != this.Width)
                     mousePos = new Point(currentPos.X, mousePos.Value.Y);
