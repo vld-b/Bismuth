@@ -947,6 +947,11 @@ namespace WID
             lastEditedText!.TextBox.Focus(FocusState.Programmatic);
         }
 
+        private void HasOpenedTextBoxListOptions(object sender, RoutedEventArgs e)
+        {
+            ToolPopupFocused(bdTextTools, e);
+        }
+
         private void ToggleBoldText(object sender, RoutedEventArgs e)
         {
             lastEditedText!.TextBox.Document.Selection.CharacterFormat.Bold = Windows.UI.Text.FormatEffect.Toggle;
@@ -1004,6 +1009,79 @@ namespace WID
                 OnPageTextHasChanged();
             }
             lastEditedText!.TextBox.Focus(FocusState.Programmatic); // Focus TextBox anyway
+        }
+
+        private void ToggleBulletedList(object sender, RoutedEventArgs e)
+        {
+            ITextParagraphFormat format = lastEditedText!.TextBox.Document.Selection.ParagraphFormat;
+            if (format.ListType == MarkerType.Bullet)
+                format.ListType = MarkerType.None;
+            else
+                format.ListType = MarkerType.Bullet;
+            OnPageTextHasChanged();
+        }
+
+        private void ToggleNumberedList(object sender, RoutedEventArgs e)
+        {
+            ITextParagraphFormat format = lastEditedText!.TextBox.Document.Selection.ParagraphFormat;
+            if (format.ListType == MarkerType.Arabic)
+                format.ListType = MarkerType.None;
+            else
+            {
+                format.ListType = MarkerType.Arabic;
+                SetListStyle(format);
+                format.ListStart = 1;
+            }
+            OnPageTextHasChanged();
+        }
+
+        private void DecreaseIndent(object sender, RoutedEventArgs e)
+        {
+            ITextParagraphFormat format = lastEditedText!.TextBox.Document.Selection.ParagraphFormat;
+            if ((format.ListType == MarkerType.Arabic || format.ListType == MarkerType.Bullet) && format.LeftIndent > 0f)
+            {
+                format.SetIndents(format.FirstLineIndent, format.LeftIndent - 40.0f, format.RightIndent);
+                if (format.ListType == MarkerType.Arabic)
+                    SetListStyle(format);
+            }
+            OnPageTextHasChanged();
+        }
+
+        private void IncreaseIndent(object sender, RoutedEventArgs e)
+        {
+            ITextParagraphFormat format = lastEditedText!.TextBox.Document.Selection.ParagraphFormat;
+            if ((format.ListType == MarkerType.Arabic || format.ListType == MarkerType.Bullet) && format.LeftIndent < 160.0f)
+            {
+                format.SetIndents(format.FirstLineIndent, format.LeftIndent + 40.0f, format.RightIndent);
+                if (format.ListType == MarkerType.Arabic)
+                    SetListStyle(format);
+            }
+            OnPageTextHasChanged();
+        }
+
+        private void SetListStyle(ITextParagraphFormat format)
+        {
+            switch (format.LeftIndent)
+            {
+                case 0.0f:
+                    format.ListStyle = MarkerStyle.Parentheses;
+                    break;
+                case 40.0f:
+                    format.ListStyle = MarkerStyle.Period;
+                    break;
+                case 80.0f:
+                    format.ListStyle = MarkerStyle.Parenthesis;
+                    break;
+                case 120.0f:
+                    format.ListStyle = MarkerStyle.Minus;
+                    break;
+                case 160.0f:
+                    format.ListStyle = MarkerStyle.Plain;
+                    break;
+                default:
+                    format.ListStyle = MarkerStyle.Parentheses;
+                    break;
+            }
         }
 
         private void DeleteCurrentTextBox(object sender, RoutedEventArgs e)

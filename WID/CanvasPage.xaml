@@ -435,6 +435,59 @@
                                 >
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8E8;" />
                             </RepeatButton>
+                            <Button
+                                Click="HasOpenedTextBoxListOptions"
+                                >
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="2"
+                                    >
+                                    <FontIcon VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="&#xE8FD;" />
+                                    <FontIcon VerticalAlignment="Center" FontFamily="Segoe Fluent Icons" Glyph="&#xE70D;" />
+                                </StackPanel>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel
+                                            GotFocus="HasOpenedTextBoxListOptions"
+                                            Orientation="Vertical"
+                                            Spacing="8"
+                                            >
+                                            <StackPanel
+                                                GotFocus="HasOpenedTextBoxListOptions"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                >
+                                                <Button
+                                                    Click="ToggleBulletedList"
+                                                    >
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8FD;" />
+                                                </Button>
+                                                <Button
+                                                    Click="ToggleNumberedList"
+                                                    >
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xF168;" />
+                                                </Button>
+                                            </StackPanel>
+                                            <StackPanel
+                                                GotFocus="HasOpenedTextBoxListOptions"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                >
+                                                <Button
+                                                    Click="DecreaseIndent"
+                                                    >
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9AB;" />
+                                                </Button>
+                                                <Button
+                                                    Click="IncreaseIndent"
+                                                    >
+                                                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9AA;" />
+                                                </Button>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                             <TextBox
                                 x:Name="tbFindText"
                                 Width="200"
