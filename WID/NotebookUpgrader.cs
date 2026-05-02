@@ -21,6 +21,8 @@ namespace WID
             if (config.configVersion < 3L)
                 config = Upgrade2To3(config);
 
+            config.configVersion = 4L;
+
             return config;
         }
 
@@ -31,6 +33,8 @@ namespace WID
 
             foreach (PageConfig pageConf in config.pageMapping)
                 pageConf.containedText = new List<RecognizedText>();
+
+            config.configVersion = 3L;
 
             return config;
         }
