@@ -42,9 +42,32 @@ namespace WID
             this.Loaded += StartAnimation;
         }
 
+        private async Task<List<SearchableNotebook>> LoadSearchableNotebooks(StorageFolder searchingFolder)
+        {
+            List<SearchableNotebook> notebooks = new List<SearchableNotebook>();
+
+            IReadOnlyList<StorageFolder> folders = await searchingFolder.GetFoldersAsync();
+            foreach (StorageFolder folder in folders)
+            {
+                if (folder.Name.EndsWith(".notebook"))
+                {
+                    NotebookConfig config = NotebookUpgrader.UpgradeToLastVersion((await NotebookConfig.DeserializeFile(folder))!);
+                    string path = folder.Path[(ApplicationData.Current.LocalFolder.Path.Count()+1) .. (folder.Path.Length-9)];
+                    notebooks.Add(new SearchableNotebook(config, path));
+                }else
+                {
+                    notebooks.Add(await LoadSearchableNotebooks(folder));
+                }
+            }
+
+            return notebooks;
+        }
+
         private async Task LoadUserData()
         {
             LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder, Frame);
+
+            //await LoadSearchableNotebooks(ApplicationData.Current.LocalFolder);
 
             List<MenuElement> organizationFolders = new List<MenuElement>();
             List<MenuElement> notebookElements = new List<MenuElement>();
@@ -123,6 +146,7 @@ namespace WID
     public class LoadedNotebooks
     {
         public List<NotebookData> notebooks { get; private set; }
+        public List<SearchableNotebook> searchableNotebooks { get; private set; }
         public StorageFolder notesFolder { get; private set; }
         public Frame mainFrame { get; private set; }
 
@@ -130,6 +154,7 @@ namespace WID
         {
             this.notesFolder = notesFolder;
             notebooks = new List<NotebookData>();
+            searchableNotebooks = new List<SearchableNotebook>();
             this.mainFrame = mainFrame;
         }
     }
@@ -157,6 +182,18 @@ namespace WID
             this.pattern = pattern;
             this.width = width;
             this.height = height;
+        }
+    }
+
+    public class SearchableNotebook
+    {
+        public NotebookConfig config;
+        public string path;
+
+        public SearchableNotebook(NotebookConfig config, string path)
+        {
+            this.config = config;
+            this.path = path;
         }
     }
 }
