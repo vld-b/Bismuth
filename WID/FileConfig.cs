@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.AppBroadcasting;
 using Windows.Networking.Sockets;
@@ -86,6 +87,7 @@ namespace WID
             {
                 StorageFile pageFile = await destFolder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
                 await page.SaveToFile(pageFile);
+                page.hasBeenModifiedSinceSave = false;
             }
             if (isExporting && page.hasBg)
             {
@@ -96,6 +98,7 @@ namespace WID
             PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
             currentConfig.pagePattern = page.currentPattern;
             currentConfig.hasTemplate = page.hasPattern;
+            currentConfig.containedText = await page.CollectText();
             pageMapping.Add(currentConfig);
 
             foreach (IOnPageItem onPageItem in page.onPageItems)
@@ -107,6 +110,7 @@ namespace WID
                         StorageFile rtfFile = await destFolder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
                         using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
                             txt.SaveToStream(stream);
+                        txt.hasBeenModifiedSinceSave = false;
                     }
 
                     currentConfig.textBoxes.Add(new TextData(
@@ -157,6 +161,7 @@ namespace WID
 
                         await enc.FlushAsync();
                     }
+                    img.isNewImage = false;
                 }
             }
         }
@@ -194,6 +199,8 @@ namespace WID
                     pageState
                     );
             }
+
+            page.recText = pageMapping[pageIndex].containedText;
 
             foreach (TextData textData in pageMapping[pageIndex].textBoxes)
             {
@@ -371,8 +378,9 @@ namespace WID
         public double width { get; set; }
         public double height { get; set; }
         public bool hasBg { get; set; }
-        public List<TextData> textBoxes { get; set; }
-        public List<ImageData> images { get; set; }
+        public List<TextData> textBoxes { get; set; } = new List<TextData>();
+        public List<ImageData> images { get; set; } = new List<ImageData>();
+        public List<RecognizedText> containedText { get; set; } = new List<RecognizedText>();
 
         public bool hasTemplate { get; set; }
         public PageTemplatePattern? pagePattern { get; set; }
@@ -383,8 +391,6 @@ namespace WID
             this.fileName = "";
             this.width = this.height = 0d;
             this.hasBg = false;
-            textBoxes = new List<TextData>();
-            images = new List<ImageData>();
         }
 
         public PageConfig(int id, double width, double height, bool hasBg)
@@ -394,11 +400,57 @@ namespace WID
             this.width = width;
             this.height = height;
             this.hasBg = hasBg;
-            textBoxes = new List<TextData>();
-            images = new List<ImageData>();
         }
 
+        [JsonIgnore]
         public string BgName { get => "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png"; }
+    }
+
+    public class RecognizedText
+    {
+        public string text { get; set; }
+        public int textBoxId { get; set; } = -1; // -1 means text was recognized from ink, boundingbox will be provided
+        public SimpleRect? boudingBox { get; set; } = null;
+
+        public RecognizedText()
+        {
+            text = "";
+        }
+
+        public RecognizedText(string text, int textBoxId)
+        {
+            this.text = text;
+            this.textBoxId = textBoxId;
+        }
+
+        public RecognizedText(string text, SimpleRect boundingBox)
+        {
+            this.text = text;
+            this.boudingBox = boundingBox;
+        }
+    }
+
+    public class SimpleRect
+    {
+        public double x { get; set; }
+        public double y { get; set; }
+        public double width { get; set; }
+        public double height { get; set; }
+
+        public SimpleRect()
+        {
+            x = y = width = height = -1d;
+        }
+
+        public SimpleRect(double x, double y, double width, double height)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        public static SimpleRect FromRect(Rect r) => new SimpleRect(r.X, r.Y, r.Width, r.Height);
     }
 
     public class TextData
@@ -431,6 +483,7 @@ namespace WID
             this.left = left;
         }
 
+        [JsonIgnore]
         public string FileName { get => "text" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".rtf"; }
     }
 
@@ -463,6 +516,7 @@ namespace WID
             this.left = left;
         }
 
+        [JsonIgnore]
         public string FileName { get => "img" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".jpg"; }
     }
 

@@ -47,6 +47,7 @@ namespace WID
         public string inkFileName { get => "page" + (id == 0 ? "" : (" (" + id + ")")) + ".gif"; }
         public string bgFileName { get => "bg" + (id == 0 ? "" : (" (" + id + ")")) + ".png"; }
         public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
+        public List<RecognizedText> recText { get; set; } = new List<RecognizedText>();
 
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -255,16 +256,63 @@ namespace WID
             cvManipulationRects.Children.Add(this.selectionRect);
         }
 
-        public async Task CollectText() // TODO: Implement collecting text from textboxes and from ink
+        public async Task<List<RecognizedText>> CollectText() // TODO: Implement collecting text from textboxes and from ink
         {
-            //InkAnalyzer analyzer = new InkAnalyzer();
-            //analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
-            //InkAnalysisResult result = await analyzer.AnalyzeAsync();
+            List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
-            //if (result.Status != InkAnalysisStatus.Updated)
-            //    return;
+            if (!hasBeenModifiedSinceSave && recText.Count != 0)
+                goto alreadyAnalyzedInk;
 
-            //IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+            InkAnalyzer analyzer = new InkAnalyzer();
+            analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
+            InkAnalysisResult result = await analyzer.AnalyzeAsync();
+
+            IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+            foreach (IInkAnalysisNode word in words)
+            {
+                InkAnalysisInkWord inkWord = (InkAnalysisInkWord)word;
+                recognizedInk.Add(new RecognizedText(inkWord.RecognizedText, SimpleRect.FromRect(inkWord.BoundingRect)));
+            }
+
+        alreadyAnalyzedInk:
+
+            List<RecognizedText> textFromTextboxes = new List<RecognizedText>();
+            foreach (IOnPageItem item in onPageItems)
+            {
+                if (recText.Count == 0 || (item is OnPageText text && text.hasBeenModifiedSinceSave))
+                {
+                    text = (OnPageText)item;
+                    text.TextBox.Document.GetText(Windows.UI.Text.TextGetOptions.None, out string containedText);
+                    textFromTextboxes.Add(new RecognizedText(containedText, text.id));
+                }
+            }
+
+            if (recText.Count == 0)
+            {
+                recText = recognizedInk;
+                recText.Add(textFromTextboxes);
+                return recText;
+            }
+            else
+            {
+                bool shouldReplaceInkText = recText[0].textBoxId == -1;
+                if (shouldReplaceInkText)
+                {
+                    while (recText[0].textBoxId == -1)
+                        recText.RemoveAt(0);
+                }
+
+                foreach (RecognizedText oldText in recText)
+                    foreach (RecognizedText newText in textFromTextboxes)
+                        if (oldText.textBoxId == newText.textBoxId)
+                            oldText.text = newText.text;
+
+                if (shouldReplaceInkText)
+                    foreach (RecognizedText txt in recognizedInk)
+                        recText.Insert(0, txt);
+            }
+
+            return recognizedInk;
         }
 
         private void UpdateTemplateBackground()

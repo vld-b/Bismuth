@@ -34,7 +34,7 @@ namespace WID
         public NotebookPage containingPage { get; private set;  }
         public WriteableBitmap wbmp;
         private ScrollViewer pageContainer;
-        public bool isNewImage { get; private set; }
+        public bool isNewImage { get; set; }
 
         public EventHandler? ImageGotFocus;
         public EventHandler? ImageLostFocus;

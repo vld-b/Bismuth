@@ -3,16 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Services.Maps;
 
 namespace WID
 {
     internal static class NotebookUpgrader
     {
-        public static long latestVersion = 2L;
+        public static long latestVersion = 4L;
 
         public static NotebookConfig UpgradeToLastVersion(NotebookConfig config)
         {
-            return Upgrade1To2(config);
+            return Upgrade3To4(config);
+        }
+
+        private static NotebookConfig Upgrade3To4(NotebookConfig config)
+        {
+            if (config.configVersion < 3L)
+                config = Upgrade2To3(config);
+
+            return config;
+        }
+
+        private static NotebookConfig Upgrade2To3(NotebookConfig config)
+        {
+            if (config.configVersion < 2L)
+                config = Upgrade1To2(config);
+
+            foreach (PageConfig pageConf in config.pageMapping)
+                pageConf.containedText = new List<RecognizedText>();
+
+            return config;
         }
 
         private static NotebookConfig Upgrade1To2(NotebookConfig config)
