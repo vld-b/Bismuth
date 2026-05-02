@@ -341,6 +341,7 @@ namespace WID
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
+            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
 
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
@@ -360,6 +361,7 @@ namespace WID
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
             pendingDeletions.Remove(config!.pageMapping.Last().fileName);
+            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
             if (page.hasBg)
                 pendingDeletions.Remove(config!.pageMapping.Last().BgName);
             foreach (IOnPageItem onPageItem in page.onPageItems)
@@ -404,6 +406,7 @@ namespace WID
             // Remove background from pending deletions so it doesn't get deleted when it should be present
             pendingDeletions.Remove(config.pageMapping.Last().BgName);
             pendingDeletions.Remove(config.pageMapping.Last().fileName);
+            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
 
 
             BringIntoViewOptions options = new BringIntoViewOptions
@@ -471,7 +474,7 @@ namespace WID
                 // Remove background from pending deletions so it doesn't get deleted when it should be present
                 pendingDeletions.Remove(config.pageMapping.Last().BgName);
                 pendingDeletions.Remove(config.pageMapping.Last().fileName);
-
+                pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
             }
 
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
@@ -597,6 +600,7 @@ namespace WID
                         page,
                         svPageZoom
                         );
+                    onPageText.hasBeenModifiedSinceSave = true;
                     ZipArchiveEntry? textEntry = archive.GetEntry(text.FileName);
                     if (textEntry is not null)
                     {
@@ -793,6 +797,7 @@ namespace WID
 
             pendingDeletions.Add("page" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".gif");
             pendingDeletions.Add("bg" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".png");
+            pendingDeletions.Add("recText" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".json");
         }
 
         private async void OpenCameraForFileImport(object sender, RoutedEventArgs e)

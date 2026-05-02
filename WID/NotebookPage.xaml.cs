@@ -48,7 +48,7 @@ namespace WID
         public string inkFileName { get => "page" + (id == 0 ? "" : (" (" + id + ")")) + ".gif"; }
         public string bgFileName { get => "bg" + (id == 0 ? "" : (" (" + id + ")")) + ".png"; }
         public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
-        public List<RecognizedText> recText { get; set; } = new List<RecognizedText>();
+        public RecognizedTextCollection recTextCollection { get; set; } = new RecognizedTextCollection();
 
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -257,11 +257,11 @@ namespace WID
             cvManipulationRects.Children.Add(this.selectionRect);
         }
 
-        public async Task<List<RecognizedText>> CollectText() // TODO: Implement collecting text from textboxes and from ink
+        public async Task<RecognizedTextCollection> CollectText() // TODO: Implement collecting text from textboxes and from ink
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
-            if (!hasBeenModifiedSinceSave && recText.Count != 0)
+            if (!hasBeenModifiedSinceSave && recTextCollection.recText.Count != 0)
                 goto alreadyAnalyzedInk;
 
             InkAnalyzer analyzer = new InkAnalyzer();
@@ -280,7 +280,7 @@ namespace WID
             List<RecognizedText> textFromTextboxes = new List<RecognizedText>();
             foreach (IOnPageItem item in onPageItems)
             {
-                if (recText.Count == 0 || (item is OnPageText text && text.hasBeenModifiedSinceSave))
+                if (recTextCollection.recText.Count == 0 || (item is OnPageText text && text.hasBeenModifiedSinceSave))
                 {
                     text = (OnPageText)item;
                     text.TextBox.Document.GetText(Windows.UI.Text.TextGetOptions.None, out string containedText);
@@ -288,22 +288,22 @@ namespace WID
                 }
             }
 
-            if (recText.Count == 0)
+            if (recTextCollection.recText.Count == 0)
             {
-                recText = recognizedInk;
-                recText.Add(textFromTextboxes);
-                return recText;
+                recTextCollection.recText = recognizedInk;
+                recTextCollection.recText.Add(textFromTextboxes);
+                return recTextCollection;
             }
             else
             {
-                bool shouldReplaceInkText = (recText[0].textBoxId == -1) && recognizedInk.Count != 0;
+                bool shouldReplaceInkText = (recTextCollection.recText[0].textBoxId == -1) && recognizedInk.Count != 0;
                 if (shouldReplaceInkText)
-                    while (recText[0].textBoxId == -1)
-                        recText.RemoveAt(0);
+                    while (recTextCollection.recText[0].textBoxId == -1)
+                        recTextCollection.recText.RemoveAt(0);
 
-                for (int i = recText.Count - 1; i >= 0; --i)
+                for (int i = recTextCollection.recText.Count - 1; i >= 0; --i)
                 {
-                    RecognizedText oldText = recText[i];
+                    RecognizedText oldText = recTextCollection.recText[i];
                     if (oldText.textBoxId == -1) // means that there are no text boxes to save text from
                         break;
                     foreach (RecognizedText newText in textFromTextboxes)
@@ -316,14 +316,14 @@ namespace WID
                         }
                     }
                 }
-                recText.Add(textFromTextboxes);
+                recTextCollection.recText.Add(textFromTextboxes);
 
                 if (shouldReplaceInkText)
                     foreach (RecognizedText txt in recognizedInk)
-                        recText.Insert(0, txt);
+                        recTextCollection.recText.Insert(0, txt);
             }
 
-            return recText;
+            return recTextCollection;
         }
 
         private void UpdateTemplateBackground()
@@ -345,11 +345,11 @@ namespace WID
             if (item is OnPageText txt)
             {
                 contentCanvas.Children.Remove(txt);
-                for (int i = recText.Count - 1; i >= 0; --i)
+                for (int i = recTextCollection.recText.Count - 1; i >= 0; --i)
                 {
-                    if (recText[i].textBoxId == txt.id)
+                    if (recTextCollection.recText[i].textBoxId == txt.id)
                     {
-                        recText.RemoveAt(i);
+                        recTextCollection.recText.RemoveAt(i);
                         break;
                     }
                 }

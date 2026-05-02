@@ -98,8 +98,9 @@ namespace WID
             PageConfig currentConfig = new PageConfig(page.id, page.Width, page.Height, page.hasBg);
             currentConfig.pagePattern = page.currentPattern;
             currentConfig.hasTemplate = page.hasPattern;
-            currentConfig.containedText = await page.CollectText();
             pageMapping.Add(currentConfig);
+
+            bool anyTextBoxHasBeenModified = false;
 
             foreach (IOnPageItem onPageItem in page.onPageItems)
             {
@@ -107,6 +108,7 @@ namespace WID
                 {
                     if (txt.hasBeenModifiedSinceSave || isExporting)
                     {
+                        anyTextBoxHasBeenModified = true;
                         StorageFile rtfFile = await destFolder.CreateFileAsync("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf", CreationCollisionOption.ReplaceExisting);
                         using (IRandomAccessStream stream = await rtfFile.OpenAsync(FileAccessMode.ReadWrite))
                             txt.SaveToStream(stream);
@@ -164,6 +166,13 @@ namespace WID
                     img.isNewImage = false;
                 }
             }
+
+            if (page.hasBeenModifiedSinceSave || anyTextBoxHasBeenModified || !File.Exists(destFolder.Path + "\\" + "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json"))
+            {
+                await page.CollectText();
+                StorageFile containtedTextFile = await destFolder.CreateFileAsync("recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json", CreationCollisionOption.ReplaceExisting);
+                await page.recTextCollection.SerializeToFile(containtedTextFile);
+            }
         }
 
         public async Task<NotebookPage> LoadPage(
@@ -200,7 +209,11 @@ namespace WID
                     );
             }
 
-            page.recText = pageMapping[pageIndex].containedText;
+            string possibleRecTextFileName = "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json";
+            if (File.Exists(folder.Path + "\\" + possibleRecTextFileName))
+                page.recTextCollection = (await RecognizedTextCollection.DeserializeFile(await folder.GetFileAsync(possibleRecTextFileName)))!;
+            else
+                page.recTextCollection = new RecognizedTextCollection();
 
             foreach (TextData textData in pageMapping[pageIndex].textBoxes)
             {
@@ -380,7 +393,6 @@ namespace WID
         public bool hasBg { get; set; }
         public List<TextData> textBoxes { get; set; } = new List<TextData>();
         public List<ImageData> images { get; set; } = new List<ImageData>();
-        public List<RecognizedText> containedText { get; set; } = new List<RecognizedText>();
 
         public bool hasTemplate { get; set; }
         public PageTemplatePattern? pagePattern { get; set; }
@@ -404,7 +416,35 @@ namespace WID
 
         [JsonIgnore]
         public string BgName { get => "bg" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".png"; }
+
+        [JsonIgnore]
+        public string RecognizedTextFilename { get => "recText" + (this.id == 0 ? "" : (" (" + this.id + ")")) + ".json"; }
     }
+
+    public class RecognizedTextCollection
+    {
+        public List<RecognizedText> recText { get; set; } = new List<RecognizedText>();
+
+        public async Task SerializeToFile(StorageFile file)
+        {
+            using (Stream opStream = await file.OpenStreamForWriteAsync())
+                JsonSerializer.Serialize(opStream, this, RecognizedTextCollectionJsonContext.Default.RecognizedTextCollection);
+        }
+
+        public static RecognizedTextCollection? DeserializeStream(Stream stream)
+        {
+            return JsonSerializer.Deserialize(stream, RecognizedTextCollectionJsonContext.Default.RecognizedTextCollection);
+        }
+
+        public static async Task<RecognizedTextCollection?> DeserializeFile(StorageFile file)
+        {
+            using (Stream ipStream = await file.OpenStreamForReadAsync())
+                return DeserializeStream(ipStream);
+        }
+    }
+
+    [JsonSerializable(typeof(RecognizedTextCollection))]
+    internal partial class RecognizedTextCollectionJsonContext : JsonSerializerContext { }
 
     public class RecognizedText
     {

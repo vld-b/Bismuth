@@ -9,30 +9,17 @@ namespace WID
 {
     internal static class NotebookUpgrader
     {
-        public static long latestVersion = 4L;
+        public static long latestVersion = 3L;
 
         public static NotebookConfig UpgradeToLastVersion(NotebookConfig config)
         {
-            return Upgrade3To4(config);
-        }
-
-        private static NotebookConfig Upgrade3To4(NotebookConfig config)
-        {
-            if (config.configVersion < 3L)
-                config = Upgrade2To3(config);
-
-            config.configVersion = 4L;
-
-            return config;
+            return Upgrade2To3(config);
         }
 
         private static NotebookConfig Upgrade2To3(NotebookConfig config)
         {
             if (config.configVersion < 2L)
                 config = Upgrade1To2(config);
-
-            foreach (PageConfig pageConf in config.pageMapping)
-                pageConf.containedText = new List<RecognizedText>();
 
             config.configVersion = 3L;
 
