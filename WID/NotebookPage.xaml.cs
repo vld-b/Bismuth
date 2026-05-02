@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -295,24 +296,34 @@ namespace WID
             }
             else
             {
-                bool shouldReplaceInkText = recText[0].textBoxId == -1;
+                bool shouldReplaceInkText = (recText[0].textBoxId == -1) && recognizedInk.Count != 0;
                 if (shouldReplaceInkText)
-                {
                     while (recText[0].textBoxId == -1)
                         recText.RemoveAt(0);
-                }
 
-                foreach (RecognizedText oldText in recText)
+                for (int i = recText.Count - 1; i >= 0; --i)
+                {
+                    RecognizedText oldText = recText[i];
+                    if (oldText.textBoxId == -1) // means that there are no text boxes to save text from
+                        break;
                     foreach (RecognizedText newText in textFromTextboxes)
+                    {
                         if (oldText.textBoxId == newText.textBoxId)
+                        {
                             oldText.text = newText.text;
+                            textFromTextboxes.Remove(newText);
+                            break;
+                        }
+                    }
+                }
+                recText.Add(textFromTextboxes);
 
                 if (shouldReplaceInkText)
                     foreach (RecognizedText txt in recognizedInk)
                         recText.Insert(0, txt);
             }
 
-            return recognizedInk;
+            return recText;
         }
 
         private void UpdateTemplateBackground()
@@ -332,7 +343,17 @@ namespace WID
         {
             onPageItems.Remove(item);
             if (item is OnPageText txt)
+            {
                 contentCanvas.Children.Remove(txt);
+                for (int i = recText.Count - 1; i >= 0; --i)
+                {
+                    if (recText[i].textBoxId == txt.id)
+                    {
+                        recText.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
             else if (item is OnPageImage img)
                 contentCanvas.Children.Remove(img);
         }
