@@ -66,7 +66,7 @@ namespace WID
                 NotebookPage currentPage = new NotebookPage();
                 StorageFolder notebookDir = await ApplicationData.Current.LocalFolder.GetFolderAsync(notebook.itemName + ".notebook");
                 NotebookConfig? config;
-                config = await NotebookConfig.DeserializeFile(notebookDir);
+                config = NotebookUpgrader.UpgradeToLastVersion((await NotebookConfig.DeserializeFile(notebookDir))!);
 
                 await currentPage.LoadLastPageFromConfig(config!, notebookDir);
 
