@@ -30,7 +30,6 @@ namespace WID
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public StorageFolder notes = ApplicationData.Current.LocalFolder;
         public MainPage()
         {
             InitializeComponent();

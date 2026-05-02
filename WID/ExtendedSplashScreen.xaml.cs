@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.WinUI.Lottie;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using PdfSharpCore.Pdf.Filters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,8 +53,7 @@ namespace WID
                 if (folder.Name.EndsWith(".notebook"))
                 {
                     NotebookConfig config = NotebookUpgrader.UpgradeToLastVersion((await NotebookConfig.DeserializeFile(folder))!);
-                    string path = folder.Path[(ApplicationData.Current.LocalFolder.Path.Count()+1) .. (folder.Path.Length-9)];
-                    notebooks.Add(new SearchableNotebook(config, path));
+                    notebooks.Add(await SearchableNotebook.FromConfig(config, folder));
                 }else
                 {
                     notebooks.Add(await LoadSearchableNotebooks(folder));
@@ -67,7 +67,7 @@ namespace WID
         {
             LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder, Frame);
 
-            //await LoadSearchableNotebooks(ApplicationData.Current.LocalFolder);
+            noteData.searchableNotebooks.Add(await LoadSearchableNotebooks(ApplicationData.Current.LocalFolder));
 
             List<MenuElement> organizationFolders = new List<MenuElement>();
             List<MenuElement> notebookElements = new List<MenuElement>();
@@ -145,16 +145,14 @@ namespace WID
 
     public class LoadedNotebooks
     {
-        public List<NotebookData> notebooks { get; private set; }
-        public List<SearchableNotebook> searchableNotebooks { get; private set; }
+        public List<NotebookData> notebooks { get; private set; } = new List<NotebookData>();
+        public List<SearchableNotebook> searchableNotebooks { get; private set; } = new List<SearchableNotebook>();
         public StorageFolder notesFolder { get; private set; }
         public Frame mainFrame { get; private set; }
 
         public LoadedNotebooks(StorageFolder notesFolder, Frame mainFrame)
         {
             this.notesFolder = notesFolder;
-            notebooks = new List<NotebookData>();
-            searchableNotebooks = new List<SearchableNotebook>();
             this.mainFrame = mainFrame;
         }
     }
@@ -187,13 +185,44 @@ namespace WID
 
     public class SearchableNotebook
     {
-        public NotebookConfig config;
-        public string path;
+        public List<SearchableNotebookPage> pages;
+        public StorageFolder notebookFolder;
 
-        public SearchableNotebook(NotebookConfig config, string path)
+        public SearchableNotebook(List<SearchableNotebookPage> pages, StorageFolder notebookFolder)
         {
-            this.config = config;
-            this.path = path;
+            this.pages = pages;
+            this.notebookFolder = notebookFolder;
+        }
+
+        public static async Task<SearchableNotebook> FromConfig(NotebookConfig config, StorageFolder folder)
+        {
+            List<SearchableNotebookPage> pages = new List<SearchableNotebookPage>();
+
+            foreach (PageConfig pageConfig in config.pageMapping)
+            {
+                RecognizedTextCollection recTextCollection = new RecognizedTextCollection();
+
+                string possibleTextFileName = "recText" + (pageConfig.id == 0 ? "" : (" (" + pageConfig.id + ")")) + ".json";
+                if (File.Exists(folder.Path + "\\" + possibleTextFileName))
+                {
+                    recTextCollection = (await RecognizedTextCollection.DeserializeFile(await folder.GetFileAsync(possibleTextFileName)))!;
+                }
+                pages.Add(new SearchableNotebookPage(recTextCollection, pageConfig.id));
+            }
+
+            return new SearchableNotebook(pages, folder);
+        }
+    }
+
+    public class SearchableNotebookPage
+    {
+        public RecognizedTextCollection recTextCol;
+        public int pageId;
+
+        public SearchableNotebookPage(RecognizedTextCollection recTextCol, int pageId)
+        {
+            this.recTextCol = recTextCol;
+            this.pageId = pageId;
         }
     }
 }
