@@ -391,7 +391,8 @@ namespace WID
                 //ConnectedAnimationService.GetForCurrentView().PrepareToAnimate(new BasicConnectedAnimationConfiguration());
                 ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("OpenNotebook", origin).Configuration = new BasicConnectedAnimationConfiguration();
 
-                mainFrame!.Navigate(typeof(CanvasPage),
+                mainFrame!.Navigate(
+                    typeof(CanvasPage),
                     await notes.GetFolderAsync(item.itemName + ".notebook"),
                     new DrillInNavigationTransitionInfo()
                     );

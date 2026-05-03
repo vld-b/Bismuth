@@ -45,13 +45,14 @@
 
 
             <AutoSuggestBox
-                Visibility="Collapsed"
-                x:Name="SearchBox"
                 QueryIcon="Find"
                 PlaceholderText="Search notes"
-                Width="400"
+                Width="512"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                TextChanged="SearchNotebooks"
+                SuggestionChosen="SelectItem"
+                QuerySubmitted="NavigateToSelectedItem"
                 />
         </Grid>
         

@@ -63,6 +63,7 @@ namespace WID
     {
         private StorageFolder? file;
         private StorageFile? configFile;
+        private SearchNavigation? searchNav;
 
         private NotebookConfig? config;
 
@@ -83,7 +84,7 @@ namespace WID
         private Task? savingTask;
 
         private NotebookPage? currentPage;
-        private NotebookPage? lastPage;
+        private NotebookPage? pageToScrollTo;
         private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
         private InkDrawingAttributes attrs = new InkDrawingAttributes();
         private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
@@ -130,18 +131,56 @@ namespace WID
             tbAppTitle.Text = AppInfo.Current.DisplayInfo.DisplayName+": ";
         }
 
-        private void ScrollToLastPage(object? sender, object e)
+        private async void ScrollToLastPage(object? sender, object e)
         {
-            lastPage!.LayoutUpdated -= ScrollToLastPage;
+            if (pageToScrollTo is null)
+                return;
+            NotebookPage page = pageToScrollTo;
+            pageToScrollTo.LayoutUpdated -= ScrollToLastPage;
+            pageToScrollTo = null;
 
-            lastPage.StartBringIntoView(
-                new BringIntoViewOptions
+            if (searchNav is null)
+            {
+                page.StartBringIntoView(
+                    new BringIntoViewOptions
+                    {
+                        AnimationDesired = false,
+                        VerticalAlignmentRatio = 0d,
+                        HorizontalAlignmentRatio = .5d,
+                    }
+                    );
+            } else
+            {
+                foreach (NotebookPage p in spPageView.Children)
                 {
-                    AnimationDesired = false,
-                    VerticalAlignmentRatio = 0d,
-                    HorizontalAlignmentRatio = .5d,
-                });
-            lastPage = null;
+                    if (p.id == searchNav.pageId)
+                    {
+                        page = p;
+
+                        double verticalAlignmentRatio = 0d;
+                        if (searchNav!.recText.boudingBox is not null)
+                            verticalAlignmentRatio = searchNav!.recText.boudingBox.y / page.Height;
+                        else
+                        {
+                            foreach (IOnPageItem item in page.onPageItems)
+                                if (item is OnPageText text && text.id == searchNav!.recText.textBoxId)
+                                    verticalAlignmentRatio = text.Top / page.Height + .2d;
+                        }
+
+                        page.StartBringIntoView(
+                            new BringIntoViewOptions
+                            {
+                                AnimationDesired = false,
+                                VerticalAlignmentRatio = verticalAlignmentRatio,
+                                HorizontalAlignmentRatio = .5d,
+                            }
+                            );
+                        break;
+                    }
+                }
+                await Task.Delay(1000);
+                await page.HighlightText(searchNav.recText);
+            }
 
             finishedLoading = true;
         }
@@ -216,6 +255,9 @@ namespace WID
             await Utils.MovePending(pendingMoves, file);
             await Utils.RenamePending(pendingRenames);
 
+            int currentSearchableNotebookIndex = App.SearchableNotebooks.FindIndex(0, (sn) => { return Utils.GetNotebookPathFromFolder(file!) == Utils.GetNotebookPathFromFolder(sn.notebookFolder); });
+            App.SearchableNotebooks[currentSearchableNotebookIndex] = await SearchableNotebook.FromConfig(config, file);
+
             popup.Hide();
             await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
         }
@@ -247,7 +289,16 @@ namespace WID
         {
             base.OnNavigatedTo(e);
 
-            file = e.Parameter as StorageFolder;
+            bool customNavigationNeeded = false;
+            if (e.Parameter is SearchNavigation nav)
+            {
+                searchNav = nav;
+                file = nav.notebookFolder;
+                customNavigationNeeded = true;
+            }
+            else
+                file = (StorageFolder)e.Parameter;
+
             if (file is null)
                 return;
 
@@ -265,8 +316,14 @@ namespace WID
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
                     NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
-                    if (i == config!.pageMapping.Count - 1)
-                        lastPage = page;
+                    if (customNavigationNeeded && page.id == searchNav!.pageId)
+                    {
+                        page.LayoutUpdated += ScrollToLastPage;
+                        pageToScrollTo = page;
+                    }
+
+                    if (i == config!.pageMapping.Count - 1 && !customNavigationNeeded)
+                        pageToScrollTo = page;
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
@@ -299,9 +356,9 @@ namespace WID
             }
 
 
-            if (lastPage is not null)
+            if (pageToScrollTo is not null && !customNavigationNeeded)
             {
-                lastPage.LayoutUpdated += ScrollToLastPage;
+                pageToScrollTo.LayoutUpdated += ScrollToLastPage;
                 ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
                 if (anim is not null)
                 {

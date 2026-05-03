@@ -67,7 +67,7 @@ namespace WID
         {
             LoadedNotebooks noteData = new LoadedNotebooks(ApplicationData.Current.LocalFolder, Frame);
 
-            noteData.searchableNotebooks.Add(await LoadSearchableNotebooks(ApplicationData.Current.LocalFolder));
+            App.SearchableNotebooks = await LoadSearchableNotebooks(ApplicationData.Current.LocalFolder);
 
             List<MenuElement> organizationFolders = new List<MenuElement>();
             List<MenuElement> notebookElements = new List<MenuElement>();
@@ -146,7 +146,6 @@ namespace WID
     public class LoadedNotebooks
     {
         public List<NotebookData> notebooks { get; private set; } = new List<NotebookData>();
-        public List<SearchableNotebook> searchableNotebooks { get; private set; } = new List<SearchableNotebook>();
         public StorageFolder notesFolder { get; private set; }
         public Frame mainFrame { get; private set; }
 

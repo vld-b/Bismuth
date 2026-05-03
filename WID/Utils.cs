@@ -74,6 +74,11 @@ namespace WID
             return folder.DisplayName[..(folder.DisplayName.Length - 9)];
         }
 
+        public static string GetNotebookPathFromFolder(StorageFolder folder)
+        {
+            return folder.Path[(ApplicationData.Current.LocalFolder.Path.Length + 1)..(folder.Path.Length - 9)];
+        }
+
         public async static Task MovePending(List<StorageFile> items, StorageFolder folder)
         {
             foreach (StorageFile item in items)

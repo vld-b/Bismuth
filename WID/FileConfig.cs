@@ -83,6 +83,7 @@ namespace WID
 
         public async Task AddPageWhileSaving(NotebookPage page, StorageFolder destFolder, StorageFolder originFolder, bool isExporting)
         {
+            bool inkShouldBeSaved = page.hasBeenModifiedSinceSave;
             if (page.hasBeenModifiedSinceSave || isExporting)
             {
                 StorageFile pageFile = await destFolder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
@@ -167,7 +168,7 @@ namespace WID
                 }
             }
 
-            if (page.hasBeenModifiedSinceSave || anyTextBoxHasBeenModified || !File.Exists(destFolder.Path + "\\" + "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json"))
+            if (inkShouldBeSaved || anyTextBoxHasBeenModified || !File.Exists(destFolder.Path + "\\" + "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json"))
             {
                 await page.CollectText();
                 StorageFile containtedTextFile = await destFolder.CreateFileAsync("recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json", CreationCollisionOption.ReplaceExisting);

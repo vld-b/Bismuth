@@ -86,5 +86,73 @@ namespace WID
                 }
             }
         }
+
+        private void SearchNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (string.IsNullOrWhiteSpace(sender.Text))
+            {
+                sender.ItemsSource = null;
+                return;
+            }
+
+            if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+                return;
+
+            List<NotebookSearchResult> matches = new List<NotebookSearchResult>();
+            List<string> searches = sender.Text.Split(" ").ToList();
+            for (int i = 0; i < searches.Count; ++i)
+                searches[i] = searches[i].Trim().ToLower();
+
+            int currentPage = 0;
+            foreach (SearchableNotebook nb in App.SearchableNotebooks)
+            {
+                currentPage = 0;
+                foreach (SearchableNotebookPage page in nb.pages)
+                {
+                    ++currentPage;
+                    foreach (RecognizedText text in page.recTextCol.recText)
+                    {
+                        foreach (string str in searches)
+                            if (text.text.ToLower().Contains(str))
+                                matches.Add(new NotebookSearchResult(nb.notebookFolder, Utils.GetNotebookPathFromFolder(nb.notebookFolder), currentPage, page.pageId, text));
+                    }
+                }
+            }
+
+            sender.ItemsSource = matches;
+        }
+
+        private void SelectItem(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            NotebookSearchResult selItem = (NotebookSearchResult)args.SelectedItem;
+            sender.Text = selItem.notebookName;
+        }
+
+        private async void NavigateToSelectedItem(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            NotebookSearchResult selItem = (NotebookSearchResult)args.ChosenSuggestion;
+
+            SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, selItem.pageId, selItem.recText);
+
+            Frame.Navigate(
+                typeof(CanvasPage),
+                objectToPass,
+                new DrillInNavigationTransitionInfo()
+                );
+        }
+    }
+
+    public class SearchNavigation
+    {
+        public StorageFolder notebookFolder;
+        public int pageId;
+        public RecognizedText recText;
+
+        public SearchNavigation(StorageFolder notebookFolder, int pageId, RecognizedText recText)
+        {
+            this.notebookFolder = notebookFolder;
+            this.pageId = pageId;
+            this.recText = recText;
+        }
     }
 }

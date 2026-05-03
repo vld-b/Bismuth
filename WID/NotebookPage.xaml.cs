@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Printing;
+using Windows.Media.Core;
 using Windows.Security.EnterpriseData;
 using Windows.Storage;
 using Windows.Storage.Search;
@@ -20,6 +21,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Input.Inking.Analysis;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -257,15 +259,15 @@ namespace WID
             cvManipulationRects.Children.Add(this.selectionRect);
         }
 
-        public async Task<RecognizedTextCollection> CollectText() // TODO: Implement collecting text from textboxes and from ink
+        public async Task<RecognizedTextCollection> CollectText()
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
-            if (!hasBeenModifiedSinceSave && recTextCollection.recText.Count != 0)
-                goto alreadyAnalyzedInk;
-
             InkAnalyzer analyzer = new InkAnalyzer();
-            analyzer.AddDataForStrokes(canvas.InkPresenter.StrokeContainer.GetStrokes());
+            IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
+            analyzer.AddDataForStrokes(strokesToBeAnalyzed);
+            foreach (InkStroke stroke in strokesToBeAnalyzed)
+                analyzer.SetStrokeDataKind(stroke.Id, InkAnalysisStrokeKind.Writing);
             InkAnalysisResult result = await analyzer.AnalyzeAsync();
 
             IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
@@ -275,12 +277,10 @@ namespace WID
                 recognizedInk.Add(new RecognizedText(inkWord.RecognizedText, SimpleRect.FromRect(inkWord.BoundingRect)));
             }
 
-        alreadyAnalyzedInk:
-
             List<RecognizedText> textFromTextboxes = new List<RecognizedText>();
             foreach (IOnPageItem item in onPageItems)
             {
-                if (recTextCollection.recText.Count == 0 || (item is OnPageText text && text.hasBeenModifiedSinceSave))
+                if (item is OnPageText text)
                 {
                     text = (OnPageText)item;
                     text.TextBox.Document.GetText(Windows.UI.Text.TextGetOptions.None, out string containedText);
@@ -288,42 +288,60 @@ namespace WID
                 }
             }
 
-            if (recTextCollection.recText.Count == 0)
-            {
-                recTextCollection.recText = recognizedInk;
-                recTextCollection.recText.Add(textFromTextboxes);
-                return recTextCollection;
-            }
-            else
-            {
-                bool shouldReplaceInkText = (recTextCollection.recText[0].textBoxId == -1) && recognizedInk.Count != 0;
-                if (shouldReplaceInkText)
-                    while (recTextCollection.recText[0].textBoxId == -1)
-                        recTextCollection.recText.RemoveAt(0);
-
-                for (int i = recTextCollection.recText.Count - 1; i >= 0; --i)
-                {
-                    RecognizedText oldText = recTextCollection.recText[i];
-                    if (oldText.textBoxId == -1) // means that there are no text boxes to save text from
-                        break;
-                    foreach (RecognizedText newText in textFromTextboxes)
-                    {
-                        if (oldText.textBoxId == newText.textBoxId)
-                        {
-                            oldText.text = newText.text;
-                            textFromTextboxes.Remove(newText);
-                            break;
-                        }
-                    }
-                }
-                recTextCollection.recText.Add(textFromTextboxes);
-
-                if (shouldReplaceInkText)
-                    foreach (RecognizedText txt in recognizedInk)
-                        recTextCollection.recText.Insert(0, txt);
-            }
-
+            recTextCollection.recText = recognizedInk;
+            recTextCollection.recText.Add(textFromTextboxes);
             return recTextCollection;
+        }
+
+        public async Task HighlightText(RecognizedText recText)
+        {
+            if (recText.textBoxId == -1)
+            {
+                int opacityTransitionDuration = 500;
+                Rectangle drawingRect = new Rectangle
+                {
+                    IsHitTestVisible = false,
+                    Opacity = 0d,
+                    Fill = new SolidColorBrush(Colors.Yellow),
+                    OpacityTransition = new ScalarTransition { Duration = TimeSpan.FromMilliseconds(opacityTransitionDuration) },
+                    Width = recText.boudingBox!.width,
+                    Height = recText.boudingBox!.height,
+                };
+                Canvas.SetLeft(drawingRect, recText.boudingBox!.x);
+                Canvas.SetTop(drawingRect, recText.boudingBox!.y);
+
+                pageContent.Children.Add(drawingRect);
+                drawingRect.Opacity = 1d;
+                await Task.Delay(opacityTransitionDuration + 2000);
+                drawingRect.Opacity = 0d;
+                await Task.Delay(opacityTransitionDuration);
+                pageContent.Children.Remove(drawingRect);
+            } else
+            {
+                OnPageText? opT = null;
+                foreach (IOnPageItem item in pageContent.Children)
+                    if (item is OnPageText onPageText && onPageText.id == recText.textBoxId)
+                        opT = onPageText;
+
+                RichEditBox reb = opT!.TextBox;
+
+                Color highlightBg = (Color)App.Current.Resources["SystemColorHighlightColor"];
+                Color highlightFg = (Color)App.Current.Resources["SystemColorHighlightTextColor"];
+
+                ITextRange searchRange = reb.Document.GetRange(0, 0);
+                searchRange.FindText(recText.text, TextConstants.MaxUnitCount, FindOptions.None);
+                searchRange.CharacterFormat.BackgroundColor = highlightBg;
+                searchRange.CharacterFormat.ForegroundColor = highlightFg;
+
+                await Task.Delay(2000);
+
+                ITextRange docRange = reb.Document.GetRange(0, TextConstants.MaxUnitCount);
+                Color defaultBg = ((SolidColorBrush)reb.Background).Color;
+                Color defaultFg = ((SolidColorBrush)reb.Foreground).Color;
+
+                docRange.CharacterFormat.BackgroundColor = defaultBg;
+                docRange.CharacterFormat.ForegroundColor = defaultFg;
+            }
         }
 
         private void UpdateTemplateBackground()
