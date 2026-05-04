@@ -85,9 +85,10 @@ namespace WID
                 Canvas.SetTop(this, Math.Clamp(originalPos!.Value.Y + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y, 0, containingPage.Height - Height));
                 Canvas.SetLeft(this, Math.Clamp(originalPos!.Value.X + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X, 0, containingPage.Width - Width));
 
+                Matrix3x2 targetTranslation = Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this) - oldX, (float)Canvas.GetTop(this) - oldY));
                 foreach (MovedStroke movedStroke in selectedStrokes)
                 {
-                    movedStroke.stroke.PointTransform = movedStroke.oldTransform * Matrix3x2.CreateTranslation(new Vector2((float)Canvas.GetLeft(this) - oldX, (float)Canvas.GetTop(this) - oldY));
+                    movedStroke.stroke.PointTransform = movedStroke.oldTransform * targetTranslation;
                 }
             }
         }
