@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Input.Inking;
 
 namespace AppSettings
 {
@@ -12,7 +13,17 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade7To8(current);
+            return Upgrade8To9(current);
+        }
+
+        private static Settings Upgrade8To9(Settings current)
+        {
+            if (current.configVersion < 9)
+                current = Upgrade7To8(current);
+
+            current.configVersion = 9;
+
+            return current;
         }
 
         private static Settings Upgrade7To8(Settings current)
@@ -21,6 +32,15 @@ namespace AppSettings
                 current = Upgrade6To7(current);
 
             current.configVersion = 8;
+
+            foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
+            {
+                if (rec.Name.ToLower().Contains("english") && rec.Name.ToLower().Contains("uk"))
+                {
+                    current.defaultInkLanguage = rec.Name;
+                    break;
+                }
+            }
 
             return current;
         }

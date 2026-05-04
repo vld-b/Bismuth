@@ -263,6 +263,14 @@ namespace WID
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
+            //InkRecognizerContainer cont = new InkRecognizerContainer();
+            //IReadOnlyList<InkRecognitionResult> res = await cont.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+
+            //foreach (InkRecognitionResult r in res)
+            //{
+            //    Rect bounds = r.
+            //}
+
             InkAnalyzer analyzer = new InkAnalyzer();
             IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
             analyzer.AddDataForStrokes(strokesToBeAnalyzed);

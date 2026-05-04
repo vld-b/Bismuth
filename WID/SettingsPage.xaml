@@ -122,6 +122,28 @@
                         <x:String>Bottom right</x:String>
                     </ComboBox>
                 </StackPanel>
+
+                <StackPanel
+                    Style="{StaticResource SettingsPageOptionPanel}"
+                    >
+                    <TextBlock
+                        Text="Default language for ink recognition"
+                        Style="{StaticResource SettingsPageOption}"
+                        />
+
+                    <ComboBox
+                        x:Name="cbxDefaultInkLanguage"
+                        SelectionChanged="ChangeDefaultInkLanguage"
+                        Style="{StaticResource SettingsPageComboBox}"
+                        >
+                    </ComboBox>
+
+                    <Button
+                        Click="GetMoreInkLanguages"
+                        >
+                        Get more ink languages
+                    </Button>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

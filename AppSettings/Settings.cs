@@ -211,6 +211,21 @@ namespace AppSettings
             }
         }
 
+        private string _defaultInkLanguage;
+        public string defaultInkLanguage
+        {
+            get => _defaultInkLanguage;
+            set
+            {
+                if (_defaultInkLanguage != value)
+                {
+                    _defaultInkLanguage = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]

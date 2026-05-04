@@ -6,7 +6,9 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -52,6 +54,8 @@ namespace WID
             ["Bottom"] = InkToolbarPlacement.Bottom,
         };
 
+        private readonly List<string> inkLanguageRecognizers = new List<string>();
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -63,6 +67,11 @@ namespace WID
             cbxHomeScreenThumbnailSize.SelectedItem = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
             cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
             cbxInkToolbarPlacement.SelectedItem = inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
+
+            foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
+                inkLanguageRecognizers.Add(rec.Name);
+            cbxDefaultInkLanguage.ItemsSource = inkLanguageRecognizers;
+            cbxDefaultInkLanguage.SelectedItem = App.AppSettings.defaultInkLanguage;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -97,6 +106,16 @@ namespace WID
         private void ChangeInkToolbarPlacement(object sender, SelectionChangedEventArgs e)
         {
             App.AppSettings.inkToolbarPlacement = inkToolbarPlacement[(string)e.AddedItems[0]];
+        }
+
+        private void ChangeDefaultInkLanguage(object sender, SelectionChangedEventArgs e)
+        {
+            App.AppSettings.defaultInkLanguage = (string)e.AddedItems[0];
+        }
+
+        private async void GetMoreInkLanguages(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("ms-settings:regionlanguage"));
         }
     }
 }
