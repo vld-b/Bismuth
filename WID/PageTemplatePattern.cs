@@ -205,6 +205,22 @@ namespace WID
             _margin = margin;
         }
 
+        public PageTemplatePattern Clone()
+        {
+            PageTemplatePattern newTemp = new PageTemplatePattern(_type, _desSpacing);
+            newTemp._margin = new PageMarginReactive();
+            newTemp._margin.hasTop = _margin.hasTop;
+            newTemp._margin.hasBottom = _margin.hasBottom;
+            newTemp._margin.hasLeft = _margin.hasLeft;
+            newTemp._margin.hasRight = _margin.hasRight;
+            newTemp._margin.top = _margin.top;
+            newTemp._margin.bottom = _margin.bottom;
+            newTemp._margin.left = _margin.left;
+            newTemp._margin.right = _margin.right;
+
+            return newTemp;
+        }
+
         public void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             switch (_type) {

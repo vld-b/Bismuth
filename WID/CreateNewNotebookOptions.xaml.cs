@@ -53,8 +53,6 @@ namespace WID
         {
             UnassignMethods();
 
-            npTemplatePreview.currentPattern = new PageTemplatePattern();
-
             tbNotebookName.IsReadOnly = true;
             tbNotebookName.Text = Utils.GetNotebookNameFromFolder(containingFolder);
 
@@ -63,7 +61,7 @@ namespace WID
             else
                 cbxNotebookInkLanguage.SelectedItem = config.inkRecognizerLanguage;
 
-            chosenPattern = config.defaultTemplate.pattern;
+            chosenPattern = config.defaultTemplate.pattern?.Clone() ?? null;
             npTemplatePreview.currentPattern = chosenPattern;
 
             if (chosenPattern is null)
@@ -116,7 +114,7 @@ namespace WID
 
         public async Task UpdatePreviewTemplateBackground()
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, async () =>
             {
                 npTemplatePreview.UpdateTemplateBackground();
             });
@@ -170,15 +168,21 @@ namespace WID
                     return;
                 case "Lines":
                     tbSpacingLabel.Text = "Line spacing";
-                    chosenPattern = new PageTemplatePattern(PatternType.Lines, slTemplateSpacing.Value);
+                    if (chosenPattern is null)
+                        chosenPattern = new PageTemplatePattern(PatternType.Lines, slTemplateSpacing.Value);
+                    chosenPattern.type = PatternType.Lines;
                     break;
                 case "Grid":
                     tbSpacingLabel.Text = "Grid spacing";
-                    chosenPattern = new PageTemplatePattern(PatternType.Grid, slTemplateSpacing.Value);
+                    if (chosenPattern is null)
+                        chosenPattern = new PageTemplatePattern(PatternType.Grid, slTemplateSpacing.Value);
+                    chosenPattern.type = PatternType.Grid;
                     break;
                 case "Dots":
                     tbSpacingLabel.Text = "Dot spacing";
-                    chosenPattern = new PageTemplatePattern(PatternType.Dots, slTemplateSpacing.Value);
+                    if (chosenPattern is null)
+                        chosenPattern = new PageTemplatePattern(PatternType.Dots, slTemplateSpacing.Value);
+                    chosenPattern.type = PatternType.Dots;
                     break;
             }
             npTemplatePreview.currentPattern = chosenPattern;
