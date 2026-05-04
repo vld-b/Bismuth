@@ -21,12 +21,13 @@ namespace WID
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class NotebookSearchResult : Grid
+    public sealed partial class NotebookSearchResult : Grid, IComparable<NotebookSearchResult>
     {
         public StorageFolder notebookFolder { get; private set; }
         public string notebookName { get; private set; }
         public int pageId { get; private set; }
         public RecognizedText recText { get; private set; }
+        public int rating = 1;
         public NotebookSearchResult(StorageFolder notebookFolder, string notebookName, int notebookPage, int pageId, RecognizedText recText)
         {
             this.InitializeComponent();
@@ -37,6 +38,14 @@ namespace WID
             tbNotebookPage.Text = "page: " + notebookPage.ToString();
             this.pageId = pageId;
             this.recText = recText;
+        }
+
+        public int CompareTo(NotebookSearchResult? other)
+        {
+            if (other is null)
+                return 1;
+
+            return this.rating.CompareTo(other.rating);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AppSettings;
 using Shared;
+using SixLabors.ImageSharp.ColorSpaces;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -85,6 +86,7 @@ namespace WID
 
         private NotebookPage? currentPage;
         private NotebookPage? pageToScrollTo;
+        private OnPageText? textToScrollTo;
         private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
         private InkDrawingAttributes attrs = new InkDrawingAttributes();
         private CurrentlySelectedColors currentColors = new CurrentlySelectedColors();
@@ -164,7 +166,10 @@ namespace WID
                         {
                             foreach (IOnPageItem item in page.onPageItems)
                                 if (item is OnPageText text && text.id == searchNav!.recText.textBoxId)
+                                {
                                     verticalAlignmentRatio = text.Top / page.Height + .2d;
+                                    textToScrollTo = text;
+                                }
                         }
 
                         page.StartBringIntoView(
@@ -179,7 +184,7 @@ namespace WID
                     }
                 }
                 await Task.Delay(1000);
-                await page.HighlightText(searchNav.recText);
+                await page.HighlightText(searchNav.searchKeyword, searchNav.recText);
             }
 
             finishedLoading = true;
@@ -281,6 +286,14 @@ namespace WID
         private void PageBack(object sender, RoutedEventArgs e)
         {
             SaveFileSafe();
+            if (textToScrollTo is not null)
+            {
+                ITextRange docRange = textToScrollTo.TextBox.Document.GetRange(0, TextConstants.MaxUnitCount);
+                Color defaultBg = ((SolidColorBrush)textToScrollTo.TextBox.Background).Color;
+                Color defaultFg = ((SolidColorBrush)textToScrollTo.TextBox.Foreground).Color;
+                docRange.CharacterFormat.BackgroundColor = defaultBg;
+                docRange.CharacterFormat.ForegroundColor = defaultFg;
+            }
 
             if (Frame.CanGoBack)
                 Frame.GoBack();

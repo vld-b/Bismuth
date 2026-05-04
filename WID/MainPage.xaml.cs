@@ -30,6 +30,8 @@ namespace WID
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private string searchingFor = "";
+
         public MainPage()
         {
             InitializeComponent();
@@ -91,16 +93,18 @@ namespace WID
         {
             if (string.IsNullOrWhiteSpace(sender.Text))
             {
+                searchingFor = "";
                 sender.ItemsSource = null;
                 return;
             }
 
-            if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen || args.Reason == AutoSuggestionBoxTextChangeReason.ProgrammaticChange)
                 return;
 
+            searchingFor = sender.Text;
             List<NotebookSearchResult> matches = new List<NotebookSearchResult>();
-            List<string> searches = sender.Text.Split(" ").ToList();
-            for (int i = 0; i < searches.Count; ++i)
+            string[] searches = searchingFor.Split(" ");
+            for (int i = 0; i < searches.Length; ++i)
                 searches[i] = searches[i].Trim().ToLower();
 
             int currentPage = 0;
@@ -113,11 +117,25 @@ namespace WID
                     foreach (RecognizedText text in page.recTextCol.recText)
                     {
                         foreach (string str in searches)
-                            if (text.text.ToLower().Contains(str))
+                        {
+                            bool matchAlreadyExists = false;
+                            foreach (NotebookSearchResult match in matches)
+                            {
+                                if (match.notebookFolder.Path == nb.notebookFolder.Path && match.pageId == page.pageId)
+                                {
+                                    ++match.rating;
+                                    matchAlreadyExists = true;
+                                    break;
+                                }
+                            }
+                            if (text.text.ToLower().Contains(str) && !matchAlreadyExists)
                                 matches.Add(new NotebookSearchResult(nb.notebookFolder, Utils.GetNotebookPathFromFolder(nb.notebookFolder), currentPage, page.pageId, text));
+                        }
                     }
                 }
             }
+
+            matches.Sort();
 
             sender.ItemsSource = matches;
         }
@@ -132,7 +150,7 @@ namespace WID
         {
             NotebookSearchResult selItem = (NotebookSearchResult)args.ChosenSuggestion;
 
-            SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, selItem.pageId, selItem.recText);
+            SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, searchingFor, selItem.pageId, selItem.recText);
 
             Frame.Navigate(
                 typeof(CanvasPage),
@@ -145,12 +163,14 @@ namespace WID
     public class SearchNavigation
     {
         public StorageFolder notebookFolder;
+        public string searchKeyword;
         public int pageId;
         public RecognizedText recText;
 
-        public SearchNavigation(StorageFolder notebookFolder, int pageId, RecognizedText recText)
+        public SearchNavigation(StorageFolder notebookFolder, string searchKeyword, int pageId, RecognizedText recText)
         {
             this.notebookFolder = notebookFolder;
+            this.searchKeyword = searchKeyword;
             this.pageId = pageId;
             this.recText = recText;
         }

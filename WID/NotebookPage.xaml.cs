@@ -330,8 +330,10 @@ namespace WID
             return recTextCollection;
         }
 
-        public async Task HighlightText(RecognizedText recText)
+        public async Task HighlightText(string searchKeywords, RecognizedText recText)
         {
+            string[] words = searchKeywords.Split(' ');
+
             if (recText.textBoxId == -1)
             {
                 int opacityTransitionDuration = 500;
@@ -366,9 +368,14 @@ namespace WID
                 Color highlightFg = (Color)App.Current.Resources["SystemColorHighlightTextColor"];
 
                 ITextRange searchRange = reb.Document.GetRange(0, 0);
-                searchRange.FindText(recText.text, TextConstants.MaxUnitCount, FindOptions.None);
-                searchRange.CharacterFormat.BackgroundColor = highlightBg;
-                searchRange.CharacterFormat.ForegroundColor = highlightFg;
+                foreach (string str in words)
+                {
+                    while (searchRange.FindText(str, TextConstants.MaxUnitCount, FindOptions.None) > 0)
+                    {
+                        searchRange.CharacterFormat.BackgroundColor = highlightBg;
+                        searchRange.CharacterFormat.ForegroundColor = highlightFg;
+                    }
+                }
 
                 await Task.Delay(2000);
 
@@ -378,6 +385,8 @@ namespace WID
 
                 docRange.CharacterFormat.BackgroundColor = defaultBg;
                 docRange.CharacterFormat.ForegroundColor = defaultFg;
+
+                opT.hasBeenModifiedSinceSave = false;
             }
         }
 
