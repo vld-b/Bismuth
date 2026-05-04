@@ -233,26 +233,9 @@ namespace WID
                 await config!.AddPageWhileSaving(page, file, file, false);
             }
 
-            if (config is null) // This should never happen, because config is created in OnNavigatedTo if empty
-                config = new NotebookConfig( // Would most likely break config (or at least leave it inconsistent), because usableIDs is not being calculated
-                    1L,
-                    config!.pageMapping,
-                    spPageView.Children.Count-1,
-                    new List<int>(),
-                    new LastNotebookState(),
-                    -1,
-                    new List<int>(),
-                    new DefaultTemplate(null),
-                    -1,
-                    new List<int>(),
-                    null
-                    );
-            else
-            {
-                config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
-                config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
-                config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
-            }
+            config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
+            config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
+            config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             await config.SerializeToFile(configFile);
             if ((new FileInfo(configFile.Path)).Length == 0)
