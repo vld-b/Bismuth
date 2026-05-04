@@ -236,6 +236,7 @@ namespace WID
             config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
             config.lastNotebookState.horizScrollPos = svPageZoom.HorizontalOffset;
             config.lastNotebookState.zoomFactor = svPageZoom.ZoomFactor;
+
             configFile = await file.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             await config.SerializeToFile(configFile);
             if ((new FileInfo(configFile.Path)).Length == 0)
