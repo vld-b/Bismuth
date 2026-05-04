@@ -224,7 +224,7 @@ namespace WID
 
             ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
 
-            config!.pageMapping = new ObservableCollection<PageConfig>();
+            config!.pageMapping = new ObservableCollection<PageConfig>(new List<PageConfig>(spPageView.Children.Count));
 
             await Utils.CreatePending(pendingCreations, file);
 
