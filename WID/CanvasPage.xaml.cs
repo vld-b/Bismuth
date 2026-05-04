@@ -238,7 +238,8 @@ namespace WID
                     new List<int>(),
                     new DefaultTemplate(null),
                     -1,
-                    new List<int>()
+                    new List<int>(),
+                    null
                     );
             else
             {
@@ -347,7 +348,8 @@ namespace WID
                     new List<int>(),
                     new DefaultTemplate(null),
                     -1,
-                    new List<int>()
+                    new List<int>(),
+                    null
                     );
                 if (this.IsLoaded)
                     AddPage();

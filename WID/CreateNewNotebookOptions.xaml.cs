@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,10 +29,20 @@ namespace WID
         public string notebookName => tbNotebookName.Text;
 
         public PageTemplatePattern? chosenPattern;
+        public string? chosenInkLanguage = null;
+
+        private const string defaultInkLanguageOption = "Default setting";
+        private List<string> possibleInkLanguages = new List<string>();
 
         public CreateNewNotebookOptions()
         {
             this.InitializeComponent();
+
+            possibleInkLanguages.Add(defaultInkLanguageOption);
+            foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
+                possibleInkLanguages.Add(rec.Name);
+            cbxNotebookInkLanguage.ItemsSource = possibleInkLanguages;
+            cbxNotebookInkLanguage.SelectedIndex = 0;
         }
 
         private void ChoosePagePattern(object sender, SelectionChangedEventArgs e)
@@ -142,6 +153,15 @@ namespace WID
                     npTemplatePreview.currentPattern!.margin.bottom = newMargin;
                     break;
             }
+        }
+
+        private void ChooseInkLanguage(object sender, SelectionChangedEventArgs e)
+        {
+            string chosenItem = (string)e.AddedItems[0];
+            if (chosenItem == defaultInkLanguageOption)
+                chosenInkLanguage = null;
+            else
+                chosenInkLanguage = chosenItem;
         }
     }
 }

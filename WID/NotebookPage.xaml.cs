@@ -269,6 +269,21 @@ namespace WID
             cvManipulationRects.Children.Add(this.selectionRect);
         }
 
+        public void SetInkLanguage(string? lang)
+        {
+            if (lang is null)
+                return;
+
+            foreach (InkRecognizer rec in recContainer.GetRecognizers())
+            {
+                if (rec.Name == lang)
+                {
+                    recContainer.SetDefaultRecognizer(rec);
+                    break;
+                }
+            }
+        }
+
         public async Task<RecognizedTextCollection> CollectText()
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();

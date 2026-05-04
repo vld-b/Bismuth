@@ -164,7 +164,7 @@ namespace WID
                 StorageFolder newNotebook = await notes.CreateFolderAsync(options.notebookName + ".notebook", CreationCollisionOption.FailIfExists);
                 StorageFile file = await newNotebook.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
                 NotebookConfig config = new NotebookConfig(
-                    1L,
+                    NotebookUpgrader.latestVersion,
                     new System.Collections.ObjectModel.ObservableCollection<PageConfig>(),
                     -1,
                     new List<int>(),
@@ -173,7 +173,8 @@ namespace WID
                     new List<int>(),
                     new DefaultTemplate(options.chosenPattern),
                     -1,
-                    new List<int>()
+                    new List<int>(),
+                    options.chosenInkLanguage
                     );
                 await config.SerializeToFile(file);
                 await LoadNotebooks();

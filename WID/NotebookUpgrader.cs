@@ -9,11 +9,21 @@ namespace WID
 {
     internal static class NotebookUpgrader
     {
-        public static long latestVersion = 3L;
+        public static long latestVersion = 4L;
 
         public static NotebookConfig UpgradeToLastVersion(NotebookConfig config)
         {
-            return Upgrade2To3(config);
+            return Upgrade3To4(config);
+        }
+
+        public static NotebookConfig Upgrade3To4(NotebookConfig config)
+        {
+            if (config.configVersion < 3L)
+                config = Upgrade2To3(config);
+
+            config.configVersion = 4L;
+
+            return config;
         }
 
         private static NotebookConfig Upgrade2To3(NotebookConfig config)
@@ -22,6 +32,7 @@ namespace WID
                 config = Upgrade1To2(config);
 
             config.configVersion = 3L;
+            config.inkRecognizerLanguage = null;
 
             return config;
         }

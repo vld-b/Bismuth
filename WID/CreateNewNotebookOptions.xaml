@@ -18,9 +18,24 @@
 
         <TextBox
         x:Name="tbNotebookName"
-        Grid.Row="0"
         PlaceholderText="Enter name for new notebook"
         />
+
+        <StackPanel
+            Orientation="Vertical"
+            Spacing="10"
+            HorizontalAlignment="Stretch"
+            >
+            <TextBlock
+                Text="Ink recognizer language:"
+                />
+            <ComboBox
+                x:Name="cbxNotebookInkLanguage"
+                SelectionChanged="ChooseInkLanguage"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                />
+        </StackPanel>
 
         <StackPanel
             Spacing="10"

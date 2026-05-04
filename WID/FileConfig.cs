@@ -40,6 +40,7 @@ namespace WID
         public DefaultTemplate defaultTemplate { get; set; }
         public int maxImageID { get; set; }
         public List<int> usableImageIDs { get; set; }
+        public string? inkRecognizerLanguage { get; set; }
 
         public NotebookConfig()
         {
@@ -53,6 +54,7 @@ namespace WID
             this.defaultTemplate = new DefaultTemplate(null);
             this.maxImageID = -1;
             this.usableImageIDs = new List<int>();
+            inkRecognizerLanguage = null;
         }
 
         [JsonConstructor]
@@ -66,7 +68,8 @@ namespace WID
             List<int> usableTextIDs,
             DefaultTemplate defaultTemplate,
             int maxImageID,
-            List<int> usableImageIDs
+            List<int> usableImageIDs,
+            string? inkRecognizerLanguage
             )
         {
             this.configVersion = configVersion;
@@ -79,6 +82,7 @@ namespace WID
             this.defaultTemplate = defaultTemplate;
             this.maxImageID = maxImageID;
             this.usableImageIDs = usableImageIDs;
+            this.inkRecognizerLanguage = inkRecognizerLanguage;
         }
 
         public async Task AddPageWhileSaving(NotebookPage page, StorageFolder destFolder, StorageFolder originFolder, bool isExporting)
@@ -209,6 +213,8 @@ namespace WID
                     pageState
                     );
             }
+
+            page.SetInkLanguage(inkRecognizerLanguage);
 
             string possibleRecTextFileName = "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json";
             if (File.Exists(folder.Path + "\\" + possibleRecTextFileName))
