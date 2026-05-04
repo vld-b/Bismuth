@@ -31,7 +31,6 @@
                 />
             <ComboBox
                 x:Name="cbxNotebookInkLanguage"
-                SelectionChanged="ChooseInkLanguage"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 />
@@ -50,6 +49,7 @@
 
                 <local:NotebookPage
                     x:Name="npTemplatePreview"
+                    Loaded="UpdateTemplatePreview"
                     Width="2100"
                     Height="2970"
                     />
@@ -69,9 +69,9 @@
                     />
 
                 <ComboBox
+                    x:Name="cbxConfigPattern"
                     Header="Pattern"
                     PlaceholderText="Choose a pattern"
-                    SelectionChanged="ChoosePagePattern"
                     >
 
                     <x:String>Empty</x:String>
@@ -99,7 +99,6 @@
 
                     <Slider
                         x:Name="slTemplateSpacing"
-                        ValueChanged="TemplateSpacingChanged"
                         Width="170"
                         HorizontalAlignment="Left"
                         Value="120"
@@ -111,7 +110,7 @@
                         />
 
                     <muxc:ToggleSplitButton
-                        IsCheckedChanged="ToggleMargins"
+                        x:Name="tsbHasMargins"
                         Content="Margins"
                         >
                         <muxc:ToggleSplitButton.Flyout>
@@ -130,7 +129,6 @@
 
                                     <CheckBox
                                         x:Name="cbMarginTop"
-                                        Click="TemplateMarginToggled"
                                         Grid.Column="0"
                                         Grid.Row="0"
                                         Content="Top"
@@ -139,7 +137,6 @@
 
                                     <CheckBox
                                         x:Name="cbMarginBottom"
-                                        Click="TemplateMarginToggled"
                                         Grid.Column="0"
                                         Grid.Row="1"
                                         Content="Bottom"
@@ -148,7 +145,6 @@
 
                                     <CheckBox
                                         x:Name="cbMarginLeft"
-                                        Click="TemplateMarginToggled"
                                         Grid.Column="1"
                                         Grid.Row="0"
                                         Content="Left"
@@ -157,7 +153,6 @@
 
                                     <CheckBox
                                         x:Name="cbMarginRight"
-                                        Click="TemplateMarginToggled"
                                         Grid.Column="1"
                                         Grid.Row="1"
                                         Content="Right"
@@ -180,7 +175,6 @@
 
                         <Slider
                             x:Name="slSimpleMargins"
-                            ValueChanged="TemplateMarginsChanged"
                             Width="170"
                             Value="20"
                             StepFrequency="5"
@@ -208,7 +202,6 @@
                                     />
                                 <Slider
                                     x:Name="slMarginTop"
-                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -225,7 +218,6 @@
                                     />
                                 <Slider
                                     x:Name="slMarginBottom"
-                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -242,7 +234,6 @@
                                     />
                                 <Slider
                                     x:Name="slMarginLeft"
-                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"
@@ -259,7 +250,6 @@
                                     />
                                 <Slider
                                     x:Name="slMarginRight"
-                                    ValueChanged="TemplateMarginChanged"
                                     Value="20"
                                     StepFrequency="5"
                                     Minimum="5"

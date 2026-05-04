@@ -390,8 +390,11 @@ namespace WID
             }
         }
 
-        private void UpdateTemplateBackground()
+        public void UpdateTemplateBackground()
         {
+            if (_currPattern is null)
+                return;
+
             if (this.Children[0] is CanvasControl)
                 this.Children.RemoveAt(0);
             CanvasControl c = new CanvasControl

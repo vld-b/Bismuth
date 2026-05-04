@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -38,11 +40,120 @@ namespace WID
         {
             this.InitializeComponent();
 
+            AssignMethods();
+
             possibleInkLanguages.Add(defaultInkLanguageOption);
             foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
                 possibleInkLanguages.Add(rec.Name);
             cbxNotebookInkLanguage.ItemsSource = possibleInkLanguages;
             cbxNotebookInkLanguage.SelectedIndex = 0;
+        }
+
+        public void LoadFromConfig(NotebookConfig config, StorageFolder containingFolder)
+        {
+            UnassignMethods();
+
+            npTemplatePreview.currentPattern = new PageTemplatePattern();
+
+            tbNotebookName.IsReadOnly = true;
+            tbNotebookName.Text = Utils.GetNotebookNameFromFolder(containingFolder);
+
+            if (config.inkRecognizerLanguage is null)
+                cbxNotebookInkLanguage.SelectedItem = defaultInkLanguageOption;
+            else
+                cbxNotebookInkLanguage.SelectedItem = config.inkRecognizerLanguage;
+
+            chosenPattern = config.defaultTemplate.pattern;
+            npTemplatePreview.currentPattern = chosenPattern;
+
+            if (chosenPattern is null)
+                cbxConfigPattern.SelectedItem = "Empty";
+            else
+            {
+                switch (chosenPattern.type)
+                {
+                    case PatternType.Empty:
+                        cbxConfigPattern.SelectedItem = "Empty";
+                        break;
+                    case PatternType.Lines:
+                        cbxConfigPattern.SelectedItem = "Lines";
+                        spSpacingOptions.Opacity = 1d;
+                        spSpacingOptions.IsHitTestVisible = true;
+                        break;
+                    case PatternType.Grid:
+                        cbxConfigPattern.SelectedItem = "Grid";
+                        spSpacingOptions.Opacity = 1d;
+                        spSpacingOptions.IsHitTestVisible = true;
+                        break;
+                    case PatternType.Dots:
+                        cbxConfigPattern.SelectedItem = "Dots";
+                        spSpacingOptions.Opacity = 1d;
+                        spSpacingOptions.IsHitTestVisible = true;
+                        break;
+                }
+                slTemplateSpacing.Value = chosenPattern.desiredSpacing;
+
+                cbMarginTop.IsChecked = chosenPattern.margin.hasTop;
+                cbMarginBottom.IsChecked = chosenPattern.margin.hasBottom;
+                cbMarginLeft.IsChecked = chosenPattern.margin.hasLeft;
+                cbMarginRight.IsChecked = chosenPattern.margin.hasRight;
+
+                tsbHasMargins.IsChecked = (bool)cbMarginTop.IsChecked || (bool)cbMarginBottom.IsChecked || (bool)cbMarginLeft.IsChecked || (bool)cbMarginRight.IsChecked;
+                if (tsbHasMargins.IsChecked)
+                {
+                    spMarginOptions.Opacity = 1d;
+                    spMarginOptions.IsHitTestVisible = true;
+
+                    slMarginTop.Value = chosenPattern.margin.top * 100f;
+                    slMarginBottom.Value = chosenPattern.margin.bottom * 100f;
+                    slMarginLeft.Value = chosenPattern.margin.left * 100f;
+                    slMarginRight.Value = chosenPattern.margin.right * 100f;
+                }
+            }
+
+            AssignMethods();
+        }
+
+        public async Task UpdatePreviewTemplateBackground()
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+            {
+                npTemplatePreview.UpdateTemplateBackground();
+            });
+        }
+
+        private void AssignMethods()
+        {
+            cbxNotebookInkLanguage.SelectionChanged += ChooseInkLanguage;
+            cbxConfigPattern.SelectionChanged += ChoosePagePattern;
+            slTemplateSpacing.ValueChanged += TemplateSpacingChanged;
+            tsbHasMargins.IsCheckedChanged += ToggleMargins;
+            cbMarginTop.Click += TemplateMarginToggled;
+            cbMarginBottom.Click += TemplateMarginToggled;
+            cbMarginLeft.Click += TemplateMarginToggled;
+            cbMarginRight.Click += TemplateMarginToggled;
+            slSimpleMargins.ValueChanged += TemplateMarginsChanged;
+            slMarginTop.ValueChanged += TemplateMarginChanged;
+            slMarginBottom.ValueChanged += TemplateMarginChanged;
+            slMarginLeft.ValueChanged += TemplateMarginChanged;
+            slMarginRight.ValueChanged += TemplateMarginChanged;
+        }
+
+        private void UnassignMethods()
+        {
+            cbxNotebookInkLanguage.SelectionChanged -= ChooseInkLanguage;
+            cbxConfigPattern.SelectionChanged -= ChoosePagePattern;
+            slTemplateSpacing.ValueChanged -= TemplateSpacingChanged;
+            tsbHasMargins.IsCheckedChanged -= ToggleMargins;
+            cbMarginTop.Click -= TemplateMarginToggled;
+            cbMarginBottom.Click -= TemplateMarginToggled;
+            cbMarginLeft.Click -= TemplateMarginToggled;
+            cbMarginRight.Click -= TemplateMarginToggled;
+            slSimpleMargins.ValueChanged -= TemplateMarginsChanged;
+            slMarginTop.ValueChanged -= TemplateMarginChanged;
+            slMarginBottom.ValueChanged -= TemplateMarginChanged;
+            slMarginLeft.ValueChanged -= TemplateMarginChanged;
+            slMarginRight.ValueChanged -= TemplateMarginChanged;
         }
 
         private void ChoosePagePattern(object sender, SelectionChangedEventArgs e)
@@ -97,6 +208,14 @@ namespace WID
                 spMarginOptions.IsHitTestVisible = false;
             }
             npTemplatePreview.currentPattern!.margin = new PageMarginReactive(sender.IsChecked);
+
+            if (!sender.IsChecked)
+                return;
+
+            npTemplatePreview.currentPattern!.margin.hasTop = (bool)cbMarginTop.IsChecked!;
+            npTemplatePreview.currentPattern!.margin.hasBottom = (bool)cbMarginBottom.IsChecked!;
+            npTemplatePreview.currentPattern!.margin.hasLeft = (bool)cbMarginLeft.IsChecked!;
+            npTemplatePreview.currentPattern!.margin.hasRight = (bool)cbMarginRight.IsChecked!;
         }
 
         private void TemplateMarginsChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -162,6 +281,11 @@ namespace WID
                 chosenInkLanguage = null;
             else
                 chosenInkLanguage = chosenItem;
+        }
+
+        private async void UpdateTemplatePreview(object sender, RoutedEventArgs e)
+        {
+            await UpdatePreviewTemplateBackground();
         }
     }
 }

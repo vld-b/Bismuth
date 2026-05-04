@@ -98,6 +98,17 @@
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE105;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Text="File Settings"
+                            Click="OpenFileOptions"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="O" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE713;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
                         <MenuFlyoutSeparator />
                         <MenuFlyoutItem
                             Text="Paste object"

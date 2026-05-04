@@ -25,6 +25,7 @@ using Windows.ApplicationModel.Preview.Notes;
 using Windows.Data.Pdf;
 using Windows.Devices.Usb;
 using Windows.Devices.WiFiDirect;
+using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Globalization.Collation;
 using Windows.Graphics.Capture;
@@ -1912,6 +1913,30 @@ namespace WID
         private void SetInkToolbarStackpanelNormalWidth(object sender, RoutedEventArgs e)
         {
             inkStackpanelNormalWidth = spCustomInkToolbar.ActualWidth;
+        }
+
+        private async void OpenFileOptions(object sender, RoutedEventArgs e)
+        {
+            CreateNewNotebookOptions options = new CreateNewNotebookOptions();
+            options.LoadFromConfig(config!, file!);
+            //await options.UpdatePreviewTemplateBackground();
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Modify notebook settings",
+                Content = options,
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+
+            ContentDialogResult res = await dialog.ShowAsync();
+
+            if (res == ContentDialogResult.None)
+                return;
+
+            config!.inkRecognizerLanguage = options.chosenInkLanguage;
+            config!.defaultTemplate = new DefaultTemplate(options.chosenPattern);
         }
     }
 
