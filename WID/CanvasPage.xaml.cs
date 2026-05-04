@@ -263,7 +263,10 @@ namespace WID
             await Utils.RenamePending(pendingRenames);
 
             int currentSearchableNotebookIndex = App.SearchableNotebooks.FindIndex(0, (sn) => { return Utils.GetNotebookPathFromFolder(file!) == Utils.GetNotebookPathFromFolder(sn.notebookFolder); });
-            App.SearchableNotebooks[currentSearchableNotebookIndex] = await SearchableNotebook.FromConfig(config, file);
+            if (currentSearchableNotebookIndex == -1)
+                App.SearchableNotebooks.Add(await SearchableNotebook.FromConfig(config, file));
+            else
+                App.SearchableNotebooks[currentSearchableNotebookIndex] = await SearchableNotebook.FromConfig(config, file);
 
             popup.Hide();
             await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
