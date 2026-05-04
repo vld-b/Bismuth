@@ -82,17 +82,8 @@ namespace WID
 
                 Point oldMousePos = mousePos.Value;
 
-                Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, originalPos!.Value.Y + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y)));
-                Canvas.SetLeft(this, originalPos.Value.X + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X);
-
-                //if (oldY != Canvas.GetTop(this))
-                //{
-                //    mousePos = e.GetCurrentPoint(containingPage).Position;
-                //}
-                //else
-                //{
-                //    mousePos = new Point(e.GetCurrentPoint(containingPage).Position.X, mousePos.Value.Y);
-                //}
+                Canvas.SetTop(this, Math.Clamp(originalPos!.Value.Y + e.GetCurrentPoint(containingPage).Position.Y - mousePos.Value.Y, 0, containingPage.Height - Height));
+                Canvas.SetLeft(this, Math.Clamp(originalPos!.Value.X + e.GetCurrentPoint(containingPage).Position.X - mousePos.Value.X, 0, containingPage.Width - Width));
 
                 foreach (MovedStroke movedStroke in selectedStrokes)
                 {
