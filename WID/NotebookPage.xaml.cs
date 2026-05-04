@@ -51,6 +51,7 @@ namespace WID
         public string bgFileName { get => "bg" + (id == 0 ? "" : (" (" + id + ")")) + ".png"; }
         public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
         public RecognizedTextCollection recTextCollection { get; set; } = new RecognizedTextCollection();
+        InkRecognizerContainer recContainer = new InkRecognizerContainer();
 
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -142,6 +143,15 @@ namespace WID
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StartedDrawingInk;
             inkCanvas.InkPresenter.StrokesErased += DeletedStrokes;
             currentPattern = null;
+
+            foreach (InkRecognizer rec in recContainer.GetRecognizers())
+            {
+                if (rec.Name == App.AppSettings.defaultInkLanguage)
+                {
+                    recContainer.SetDefaultRecognizer(rec);
+                    break;
+                }
+            }
 
             this.Unloaded += (s, e) => templateCanvas = null;
             inkPres.UnprocessedInput.PointerPressed += StartLasso;
@@ -263,27 +273,31 @@ namespace WID
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
-            //InkRecognizerContainer cont = new InkRecognizerContainer();
-            //IReadOnlyList<InkRecognitionResult> res = await cont.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+            if (canvas.InkPresenter.StrokeContainer.GetStrokes().Count == 0)
+                goto afterInkAnalysis;
 
-            //foreach (InkRecognitionResult r in res)
+            IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+
+            foreach (InkRecognitionResult r in res)
+            {
+                recognizedInk.Add(new RecognizedText(r.GetTextCandidates()[0], SimpleRect.FromRect(r.BoundingRect)));
+            }
+
+            //InkAnalyzer analyzer = new InkAnalyzer();
+            //IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
+            //analyzer.AddDataForStrokes(strokesToBeAnalyzed);
+            //foreach (InkStroke stroke in strokesToBeAnalyzed)
+            //    analyzer.SetStrokeDataKind(stroke.Id, InkAnalysisStrokeKind.Writing);
+            //InkAnalysisResult result = await analyzer.AnalyzeAsync();
+
+            //IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+            //foreach (IInkAnalysisNode word in words)
             //{
-            //    Rect bounds = r.
+            //    InkAnalysisInkWord inkWord = (InkAnalysisInkWord)word;
+            //    recognizedInk.Add(new RecognizedText(inkWord.RecognizedText, SimpleRect.FromRect(inkWord.BoundingRect)));
             //}
 
-            InkAnalyzer analyzer = new InkAnalyzer();
-            IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
-            analyzer.AddDataForStrokes(strokesToBeAnalyzed);
-            foreach (InkStroke stroke in strokesToBeAnalyzed)
-                analyzer.SetStrokeDataKind(stroke.Id, InkAnalysisStrokeKind.Writing);
-            InkAnalysisResult result = await analyzer.AnalyzeAsync();
-
-            IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
-            foreach (IInkAnalysisNode word in words)
-            {
-                InkAnalysisInkWord inkWord = (InkAnalysisInkWord)word;
-                recognizedInk.Add(new RecognizedText(inkWord.RecognizedText, SimpleRect.FromRect(inkWord.BoundingRect)));
-            }
+        afterInkAnalysis:
 
             List<RecognizedText> textFromTextboxes = new List<RecognizedText>();
             foreach (IOnPageItem item in onPageItems)
