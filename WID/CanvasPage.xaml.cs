@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
@@ -93,6 +94,10 @@ namespace WID
         private double inkStackpanelNormalWidth;
         private double inkToolbarNormalHorzontalOffset;
 
+        private Task periodicalSavingTask;
+        private CancellationTokenSource periodicalSavingTaskCancellationToken;
+        private Microsoft.UI.Xaml.Controls.ProgressBar? savingBar;
+
         public CanvasPage()
         {
             InitializeComponent();
@@ -123,6 +128,9 @@ namespace WID
                 Color = App.AppSettings.drawingColors[currentColors.drawing],
                 Size = new Windows.Foundation.Size(App.AppSettings.tipSize, App.AppSettings.tipSize),
             };
+
+            periodicalSavingTaskCancellationToken = new CancellationTokenSource();
+            periodicalSavingTask = SaveFilePeriodically(periodicalSavingTaskCancellationToken.Token);
         }
 
         private void SetTitlebar()
@@ -190,14 +198,31 @@ namespace WID
 
         private void ShowFileStatus()
         {
-            tbAppTitle.Visibility = Visibility.Collapsed;
+            spFileInfo.Visibility = Visibility.Collapsed;
             pbFileStatus.Visibility = Visibility.Visible;
         }
 
         private void HideFileStatus()
         {
-            tbAppTitle.Visibility = Visibility.Visible;
+            spFileInfo.Visibility = Visibility.Visible;
             pbFileStatus.Visibility = Visibility.Collapsed;
+        }
+
+        private async Task SaveFilePeriodically(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(10000, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+                if (!cancellationToken.IsCancellationRequested)
+                    await SaveFileSilent();
+            }
         }
 
         private async void SaveFile(object sender, RoutedEventArgs e)
@@ -205,22 +230,53 @@ namespace WID
             await SaveFileSafe();
         }
 
+        private async Task HaltPeriodicSave()
+        {
+            periodicalSavingTaskCancellationToken.Cancel();
+            await periodicalSavingTask;
+            periodicalSavingTaskCancellationToken.Dispose();
+        }
+
+        private void ResumePeriodicSave()
+        {
+            periodicalSavingTaskCancellationToken.Dispose();
+            periodicalSavingTaskCancellationToken = new CancellationTokenSource(); // Resume periodical saving
+            periodicalSavingTask = SaveFilePeriodically(periodicalSavingTaskCancellationToken.Token);
+        }
+
         private async Task SaveFileSafe()
         {
             if (savingTask == null && finishedLoading)
             {
+                await HaltPeriodicSave(); // Make sure previous save is finished or cancelled the wait
+
                 savingTask = SaveFileWithDialog();
                 await savingTask;
                 savingTask = null;
+
+                ResumePeriodicSave();
             }
         }
 
         private async Task SaveFileWithDialog()
         {
+            ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
+            savingBar = (Microsoft.UI.Xaml.Controls.ProgressBar)popup.Content;
+
+            await SaveFileSilent();
+
+            savingBar = null;
+            popup.Hide();
+            _ = Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
+        }
+
+        private async Task SaveFileSilent()
+        {
             if (file is null || configFile is null)
                 return;
 
-            ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
+            prSilentSave.IsActive = true;
+            prSilentSave.Visibility = Visibility.Visible;
 
             pending.Lock();
 
@@ -228,9 +284,18 @@ namespace WID
 
             await pending.ApplyPendingFileOperations();
 
+            if (savingBar is not null)
+            {
+                savingBar.Minimum = 0.0d;
+                savingBar.Maximum = spPageView.Children.Count;
+                savingBar.Value = 0.0d;
+            }
+
             foreach (NotebookPage page in spPageView.Children)
             {
                 await config!.AddPageWhileSaving(page, file, file, false);
+                if (savingBar is not null)
+                    savingBar.Value += 1.0d;
             }
 
             config.lastNotebookState.vertScrollPos = svPageZoom.VerticalOffset;
@@ -250,8 +315,8 @@ namespace WID
 
             pending.Unlock();
 
-            popup.Hide();
-            _ = Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
+            prSilentSave.IsActive = false;
+            prSilentSave.Visibility = Visibility.Collapsed;
         }
 
         private void UndoLastAction(object sender, RoutedEventArgs e)
@@ -271,7 +336,11 @@ namespace WID
 
         private async void PageBack(object sender, RoutedEventArgs e)
         {
-            await SaveFileSafe();
+            if (finishedLoading)
+            {
+                await SaveFileSafe();
+            }
+            await HaltPeriodicSave();
             if (textToScrollTo is not null)
             {
                 ITextRange docRange = textToScrollTo.TextBox.Document.GetRange(0, TextConstants.MaxUnitCount);
@@ -353,9 +422,9 @@ namespace WID
                     null
                     );
                 if (this.IsLoaded)
-                    AddPage();
+                    await AddPage();
                 else
-                    this.Loaded += (s, e) => AddPage();
+                    this.Loaded += async (s, e) => await AddPage();
             }
 
 
@@ -376,13 +445,15 @@ namespace WID
             undoRedoSystem.FlushStacks();
         }
 
-        private void AddPageClicked(object sender, RoutedEventArgs e)
+        private async void AddPageClicked(object sender, RoutedEventArgs e)
         {
-            AddPage();
+            await AddPage();
         }
 
-        private void AddPage()
+        private async Task AddPage()
         {
+            await HaltPeriodicSave();
+
             NotebookPage page = new NotebookPage(
                 config!.GetNewPageID(),
                 2100,
@@ -412,10 +483,14 @@ namespace WID
                 HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
+
+            ResumePeriodicSave();
         }
 
-        private void AddPage(NotebookPage page)
+        private async Task AddPage(NotebookPage page)
         {
+            await HaltPeriodicSave();
+
             undoRedoSystem.RegisterPageToSystem(page, spPageView);
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
             page.hasBeenModifiedSinceSave = true;
@@ -439,10 +514,14 @@ namespace WID
                 HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
+
+            ResumePeriodicSave();
         }
 
         private async Task AddPage(StorageFile bg)
         {
+            await HaltPeriodicSave();
+
             // Make a safe copy of the background; in case user deletes the original file, pendingMoves and pendingRenames would not work; this fixes that
             StorageFile safeBgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("bg", CreationCollisionOption.GenerateUniqueName);
             await bg.CopyAndReplaceAsync(safeBgFile);
@@ -476,11 +555,20 @@ namespace WID
                 HorizontalAlignmentRatio = .5d,
             };
             page.StartBringIntoView(options);
+
+            ResumePeriodicSave();
         }
 
         private async Task AddPage(PdfDocument bg)
         {
+            await HaltPeriodicSave();
+
             ContentDialog popup = Utils.ShowLoadingPopup("Importing PDF");
+            Microsoft.UI.Xaml.Controls.ProgressBar progress = (Microsoft.UI.Xaml.Controls.ProgressBar)popup.Content;
+            progress.IsIndeterminate = false;
+            progress.Minimum = 0.0d;
+            progress.Maximum = (double)bg.PageCount;
+            progress.Value = 0.0d;
 
             List<NotebookPage> addedPages = new List<NotebookPage>();
 
@@ -512,7 +600,7 @@ namespace WID
 
                     config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
-                    if (!System.IO.File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.pageMapping.Last().BgName))
+                    if (!File.Exists(ApplicationData.Current.TemporaryFolder.Path + "\\" + config.pageMapping.Last().BgName))
                         bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName);
                     else
                         bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName, CreationCollisionOption.ReplaceExisting);
@@ -535,6 +623,8 @@ namespace WID
                 pending.RemovePendingDeletions(config.pageMapping.Last().BgName);
                 pending.RemovePendingDeletions(config.pageMapping.Last().fileName);
                 pending.RemovePendingDeletions(config!.pageMapping.Last().RecognizedTextFilename);
+
+                progress.Value += 1.0d;
             }
 
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
@@ -547,10 +637,14 @@ namespace WID
             };
             spPageView.Children.Last().StartBringIntoView(options);
             popup.Hide();
+
+            ResumePeriodicSave();
         }
 
         private async Task ImportBismuth(StorageFile bismuthFile)
         {
+            await HaltPeriodicSave();
+
             ContentDialog popup = Utils.ShowLoadingPopup("Importing Bismuth file");
 
             using ZipArchive archive = new ZipArchive(await bismuthFile.OpenStreamForReadAsync(), ZipArchiveMode.Read);
@@ -717,11 +811,13 @@ namespace WID
                     onPageImage.ImageLostFocus += UnfocusedOnPageItem;
                 }
 
-                AddPage(page);
+                await AddPage(page);
             }
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
 
             popup.Hide();
+
+            ResumePeriodicSave();
         }
 
         private void OpenPageOverview(object sender, RoutedEventArgs e)

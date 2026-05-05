@@ -35,12 +35,24 @@
             Width="Auto"
             Height="36"
              >
-            <TextBlock
-                x:Name="tbAppTitle"
-                FontFamily="Segoe UI Variable"
+            <StackPanel
+                x:Name="spFileInfo"
+                Orientation="Horizontal"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                />
+                >
+                <TextBlock
+                    x:Name="tbAppTitle"
+                    FontFamily="Segoe UI Variable"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    />
+                <muxc:ProgressRing
+                    x:Name="prSilentSave"
+                    IsActive="False"
+                    Visibility="Collapsed"
+                    />
+            </StackPanel>
             <muxc:ProgressBar
                 x:Name="pbFileStatus"
                 HorizontalAlignment="Center"
