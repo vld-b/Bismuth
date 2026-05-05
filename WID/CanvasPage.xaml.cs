@@ -272,7 +272,7 @@ namespace WID
 
         private async Task SaveFileSilent()
         {
-            if (file is null || configFile is null)
+            if (file is null || configFile is null || !finishedLoading)
                 return;
 
             prSilentSave.IsActive = true;
