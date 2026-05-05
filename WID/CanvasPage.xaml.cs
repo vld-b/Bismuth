@@ -225,7 +225,7 @@ namespace WID
 
             config!.pageMapping = new ObservableCollection<PageConfig>(new List<PageConfig>(spPageView.Children.Count));
 
-            await pending.CreatePending();
+            await pending.ApplyPendingFileOperations();
 
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -240,8 +240,6 @@ namespace WID
             await config.SerializeToFile(configFile);
             if ((new FileInfo(configFile.Path)).Length == 0)
                 Debugger.Break();
-
-            await pending.ExecuteRestPending();
 
             int currentSearchableNotebookIndex = App.SearchableNotebooks.FindIndex(0, (sn) => { return Utils.GetNotebookPathFromFolder(file!) == Utils.GetNotebookPathFromFolder(sn.notebookFolder); });
             if (currentSearchableNotebookIndex == -1)

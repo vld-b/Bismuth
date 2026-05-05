@@ -33,22 +33,15 @@ namespace WID
             this.notebookFolder = notebookFolder;
         }
 
-        public async Task CreatePending()
+        public async Task ApplyPendingFileOperations()
         {
             if (!isLocked)
                 Unlock(); // Make sure Locked list items are in unlocked lists
 
             await Utils.CreatePending(pendingCreations, notebookFolder);
-        }
-
-        public async Task ExecuteRestPending()
-        {
-            if (!isLocked)
-                Unlock(); // Make sure locked list items are in unlocked lists
-
-            await Utils.DeletePending(pendingDeletions, notebookFolder);
             await Utils.MovePending(pendingMoves, notebookFolder);
             await Utils.RenamePending(pendingRenames);
+            await Utils.DeletePending(pendingDeletions, notebookFolder);
         }
 
         public void AddPendingCreations(string item)
@@ -88,7 +81,7 @@ namespace WID
             if (isLocked)
                 pendingCreationsDeletions.Add(item);
             else
-                pendingCreations.Remove(item);
+                pendingCreations.RemoveAll((s) => { return s == item; });
         }
 
         public void RemovePendingDeletions(string item)
@@ -96,7 +89,7 @@ namespace WID
             if (isLocked)
                 pendingDeletionsDeletions.Add(item);
             else
-                pendingDeletions.Remove(item);
+                pendingDeletions.RemoveAll((s) => { return s == item; });
         }
 
         public void RemovePendingMoves(StorageFile item)
@@ -127,12 +120,12 @@ namespace WID
             pendingCreations.Add(pendingCreationsLocked);
             pendingCreationsLocked.Clear();
             while (pendingCreationsDeletions.Count > 0)
-                pendingCreations.Remove(pendingCreationsDeletions.Pop(0));
+                pendingCreations.RemoveAll((s) => { return s == pendingCreationsDeletions.Pop(0); });
 
             pendingDeletions.Add(pendingDeletionsLocked);
             pendingDeletionsLocked.Clear();
             while (pendingDeletionsDeletions.Count > 0)
-                pendingDeletions.Remove(pendingDeletionsDeletions.Pop(0));
+                pendingDeletions.RemoveAll((s) => { return s == pendingDeletionsDeletions.Pop(0); });
 
             pendingMoves.Add(pendingMovesLocked);
             pendingMovesLocked.Clear();
@@ -142,7 +135,7 @@ namespace WID
             pendingRenames.Add(pendingRenamesLocked);
             pendingRenamesLocked.Clear();
             while (pendingRenamesDeletions.Count > 0)
-                pendingRenames.Remove(pendingRenamesDeletions.Pop(0));
+                pendingRenames.RemoveAll((s) => { return s.to == pendingRenamesDeletions.Pop(0).to; });
         }
     }
 }
