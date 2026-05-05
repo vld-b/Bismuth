@@ -246,7 +246,7 @@ namespace WID
 
         private async Task SaveFileSafe()
         {
-            if (savingTask == null && finishedLoading)
+            if (savingTask == null)
             {
                 await HaltPeriodicSave(); // Make sure previous save is finished or cancelled the wait
 
@@ -336,10 +336,7 @@ namespace WID
 
         private async void PageBack(object sender, RoutedEventArgs e)
         {
-            if (finishedLoading)
-            {
-                await SaveFileSafe();
-            }
+            await SaveFileSafe();
             await HaltPeriodicSave();
             if (textToScrollTo is not null)
             {
