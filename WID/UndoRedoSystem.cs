@@ -20,10 +20,8 @@ namespace WID
         protected readonly List<Control> redoBtns = new List<Control>();
 
         public NotebookConfig? notebookConfig;
-        public List<string> pendingCreations { get; private set; } = new List<string>();
-        public List<string> pendingDeletions { get; private set; } = new List<string>();
-        public List<StorageFile> pendingMoves { get; private set; } = new List<StorageFile>();
-        public List<RenameItem> pendingRenames { get; private set; } = new List<RenameItem>();
+
+        public PendingFileOperationsSystem pending { get; private set; } = new PendingFileOperationsSystem(ApplicationData.Current.LocalFolder);
 
         public UndoRedoSystem()
         {
@@ -62,12 +60,9 @@ namespace WID
                 ctrl.IsEnabled = state;
         }
 
-        public void BindPendingFileOperationsList(List<string> pendingCreations, List<string> pendingDeletions, List<StorageFile> pendingMoves, List<RenameItem> pendingRenames)
+        public void BindPendingFileOperationsSystem(PendingFileOperationsSystem pending)
         {
-            this.pendingCreations = pendingCreations;
-            this.pendingDeletions = pendingDeletions;
-            this.pendingMoves = pendingMoves;
-            this.pendingRenames = pendingRenames;
+            this.pending = pending;
         }
 
         public void RegisterPageToSystem(NotebookPage page, Panel parent)

@@ -299,8 +299,8 @@ namespace WID
         public override void Undo()
         {
             parentPage.RemoveOnPageItemFromPage(el);
-            containingSystem.pendingCreations.Remove(el.FileName);
-            containingSystem.pendingDeletions.Add(el.FileName);
+            containingSystem.pending.RemovePendingCreations(el.FileName);
+            containingSystem.pending.AddPendingDeletions(el.FileName);
             if (el is OnPageText txt)
                 containingSystem.notebookConfig!.DeleteTextWithId(txt.id);
             else if (el is OnPageImage img)
@@ -310,8 +310,8 @@ namespace WID
         public override void Redo()
         {
             parentPage.AddOnPageItemToPage(el);
-            containingSystem.pendingCreations.Add(el.FileName);
-            containingSystem.pendingDeletions.Remove(el.FileName);
+            containingSystem.pending.AddPendingCreations(el.FileName);
+            containingSystem.pending.RemovePendingDeletions(el.FileName);
             // On redoing, the id's don't have to be reassigned because IOnPageItem would receive the same id. config file has to be notified anyway
             if (el is OnPageText txt)
                 containingSystem.notebookConfig!.GetNewTextID();

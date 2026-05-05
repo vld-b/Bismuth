@@ -73,10 +73,7 @@ namespace WID
 
         private UndoRedoSystem undoRedoSystem = new UndoRedoSystem();
 
-        private List<string> pendingCreations = new List<string>();
-        private List<string> pendingDeletions = new List<string>();
-        private List<StorageFile> pendingMoves = new List<StorageFile>();
-        private List<RenameItem> pendingRenames = new List<RenameItem>();
+        private PendingFileOperationsSystem pending = new PendingFileOperationsSystem(ApplicationData.Current.LocalFolder);
 
         private OnPageText? lastEditedText;
         private OnPageImage? lastEditedImage;
@@ -110,7 +107,7 @@ namespace WID
             undoRedoSystem.RegisterRedoButton(btRedo);
             undoRedoSystem.RegisterRedoButton(btFloatRedo);
 
-            undoRedoSystem.BindPendingFileOperationsList(pendingCreations, pendingDeletions, pendingMoves, pendingRenames);
+            undoRedoSystem.BindPendingFileOperationsSystem(pending);
 
             btInkTool.isSelected = true;
             btInkTool.Foreground = new SolidColorBrush(App.AppSettings.drawingColors[0]);
@@ -224,9 +221,11 @@ namespace WID
 
             ContentDialog popup = Utils.ShowLoadingPopup("Saving file...");
 
+            pending.Lock();
+
             config!.pageMapping = new ObservableCollection<PageConfig>(new List<PageConfig>(spPageView.Children.Count));
 
-            await Utils.CreatePending(pendingCreations, file);
+            await pending.CreatePending();
 
             foreach (NotebookPage page in spPageView.Children)
             {
@@ -242,15 +241,15 @@ namespace WID
             if ((new FileInfo(configFile.Path)).Length == 0)
                 Debugger.Break();
 
-            await Utils.DeletePending(pendingDeletions, file);
-            await Utils.MovePending(pendingMoves, file);
-            await Utils.RenamePending(pendingRenames);
+            await pending.ExecuteRestPending();
 
             int currentSearchableNotebookIndex = App.SearchableNotebooks.FindIndex(0, (sn) => { return Utils.GetNotebookPathFromFolder(file!) == Utils.GetNotebookPathFromFolder(sn.notebookFolder); });
             if (currentSearchableNotebookIndex == -1)
                 App.SearchableNotebooks.Add(await SearchableNotebook.FromConfig(config, file));
             else
                 App.SearchableNotebooks[currentSearchableNotebookIndex] = await SearchableNotebook.FromConfig(config, file);
+
+            pending.Unlock();
 
             popup.Hide();
             await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
@@ -303,6 +302,8 @@ namespace WID
 
             if (file is null)
                 return;
+
+            pending.notebookFolder = file;
 
             tbAppTitle.Text += Utils.GetNotebookNameFromFolder(file!);
             ShowFileStatus();
@@ -400,8 +401,8 @@ namespace WID
 
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, false));
 
-            pendingDeletions.Remove(config!.pageMapping.Last().fileName);
-            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
+            pending.RemovePendingDeletions(config!.pageMapping.Last().fileName);
+            pending.RemovePendingDeletions(config!.pageMapping.Last().RecognizedTextFilename);
 
             page.SetupForDrawing(attrs, currentInkingTool);
             spPageView.Children.Add(page);
@@ -420,14 +421,14 @@ namespace WID
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(new List<NotebookPage> { page }, spPageView, undoRedoSystem));
             page.hasBeenModifiedSinceSave = true;
             config!.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, page.hasBg));
-            pendingDeletions.Remove(config!.pageMapping.Last().fileName);
-            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
+            pending.RemovePendingDeletions(config!.pageMapping.Last().fileName);
+            pending.RemovePendingDeletions(config!.pageMapping.Last().RecognizedTextFilename);
             if (page.hasBg)
-                pendingDeletions.Remove(config!.pageMapping.Last().BgName);
+                pending.RemovePendingDeletions(config!.pageMapping.Last().BgName);
             foreach (IOnPageItem onPageItem in page.onPageItems)
             {
-                pendingCreations.Add(onPageItem.FileName);
-                pendingDeletions.Remove(onPageItem.FileName);
+                pending.AddPendingCreations(onPageItem.FileName);
+                pending.RemovePendingDeletions(onPageItem.FileName);
                 onPageItem.HasBeenModified = true;
             }
             page.SetupForDrawing(attrs, currentInkingTool);
@@ -461,12 +462,12 @@ namespace WID
 
             config.pageMapping.Add(new PageConfig(page.id, page.Width, page.Height, true));
 
-            pendingMoves.Add(safeBgFile);
-            pendingRenames.Add(new RenameItem(safeBgFile, config.pageMapping.Last().BgName));
+            pending.AddPendingMoves(safeBgFile);
+            pending.AddPendingRenames(new RenameItem(safeBgFile, config.pageMapping.Last().BgName));
             // Remove background from pending deletions so it doesn't get deleted when it should be present
-            pendingDeletions.Remove(config.pageMapping.Last().BgName);
-            pendingDeletions.Remove(config.pageMapping.Last().fileName);
-            pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
+            pending.RemovePendingDeletions(config.pageMapping.Last().BgName);
+            pending.RemovePendingDeletions(config.pageMapping.Last().fileName);
+            pending.RemovePendingDeletions(config!.pageMapping.Last().RecognizedTextFilename);
 
 
             BringIntoViewOptions options = new BringIntoViewOptions
@@ -516,7 +517,7 @@ namespace WID
                         bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName);
                     else
                         bgFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(config.pageMapping.Last().BgName, CreationCollisionOption.ReplaceExisting);
-                    pendingMoves.Add(bgFile);
+                    pending.AddPendingMoves(bgFile);
 
                     BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
                     SoftwareBitmap bmp = await decoder.GetSoftwareBitmapAsync();
@@ -532,9 +533,9 @@ namespace WID
                 spPageView.Children.Add(page);
 
                 // Remove background from pending deletions so it doesn't get deleted when it should be present
-                pendingDeletions.Remove(config.pageMapping.Last().BgName);
-                pendingDeletions.Remove(config.pageMapping.Last().fileName);
-                pendingDeletions.Remove(config!.pageMapping.Last().RecognizedTextFilename);
+                pending.RemovePendingDeletions(config.pageMapping.Last().BgName);
+                pending.RemovePendingDeletions(config.pageMapping.Last().fileName);
+                pending.RemovePendingDeletions(config!.pageMapping.Last().RecognizedTextFilename);
             }
 
             //undoRedoSystem.AddToUndoStack(new UndoAddPages(addedPages, spPageView, undoRedoSystem));
@@ -595,14 +596,14 @@ namespace WID
                             File.Delete(tempBgPath);
                         bgEntry.ExtractToFile(tempBgPath, true);
                         StorageFile tempBgFile = await ApplicationData.Current.TemporaryFolder.GetFileAsync("tempBg.png");
-                        pendingMoves.Add(tempBgFile);
-                        pendingRenames.Add(
+                        pending.AddPendingMoves(tempBgFile);
+                        pending.AddPendingRenames(
                             new RenameItem(
                                 tempBgFile,
                                 "bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png"
                                 )
                             );
-                        pendingDeletions.Remove("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png");
+                        pending.RemovePendingDeletions("bg" + (pageId == 0 ? "" : (" (" + pageId + ")")) + ".png");
                     } else
                     {
                         popup.Hide();
@@ -845,7 +846,7 @@ namespace WID
                     NotebookPage deletedPage = (NotebookPage)spPageView.Children[i];
 
                     foreach (IOnPageItem onPageItem in deletedPage.onPageItems)
-                        pendingDeletions.Add(onPageItem.FileName);
+                        pending.AddPendingDeletions(onPageItem.FileName);
 
                     spPageView.Children.RemoveAt(i);
                     break;
@@ -855,9 +856,9 @@ namespace WID
 
             config!.DeletePageWithId(args.id); // Takes care of deleting text and image ids as well
 
-            pendingDeletions.Add("page" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".gif");
-            pendingDeletions.Add("bg" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".png");
-            pendingDeletions.Add("recText" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".json");
+            pending.AddPendingDeletions("page" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".gif");
+            pending.AddPendingDeletions("bg" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".png");
+            pending.AddPendingDeletions("recText" + (args.id == 0 ? "" : (" (" + args.id + ")")) + ".json");
         }
 
         private async void OpenCameraForFileImport(object sender, RoutedEventArgs e)
@@ -917,8 +918,8 @@ namespace WID
                 currentPage,
                 svPageZoom
                 );
-            pendingCreations.Add("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
-            pendingDeletions.Remove("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+            pending.AddPendingCreations("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
+            pending.RemovePendingDeletions("text" + (txt.id == 0 ? "" : (" (" + txt.id + ")")) + ".rtf");
             currentPage!.AddOnPageItemToPage(txt);
             undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, txt, undoRedoSystem));
             txt.TextBoxGotFocus += FocusedOnPageItem;
@@ -1155,8 +1156,8 @@ namespace WID
             undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(textBoxPage, lastEditedText!, undoRedoSystem));
             config!.DeleteTextWithId(lastEditedText!.id);
             string textBoxFileName = lastEditedText!.FileName;
-            pendingCreations.Remove(textBoxFileName);
-            pendingDeletions.Add(textBoxFileName);
+            pending.RemovePendingCreations(textBoxFileName);
+            pending.AddPendingDeletions(textBoxFileName);
             lastEditedText = null;
             ppTextTools.IsHitTestVisible = false;
             ppTextTools.Opacity = 0d;
@@ -1168,8 +1169,8 @@ namespace WID
             undoRedoSystem.AddToUndoStack(new UndoRemoveOnPageElement(imgPage, lastEditedImage, undoRedoSystem));
             config!.DeleteImageWithId(lastEditedImage!.id);
             string imgFileName = lastEditedImage!.FileName;
-            pendingCreations.Remove(imgFileName);
-            pendingDeletions.Add(imgFileName);
+            pending.RemovePendingCreations(imgFileName);
+            pending.AddPendingDeletions(imgFileName);
             lastEditedImage = null;
             ppImageTools.IsHitTestVisible = false;
             ppImageTools.Opacity = 0d;
@@ -1375,8 +1376,8 @@ namespace WID
                 currentPage!.AddOnPageItemToPage(opI);
                 opI.ImageGotFocus += FocusedOnPageItem;
                 opI.ImageLostFocus += UnfocusedOnPageItem;
-                pendingCreations.Add(opI.FileName);
-                pendingDeletions.Remove(opI.FileName);
+                pending.AddPendingCreations(opI.FileName);
+                pending.RemovePendingDeletions(opI.FileName);
                 undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, opI, undoRedoSystem));
 
                 ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
