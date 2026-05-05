@@ -200,17 +200,18 @@ namespace WID
             pbFileStatus.Visibility = Visibility.Collapsed;
         }
 
-        private void SaveFile(object sender, RoutedEventArgs e)
+        private async void SaveFile(object sender, RoutedEventArgs e)
         {
-            SaveFileSafe();
+            await SaveFileSafe();
         }
 
-        private void SaveFileSafe()
+        private async Task SaveFileSafe()
         {
             if (savingTask == null && finishedLoading)
             {
                 savingTask = SaveFileWithDialog();
-                savingTask.ContinueWith(_ => savingTask = null);
+                await savingTask;
+                savingTask = null;
             }
         }
 
@@ -250,7 +251,7 @@ namespace WID
             pending.Unlock();
 
             popup.Hide();
-            await Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
+            _ = Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
         }
 
         private void UndoLastAction(object sender, RoutedEventArgs e)
@@ -268,9 +269,9 @@ namespace WID
                 page.RemoveManipulationRect();
         }
 
-        private void PageBack(object sender, RoutedEventArgs e)
+        private async void PageBack(object sender, RoutedEventArgs e)
         {
-            SaveFileSafe();
+            await SaveFileSafe();
             if (textToScrollTo is not null)
             {
                 ITextRange docRange = textToScrollTo.TextBox.Document.GetRange(0, TextConstants.MaxUnitCount);
