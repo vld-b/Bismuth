@@ -72,6 +72,8 @@ namespace WID
                 inkLanguageRecognizers.Add(rec.Name);
             cbxDefaultInkLanguage.ItemsSource = inkLanguageRecognizers;
             cbxDefaultInkLanguage.SelectedItem = App.AppSettings.defaultInkLanguage;
+
+            tsSelectWithRightClick.IsOn = App.AppSettings.selectWithRightClick == InkInputRightDragAction.LeaveUnprocessed;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -116,6 +118,11 @@ namespace WID
         private async void GetMoreInkLanguages(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri("ms-settings:regionlanguage"));
+        }
+
+        private void ChangeSelectWithRightClick(object sender, RoutedEventArgs e)
+        {
+            App.AppSettings.selectWithRightClick = tsSelectWithRightClick.IsOn ? InkInputRightDragAction.LeaveUnprocessed : InkInputRightDragAction.AllowProcessing;
         }
     }
 }

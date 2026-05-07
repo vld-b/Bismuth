@@ -13,7 +13,17 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade8To9(current);
+            return Upgrade9To10(current);
+        }
+
+        private static Settings Upgrade9To10(Settings current)
+        {
+            if (current.configVersion < 10)
+                current = Upgrade8To9(current);
+
+            current.configVersion = 10;
+
+            return current;
         }
 
         private static Settings Upgrade8To9(Settings current)
@@ -22,6 +32,7 @@ namespace AppSettings
                 current = Upgrade7To8(current);
 
             current.configVersion = 9;
+            current.selectWithRightClick = InkInputRightDragAction.LeaveUnprocessed;
 
             return current;
         }

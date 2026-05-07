@@ -144,6 +144,20 @@
                         Get more ink languages
                     </Button>
                 </StackPanel>
+
+                <StackPanel
+                    Style="{StaticResource SettingsPageOptionPanel}"
+                    >
+                    <TextBlock
+                        Text="Use select lasso with right click"
+                        Style="{StaticResource SettingsPageOption}"
+                        />
+
+                    <ToggleSwitch
+                        x:Name="tsSelectWithRightClick"
+                        Toggled="ChangeSelectWithRightClick"
+                        />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

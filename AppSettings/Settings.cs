@@ -17,6 +17,7 @@ using Windows.Devices.Enumeration;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -226,6 +227,21 @@ namespace AppSettings
             }
         }
 
+        private InkInputRightDragAction _selectWithRightClick;
+        public InkInputRightDragAction selectWithRightClick
+        {
+            get => _selectWithRightClick;
+            set
+            {
+                if (_selectWithRightClick != value)
+                {
+                    _selectWithRightClick = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]
@@ -243,6 +259,7 @@ namespace AppSettings
             _highlightColors = new ObservableCollection<Color>();
             _pencilColors = new ObservableCollection<Color>();
             _calligraphyColors = new ObservableCollection<Color>();
+            selectWithRightClick = InkInputRightDragAction.LeaveUnprocessed;
         }
 
         public void RequestSave()

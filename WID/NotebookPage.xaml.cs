@@ -140,6 +140,7 @@ namespace WID
             inkPres = inkCanvas.InkPresenter;
             ruler = new InkPresenterRuler(inkPres);
             protractor = new InkPresenterProtractor(inkPres);
+            canvas.InkPresenter.InputProcessingConfiguration.RightDragAction = App.AppSettings.selectWithRightClick;
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StartedDrawingInk;
             inkCanvas.InkPresenter.StrokesErased += DeletedStrokes;
             currentPattern = null;
@@ -469,7 +470,12 @@ namespace WID
                 await this.SaveToStream(stream);
         }
 
-        private void StartedDrawingInk(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs e) => this.hasBeenModifiedSinceSave = true;
+        private void StartedDrawingInk(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs e)
+        {
+            this.hasBeenModifiedSinceSave = true;
+            pageState.DeselectStrokes();
+            this.RemoveManipulationRect();
+        }
         private void DeletedStrokes(InkPresenter sender, InkStrokesErasedEventArgs e) => this.hasBeenModifiedSinceSave = true;
 
         private void StartLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
