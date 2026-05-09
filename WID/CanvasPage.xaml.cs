@@ -403,6 +403,7 @@ namespace WID
                         page.LayoutUpdated += ScrollToLastPage;
                         pageToScrollTo = page;
                     }
+                    //page.Unload();
 
                     if (i == config!.pageMapping.Count - 1 && !customNavigationNeeded)
                         pageToScrollTo = page;

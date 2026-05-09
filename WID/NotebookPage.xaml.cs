@@ -131,6 +131,7 @@ namespace WID
         public bool hasPattern { get; set; }
 
         private UIElement[]? storedElements;
+        public bool isLoaded { get; private set; } = true;
 
         public NotebookPage()
         {
@@ -211,17 +212,25 @@ namespace WID
 
         public void Unload()
         {
+            if (!isLoaded)
+                return;
+
             storedElements = new UIElement[Children.Count];
             for (int i = 0; i < Children.Count; ++i)
                 storedElements[i] = Children[i];
             Children.Clear();
+            isLoaded = false;
         }
 
         public void Load()
         {
+            if (isLoaded)
+                return;
+
             for (int i = 0; i < storedElements!.Length; ++i)
                 Children.Add(storedElements[i]);
             storedElements = null;
+            isLoaded = true;
         }
 
         public void SetupForDrawing(InkDrawingAttributes attrs, CurrentInkingTool currentInkingTool)
