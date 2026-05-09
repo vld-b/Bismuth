@@ -130,6 +130,8 @@ namespace WID
         }
         public bool hasPattern { get; set; }
 
+        private UIElement[]? storedElements;
+
         public NotebookPage()
         {
             this.InitializeComponent();
@@ -205,6 +207,21 @@ namespace WID
             };
             bgImg.Source = bg;
             Children.Insert(0, bgImg);
+        }
+
+        public void Unload()
+        {
+            storedElements = new UIElement[Children.Count];
+            for (int i = 0; i < Children.Count; ++i)
+                storedElements[i] = Children[i];
+            Children.Clear();
+        }
+
+        public void Load()
+        {
+            for (int i = 0; i < storedElements!.Length; ++i)
+                Children.Add(storedElements[i]);
+            storedElements = null;
         }
 
         public void SetupForDrawing(InkDrawingAttributes attrs, CurrentInkingTool currentInkingTool)
