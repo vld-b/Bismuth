@@ -39,6 +39,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Notifications;
@@ -131,6 +132,8 @@ namespace WID
 
             periodicalSavingTaskCancellationToken = new CancellationTokenSource();
             periodicalSavingTask = SaveFilePeriodically(periodicalSavingTaskCancellationToken.Token);
+
+            App.Current.Suspending += AppClosed;
         }
 
         private void SetTitlebar()
@@ -334,6 +337,16 @@ namespace WID
                 page.RemoveManipulationRect();
         }
 
+        private async void AppClosed(object sender, SuspendingEventArgs e)
+        {
+            SuspendingDeferral def = e.SuspendingOperation.GetDeferral();
+
+            await SaveFileSafe();
+            await HaltPeriodicSave();
+
+            def.Complete();
+        }
+
         private async void PageBack(object sender, RoutedEventArgs e)
         {
             await SaveFileSafe();
@@ -346,6 +359,7 @@ namespace WID
                 docRange.CharacterFormat.BackgroundColor = defaultBg;
                 docRange.CharacterFormat.ForegroundColor = defaultFg;
             }
+            App.Current.Suspending -= AppClosed;
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
