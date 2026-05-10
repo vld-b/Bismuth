@@ -85,6 +85,7 @@ namespace WID
         private Task? savingTask;
 
         private NotebookPage? currentPage;
+        private int currentPageIndex = -1;
         private NotebookPage? pageToScrollTo;
         private OnPageText? textToScrollTo;
         private CurrentInkingTool currentInkingTool = CurrentInkingTool.Drawing;
@@ -889,14 +890,14 @@ namespace WID
             int pageIndex = 0;
             double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor + Window.Current.Bounds.Height/(2*svPageZoom.ZoomFactor); // Add half window height because user likely refers to middle page
 
-            do
+            while (verticalOffset > 0)
             {
-                verticalOffset -= ((NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, pageIndex++)]).Height;
-            } while (verticalOffset > 0);
+                verticalOffset -= ((NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, pageIndex++)]).Height + spPageView.Spacing;
+            }
+            currentPageIndex = Math.Min(spPageView.Children.Count - 1, --pageIndex);
+            currentPage = (NotebookPage)spPageView.Children[currentPageIndex];
 
-            currentPage = (NotebookPage)spPageView.Children[Math.Min(spPageView.Children.Count-1, --pageIndex)];
-
-            return Math.Min(currentPage.Height, Math.Max(0, verticalOffset + currentPage.Height));
+            return Math.Clamp(verticalOffset + currentPage.Height, 0, currentPage.Height);
         }
 
         private void PagesReordered(ListViewBase sender, DragItemsCompletedEventArgs args)
