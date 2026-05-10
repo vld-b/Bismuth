@@ -438,17 +438,19 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
+                    NotebookPage page = await config.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
                     page.Unload();
+
+                    if (config is null)
+                        return;
 
                     if (customNavigationNeeded && page.id == searchNav!.pageId)
                     {
                         page.LayoutUpdated += ScrollToLastPage;
                         pageToScrollTo = page;
-                    }
-
-                    if (i == config!.pageMapping.Count - 1 && !customNavigationNeeded)
+                    } else if (i == config.pageMapping.Count - 1 && !customNavigationNeeded)
                         pageToScrollTo = page;
+
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
                     if (this.IsLoaded)
