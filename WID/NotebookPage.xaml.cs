@@ -220,6 +220,7 @@ namespace WID
             contentCanvas.Children.Clear();
             selectionLasso = null;
             selectionRect = null;
+            templateCanvas?.RemoveFromVisualTree();
             templateCanvas = null;
             if (currentPattern is not null)
                 currentPattern.TemplatePropertiesChanged -= UpdateTemplateBackgroundEvent;
