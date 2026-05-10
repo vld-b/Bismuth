@@ -63,7 +63,7 @@ namespace WID
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class CanvasPage : Page
+    public sealed partial class CanvasPage : Page, IDisposable
     {
         private StorageFolder? file;
         private StorageFile? configFile;
@@ -360,10 +360,32 @@ namespace WID
                 docRange.CharacterFormat.BackgroundColor = defaultBg;
                 docRange.CharacterFormat.ForegroundColor = defaultFg;
             }
+            Dispose();
             App.Current.Suspending -= AppClosed;
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
+        }
+
+        public void Dispose()
+        {
+            foreach (NotebookPage page in spPageView.Children)
+                page.Dispose();
+            spPageView.Children.Clear();
+            file = null;
+            configFile = null;
+            searchNav = null;
+            config = null;
+            pending.FlushLists();
+            undoRedoSystem.FlushStacks();
+            lastEditedText = null;
+            lastEditedImage = null;
+            pageState.ppInkManipulation = null;
+            pageState.currentlyActivePage = null;
+            pageState.selectedStrokes = null;
+            recoloredStrokes = null;
+            currentPage = null;
+            textToScrollTo = null;
         }
 
         private void AdjustLoadedPages(object sender, ScrollViewerViewChangedEventArgs e)
@@ -417,12 +439,13 @@ namespace WID
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
                     NotebookPage page = await config!.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
+                    page.Unload();
+
                     if (customNavigationNeeded && page.id == searchNav!.pageId)
                     {
                         page.LayoutUpdated += ScrollToLastPage;
                         pageToScrollTo = page;
                     }
-                    page.Unload();
 
                     if (i == config!.pageMapping.Count - 1 && !customNavigationNeeded)
                         pageToScrollTo = page;
@@ -905,6 +928,9 @@ namespace WID
 
         private double GetCurrentPage()
         {
+            if (spPageView.Children.Count == 0)
+                return -1d;
+
             int pageIndex = 0;
             double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor + Window.Current.Bounds.Height/(2*svPageZoom.ZoomFactor); // Add half window height because user likely refers to middle page
 

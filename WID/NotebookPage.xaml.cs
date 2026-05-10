@@ -40,7 +40,7 @@ namespace WID
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class NotebookPage : Grid
+    public sealed partial class NotebookPage : Grid, IDisposable
     {
         public int id { get; private set; }
         public bool hasBg { get => bgImg is not null; }
@@ -123,7 +123,7 @@ namespace WID
                     } else
                     {
                         UpdateTemplateBackground();
-                        _currPattern.TemplatePropertiesChanged += (s, e) => UpdateTemplateBackground();
+                        _currPattern.TemplatePropertiesChanged += UpdateTemplateBackgroundEvent;
                     }
                 }
             }
@@ -208,6 +208,23 @@ namespace WID
             };
             bgImg.Source = bg;
             Children.Insert(0, bgImg);
+        }
+
+        public void Dispose()
+        {
+            Children.Clear();
+            bgImage = null;
+            bgImg = null;
+            onPageItems.Clear();
+            recTextCollection.recText.Clear();
+            contentCanvas.Children.Clear();
+            selectionLasso = null;
+            selectionRect = null;
+            templateCanvas = null;
+            if (currentPattern is not null)
+                currentPattern.TemplatePropertiesChanged -= UpdateTemplateBackgroundEvent;
+            currentPattern = null;
+            storedElements = null;
         }
 
         public void Unload()
@@ -415,6 +432,11 @@ namespace WID
 
                 opT.hasBeenModifiedSinceSave = false;
             }
+        }
+
+        private void UpdateTemplateBackgroundEvent(object? s, EventArgs e)
+        {
+            UpdateTemplateBackground();
         }
 
         public void UpdateTemplateBackground()

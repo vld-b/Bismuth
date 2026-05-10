@@ -44,6 +44,24 @@ namespace WID
             await Utils.DeletePending(pendingDeletions, notebookFolder);
         }
 
+        public void FlushLists()
+        {
+            pendingCreations.Clear();
+            pendingDeletions.Clear();
+            pendingMoves.Clear();
+            pendingRenames.Clear();
+
+            pendingCreationsLocked.Clear();
+            pendingDeletionsLocked.Clear();
+            pendingMovesLocked.Clear();
+            pendingRenamesLocked.Clear();
+
+            pendingCreationsDeletions.Clear();
+            pendingDeletionsDeletions.Clear();
+            pendingMovesDeletions.Clear();
+            pendingRenamesDeletions.Clear();
+        }
+
         public void AddPendingCreations(string item)
         {
             if (isLocked)
