@@ -361,6 +361,7 @@
                     VerticalScrollMode="Enabled"
                     HorizontalScrollBarVisibility="Hidden"
                     VerticalScrollBarVisibility="Hidden"
+                    ViewChanged="AdjustLoadedPages"
                     >
                     <StackPanel
                         x:Name="spPageView"

@@ -366,6 +366,24 @@ namespace WID
                 Frame.GoBack();
         }
 
+        private void AdjustLoadedPages(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            GetCurrentPage();
+
+            for (int i = -10; i < 11; ++i)
+            {
+                int currentlyEvaluatingPageIndex = currentPageIndex + i;
+                if (0 <= currentlyEvaluatingPageIndex && currentlyEvaluatingPageIndex < spPageView.Children.Count)
+                {
+                    NotebookPage currentlyEvaluatingPage = (NotebookPage)spPageView.Children[currentlyEvaluatingPageIndex];
+                    if (-3 < i && i < 3)
+                        currentlyEvaluatingPage.Load();
+                    else
+                        currentlyEvaluatingPage.Unload();
+                }
+            }
+        }
+
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -404,7 +422,7 @@ namespace WID
                         page.LayoutUpdated += ScrollToLastPage;
                         pageToScrollTo = page;
                     }
-                    //page.Unload();
+                    page.Unload();
 
                     if (i == config!.pageMapping.Count - 1 && !customNavigationNeeded)
                         pageToScrollTo = page;
