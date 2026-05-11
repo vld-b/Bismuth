@@ -22,6 +22,8 @@ namespace WID
 {
     public static class Utils
     {
+        private static ContentDialog? currentlyShowingContentDialog;
+
         public static void Add<T>(this List<T> origin, List<T> source)
         {
             foreach (T item in source)
@@ -115,10 +117,15 @@ namespace WID
 
         public static ContentDialog ShowLoadingPopup(string title)
         {
-            ContentDialog dialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
-            dialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
-            _ = dialog.ShowAsync();
-            return dialog;
+            if (currentlyShowingContentDialog is not null)
+            {
+                currentlyShowingContentDialog.Hide();
+                currentlyShowingContentDialog = null;
+            }
+            currentlyShowingContentDialog = new ContentDialog { Title = title, IsPrimaryButtonEnabled = false, IsSecondaryButtonEnabled = false };
+            currentlyShowingContentDialog.Content = new Microsoft.UI.Xaml.Controls.ProgressBar { IsIndeterminate = true, HorizontalAlignment=HorizontalAlignment.Stretch, ShowPaused = false, ShowError = false };
+            _ = currentlyShowingContentDialog.ShowAsync();
+            return currentlyShowingContentDialog;
         }
 
         public async static Task ShowTeachingTip(TeachingTip tt, string title, string subtitle, int msDelay)
