@@ -135,6 +135,7 @@ namespace WID
             periodicalSavingTask = SaveFilePeriodically(periodicalSavingTaskCancellationToken.Token);
 
             App.Current.Suspending += AppClosed;
+            App.Current.Resuming += AppResuming;
         }
 
         private void SetTitlebar()
@@ -349,6 +350,11 @@ namespace WID
             def.Complete();
         }
 
+        private void AppResuming(object? sender, object e)
+        {
+            ResumePeriodicSave();
+        }
+
         private async void PageBack(object sender, RoutedEventArgs e)
         {
             await SaveFileSafe();
@@ -363,6 +369,7 @@ namespace WID
             }
             Dispose();
             App.Current.Suspending -= AppClosed;
+            App.Current.Resuming -= AppResuming;
 
             if (Frame.CanGoBack)
                 Frame.GoBack();
