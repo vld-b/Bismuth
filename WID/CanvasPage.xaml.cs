@@ -97,7 +97,7 @@ namespace WID
         private double inkToolbarNormalHorzontalOffset;
 
         private Task periodicalSavingTask;
-        private CancellationTokenSource periodicalSavingTaskCancellationToken;
+        private CancellationTokenSource? periodicalSavingTaskCancellationToken;
         private Microsoft.UI.Xaml.Controls.ProgressBar? savingBar;
 
         public CanvasPage()
@@ -236,14 +236,15 @@ namespace WID
 
         private async Task HaltPeriodicSave()
         {
-            periodicalSavingTaskCancellationToken.Cancel();
+            periodicalSavingTaskCancellationToken?.Cancel();
             await periodicalSavingTask;
-            periodicalSavingTaskCancellationToken.Dispose();
+            periodicalSavingTaskCancellationToken?.Dispose();
+            periodicalSavingTaskCancellationToken = null;
         }
 
         private void ResumePeriodicSave()
         {
-            periodicalSavingTaskCancellationToken.Dispose();
+            periodicalSavingTaskCancellationToken?.Dispose();
             periodicalSavingTaskCancellationToken = new CancellationTokenSource(); // Resume periodical saving
             periodicalSavingTask = SaveFilePeriodically(periodicalSavingTaskCancellationToken.Token);
         }
