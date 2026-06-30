@@ -1650,16 +1650,22 @@ namespace WID
 
                 PdfSharpCore.Pdf.PdfPage pdfPage = doc.AddPage();
                 PdfSharpCore.Drawing.XGraphics gfx = PdfSharpCore.Drawing.XGraphics.FromPdfPage(pdfPage);
-                pdfPage.Width = new PdfSharpCore.Drawing.XUnit(595d);
-                pdfPage.Height = new PdfSharpCore.Drawing.XUnit(842d);
+                pdfPage.Width = new PdfSharpCore.Drawing.XUnit(525.0d);
+                pdfPage.Height = new PdfSharpCore.Drawing.XUnit(742.5d);
 
                 const double imgDPI = 96d;
                 const double pdfDPI = 72d;
-                const double scaleFactor = imgDPI / pdfDPI;
 
                 NotebookPage currentPage = (NotebookPage)spPageView.Children[currentIndex];
                 RenderTargetBitmap rtb = new RenderTargetBitmap();
-                await rtb.RenderAsync(currentPage, (int)(pdfPage.Width.Value * scaleFactor), (int)(pdfPage.Height.Value * scaleFactor));
+
+                bool pageWasPreviouslyLoaded = currentPage.isLoaded;
+                currentPage.Load();
+
+                await rtb.RenderAsync(currentPage);
+
+                if (!pageWasPreviouslyLoaded)
+                    currentPage.Unload();
 
                 IBuffer pixelBuffer = await rtb.GetPixelsAsync();
                 byte[] pixels = ArrayPool<byte>.Shared.Rent((int)pixelBuffer.Length);
@@ -1691,7 +1697,7 @@ namespace WID
 
                     gfx.DrawImage(
                         PdfSharpCore.Drawing.XImage.FromStream(stream.AsStream),
-                        new PdfSharpCore.Drawing.XPoint(0, 0)
+                        new PdfSharpCore.Drawing.XRect(0.0d, 0.0d, pdfPage.Width, pdfPage.Height)
                         );
                 }
             }
