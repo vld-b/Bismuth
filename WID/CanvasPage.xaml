@@ -766,13 +766,13 @@
                                 x:Name="btEraserTool"
                                 Click="ChangeCurrentInkingTool"
                                 >
-                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
+                                <FontIcon Foreground="White" FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xE75C;" />
                             </local:CustomInkToolbarTool>
                             <local:CustomInkToolbarTool
                                 x:Name="btLassoTool"
                                 Click="ChangeCurrentInkingTool"
                                 >
-                                <FontIcon FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
+                                <FontIcon Foreground="White" FontSize="36" FontFamily="Segoe Fluent Icons" Glyph="&#xF1BE;" />
                             </local:CustomInkToolbarTool>
                             <local:CustomInkToolbarTool
                                 x:Name="btObjectTool"
