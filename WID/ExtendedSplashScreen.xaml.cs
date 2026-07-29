@@ -35,7 +35,7 @@ namespace WID
     {
         private Task? loadingTask;
 
-        private LoadedNotebooks? notebookData;
+        private object? notebookData;
 
         public ExtendedSplashScreen()
         {
@@ -116,7 +116,7 @@ namespace WID
                 }
             }
 
-            notebookData = noteData;
+            notebookData = noteData.notebooks.Count == 0 ? new FolderNavigationData(null, Frame) : noteData;
         }
 
         private async void StartAnimation(object sender, RoutedEventArgs e)
