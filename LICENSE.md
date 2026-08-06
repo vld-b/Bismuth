@@ -1,4 +1,4 @@
-# This project and its source code it disrtibuted under the MIT License
+# This project and its source code are disrtibuted under the MIT License
 
 Copyright 2026 vld-b
 
