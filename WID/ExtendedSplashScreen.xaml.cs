@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.WinUI.Lottie;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using PdfSharpCore.Pdf.Filters;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
