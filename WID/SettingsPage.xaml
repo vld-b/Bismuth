@@ -6,8 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:shared="using:Shared"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    >
 
     <ScrollViewer
         Padding="48, 48, 0, 0"
@@ -26,7 +28,7 @@
                 Style="{StaticResource SettingsPageSectionPanel}"
                 >
                 <TextBlock
-                    Text="Home screen"
+                    Text="{shared:Loc Key=SettingsPageSectionHomescreenTitle}"
                     Style="{StaticResource SettingsPageSectionHeader}"
                     />
 
@@ -34,7 +36,7 @@
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Thumbnail size"
+                        Text="{shared:Loc Key=SettingPageSectionHomescreenThumbnailSize}"
                         Style="{StaticResource SettingsPageOption}"
                         />
 
@@ -43,9 +45,9 @@
                         SelectionChanged="ChangeHomescreenThumbnailSize"
                         Style="{StaticResource SettingsPageComboBox}"
                         >
-                        <x:String>Small</x:String>
-                        <x:String>Medium</x:String>
-                        <x:String>Large</x:String>
+                        <ComboBoxItem Tag="Small" Content="{shared:Loc Key=Small}" />
+                        <ComboBoxItem Tag="Medium" Content="{shared:Loc Key=Medium}" />
+                        <ComboBoxItem Tag="Large" Content="{shared:Loc Key=Large}" />
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
@@ -54,7 +56,7 @@
                 Style="{StaticResource SettingsPageSectionPanel}"
                 >
                 <TextBlock
-                    Text="Note-taking experience"
+                    Text="{shared:Loc Key=SettingsPageSectionNotetakingTitle}"
                     Style="{StaticResource SettingsPageSectionHeader}"
                     />
 
@@ -62,24 +64,27 @@
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Input devices"
+                        Text="{shared:Loc Key=SettingsPageSectionNotetakingInputDevices}"
                         Style="{StaticResource SettingsPageOption}"
                         />
                     <CheckBox
                         x:Name="cbInputMouse"
-                        Content="Mouse"
+                        Content="{shared:Loc Key=SettingsPageSectionNotetakingInputDeviceMouse}"
+                        Tag="Mouse"
                         Checked="InputDeviceChecked"
                         Unchecked="InputDeviceUnchecked"
                         />
                     <CheckBox
                         x:Name="cbInputPen"
-                        Content="Pen"
+                        Content="{shared:Loc Key=SettingsPageSectionNotetakingInputDevicePen}"
+                        Tag="Pen"
                         Checked="InputDeviceChecked"
                         Unchecked="InputDeviceUnchecked"
                         />
                     <CheckBox
                         x:Name="cbInputTouch"
                         Content="Touch"
+                        Tag="Touch"
                         Checked="InputDeviceChecked"
                         Unchecked="InputDeviceUnchecked"
                         />

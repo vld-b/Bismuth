@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.Resources.Core;
+using Windows.Globalization;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -37,6 +39,9 @@ namespace WID
         /// <inheritdoc/>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
+            ResourceContext.GetForCurrentView().Reset();
+            ResourceContext.GetForViewIndependentUse().Reset();
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active.
             if (Window.Current.Content is not Frame rootFrame)

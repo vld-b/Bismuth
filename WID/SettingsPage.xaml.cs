@@ -64,7 +64,11 @@ namespace WID
             cbInputPen.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Pen) != 0;
             cbInputTouch.IsChecked = (App.AppSettings.inputDevices & CoreInputDeviceTypes.Touch) != 0;
 
-            cbxHomeScreenThumbnailSize.SelectedItem = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
+            string homescreenThumbnailSize = homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key;
+            foreach (ComboBoxItem item in cbxHomeScreenThumbnailSize.Items)
+                if ((string)item.Tag == homescreenThumbnailSize)
+                    cbxHomeScreenThumbnailSize.SelectedItem = item;
+
             cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
             cbxInkToolbarPlacement.SelectedItem = inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
 
@@ -86,7 +90,7 @@ namespace WID
         private void InputDeviceChecked(object sender, RoutedEventArgs e)
         {
             CheckBox cb = (CheckBox)sender;
-            App.AppSettings.inputDevices |= inputDeviceTypes[(string)cb.Content];
+            App.AppSettings.inputDevices |= inputDeviceTypes[(string)cb.Tag];
         }
 
         private void InputDeviceUnchecked(object sender, RoutedEventArgs e)
@@ -97,7 +101,9 @@ namespace WID
 
         private void ChangeHomescreenThumbnailSize(object sender, SelectionChangedEventArgs e)
         {
-            App.AppSettings.homescreenThumbnailSize = homescreenThumbnailSizes[(string)e.AddedItems[0]];
+            string chosenOption = (string)((ComboBoxItem)e.AddedItems[0]).Tag;
+            if (chosenOption != homescreenThumbnailSizes.FirstOrDefault(x => x.Value == App.AppSettings.homescreenThumbnailSize).Key)
+                App.AppSettings.homescreenThumbnailSize = homescreenThumbnailSizes[chosenOption];
         }
 
         private void ChangeUndoRedoButtonsPlacement(object sender, SelectionChangedEventArgs e)
