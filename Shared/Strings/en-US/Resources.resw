@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Large" xml:space="preserve">
+  <data name="SettingsPageSectionHomescreenThumbnailSizeLarge" xml:space="preserve">
     <value>Large</value>
   </data>
-  <data name="Medium" xml:space="preserve">
+  <data name="SettingsPageSectionHomescreenThumbnailSizeMedium" xml:space="preserve">
     <value>Medium</value>
   </data>
   <data name="SettingPageSectionHomescreenThumbnailSize" xml:space="preserve">
@@ -128,6 +128,9 @@
   </data>
   <data name="SettingsPageSectionHomescreenTitle" xml:space="preserve">
     <value>Home screen</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInkToolbarPlacement" xml:space="preserve">
+    <value>Ink toolbar placement</value>
   </data>
   <data name="SettingsPageSectionNotetakingInputDeviceMouse" xml:space="preserve">
     <value>Mouse</value>
@@ -138,13 +141,43 @@
   <data name="SettingsPageSectionNotetakingInputDevices" xml:space="preserve">
     <value>Input devices</value>
   </data>
+  <data name="SettingsPageSectionNotetakingInputDeviceTouch" xml:space="preserve">
+    <value>Touch</value>
+  </data>
   <data name="SettingsPageSectionNotetakingTitle" xml:space="preserve">
     <value>Note-taking experience</value>
   </data>
-  <data name="SettingsPageSectionNotetakingTitle1" xml:space="preserve">
-    <value>Note-taking experience</value>
-  </data>
-  <data name="Small" xml:space="preserve">
+  <data name="SettingsPageSectionHomescreenThumbnailSizeSmall" xml:space="preserve">
     <value>Small</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInkToolbarPlacementTop" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInkToolbarPlacementBottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacement" xml:space="preserve">
+    <value>Undo/Redo buttons placement</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacementTopLeft" xml:space="preserve">
+    <value>Top left</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacementTopRight" xml:space="preserve">
+    <value>Top right</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacementBottomLeft" xml:space="preserve">
+    <value>Bottom left</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacementBottomRight" xml:space="preserve">
+    <value>Bottom right</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingDefaultInkLanguage" xml:space="preserve">
+    <value>Default language for ink recognition</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingGetMoreInkLanguages" xml:space="preserve">
+    <value>Get more ink languages</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingUseLassoWithRightClick" xml:space="preserve">
+    <value>Use selection lasso with right click</value>
   </data>
 </root>

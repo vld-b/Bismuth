@@ -69,8 +69,19 @@ namespace WID
                 if ((string)item.Tag == homescreenThumbnailSize)
                     cbxHomeScreenThumbnailSize.SelectedItem = item;
 
-            cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
-            cbxInkToolbarPlacement.SelectedItem = inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
+            string undoRedoButtonsPlacement = this.undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
+            foreach (ComboBoxItem item in cbxUndoRedoButtonsPlacement.Items)
+                if ((string)item.Tag == undoRedoButtonsPlacement)
+                    cbxUndoRedoButtonsPlacement.SelectedItem = item;
+
+            //cbxUndoRedoButtonsPlacement.SelectedItem = undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key;
+
+            string inkToolbarPlacement = this.inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
+            foreach (ComboBoxItem item in cbxInkToolbarPlacement.Items)
+                if ((string)item.Tag == inkToolbarPlacement)
+                    cbxInkToolbarPlacement.SelectedItem = item;
+
+            //cbxInkToolbarPlacement.SelectedItem = inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key;
 
             foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
                 inkLanguageRecognizers.Add(rec.Name);
@@ -108,12 +119,16 @@ namespace WID
 
         private void ChangeUndoRedoButtonsPlacement(object sender, SelectionChangedEventArgs e)
         {
-            App.AppSettings.undoRedoButtonsPlacement = undoRedoButtonsPlacement[(string)e.AddedItems[0]];
+            string chosenOption = (string)((ComboBoxItem)e.AddedItems[0]).Tag;
+            if (chosenOption != undoRedoButtonsPlacement.FirstOrDefault(x => x.Value == App.AppSettings.undoRedoButtonsPlacement).Key)
+                App.AppSettings.undoRedoButtonsPlacement = undoRedoButtonsPlacement[chosenOption];
         }
 
         private void ChangeInkToolbarPlacement(object sender, SelectionChangedEventArgs e)
         {
-            App.AppSettings.inkToolbarPlacement = inkToolbarPlacement[(string)e.AddedItems[0]];
+            string chosenOption = (string)((ComboBoxItem)e.AddedItems[0]).Tag;
+            if (chosenOption != inkToolbarPlacement.FirstOrDefault(x => x.Value == App.AppSettings.inkToolbarPlacement).Key)
+                App.AppSettings.inkToolbarPlacement = inkToolbarPlacement[chosenOption];
         }
 
         private void ChangeDefaultInkLanguage(object sender, SelectionChangedEventArgs e)

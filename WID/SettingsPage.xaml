@@ -45,9 +45,9 @@
                         SelectionChanged="ChangeHomescreenThumbnailSize"
                         Style="{StaticResource SettingsPageComboBox}"
                         >
-                        <ComboBoxItem Tag="Small" Content="{shared:Loc Key=Small}" />
-                        <ComboBoxItem Tag="Medium" Content="{shared:Loc Key=Medium}" />
-                        <ComboBoxItem Tag="Large" Content="{shared:Loc Key=Large}" />
+                        <ComboBoxItem Tag="Small" Content="{shared:Loc Key=SettingsPageSectionHomescreenThumbnailSizeSmall}" />
+                        <ComboBoxItem Tag="Medium" Content="{shared:Loc Key=SettingsPageSectionHomescreenThumbnailSizeMedium}" />
+                        <ComboBoxItem Tag="Large" Content="{shared:Loc Key=SettingsPageSectionHomescreenThumbnailSizeLarge}" />
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
@@ -83,7 +83,7 @@
                         />
                     <CheckBox
                         x:Name="cbInputTouch"
-                        Content="Touch"
+                        Content="{shared:Loc Key=SettingsPageSectionNotetakingInputDeviceTouch}"
                         Tag="Touch"
                         Checked="InputDeviceChecked"
                         Unchecked="InputDeviceUnchecked"
@@ -94,7 +94,7 @@
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Ink toolbar placement"
+                        Text="{shared:Loc Key=SettingsPageSectionNotetakingInkToolbarPlacement}"
                         Style="{StaticResource SettingsPageOption}"
                         />
 
@@ -103,8 +103,8 @@
                         SelectionChanged="ChangeInkToolbarPlacement"
                         Style="{StaticResource SettingsPageComboBox}"
                         >
-                        <x:String>Top</x:String>
-                        <x:String>Bottom</x:String>
+                        <ComboBoxItem Tag="Top" Content="{shared:Loc Key=SettingsPageSectionNotetakingInkToolbarPlacementTop}" />
+                        <ComboBoxItem Tag="Bottom" Content="{shared:Loc Key=SettingsPageSectionNotetakingInkToolbarPlacementBottom}" />
                     </ComboBox>
                 </StackPanel>
 
@@ -112,7 +112,7 @@
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Undo/Redo buttons placement"
+                        Text="{shared:Loc Key=SettingsPageSectionNotetakingUndoRedoButtonsPlacement}"
                         Style="{StaticResource SettingsPageOption}"
                         />
 
@@ -121,10 +121,10 @@
                         SelectionChanged="ChangeUndoRedoButtonsPlacement"
                         Style="{StaticResource SettingsPageComboBox}"
                         >
-                        <x:String>Top left</x:String>
-                        <x:String>Top right</x:String>
-                        <x:String>Bottom left</x:String>
-                        <x:String>Bottom right</x:String>
+                        <ComboBoxItem Tag="Top left" Content="{shared:Loc Key=SettingsPageSectionNotetakingUndoRedoButtonsPlacementTopLeft}" />
+                        <ComboBoxItem Tag="Top right" Content="{shared:Loc Key=SettingsPageSectionNotetakingUndoRedoButtonsPlacementTopRight}" />
+                        <ComboBoxItem Tag="Bottom left" Content="{shared:Loc Key=SettingsPageSectionNotetakingUndoRedoButtonsPlacementBottomLeft}" />
+                        <ComboBoxItem Tag="Bottom right" Content="{shared:Loc Key=SettingsPageSectionNotetakingUndoRedoButtonsPlacementBottomRight}" />
                     </ComboBox>
                 </StackPanel>
 
@@ -132,7 +132,7 @@
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Default language for ink recognition"
+                        Text="{shared:Loc Key=SettingsPageSectionNotetakingDefaultInkLanguage}"
                         Style="{StaticResource SettingsPageOption}"
                         />
 
@@ -145,16 +145,15 @@
 
                     <Button
                         Click="GetMoreInkLanguages"
-                        >
-                        Get more ink languages
-                    </Button>
+                        Content="{shared:Loc Key=SettingsPageSectionNotetakingGetMoreInkLanguages}"
+                        />
                 </StackPanel>
 
                 <StackPanel
                     Style="{StaticResource SettingsPageOptionPanel}"
                     >
                     <TextBlock
-                        Text="Use select lasso with right click"
+                        Text="{shared:Loc Key=SettingsPageSectionNotetakingUseLassoWithRightClick}"
                         Style="{StaticResource SettingsPageOption}"
                         />
 
