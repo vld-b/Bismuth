@@ -203,7 +203,7 @@ namespace WID
 
             ContentDialog dialog = new ContentDialog
             {
-                Title = "Create new folder",
+                Title = new Shared.Loc { Key = "NotebookListCreateNewFolderTitle" },
                 Content = txtbox,
                 PrimaryButtonText = "Create",
                 CloseButtonText = "Cancel",

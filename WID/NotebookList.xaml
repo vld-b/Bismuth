@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:shared="using:Shared"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     SizeChanged="ResizeMenuElements"
@@ -126,9 +127,9 @@
                                                     FontFamily="Segoe Fluent Icons"
                                                     Glyph="&#xE70F;"
                                                             />
-                                                <TextBlock>
-                                                    Rename
-                                                </TextBlock>
+                                                <TextBlock
+                                                    Text="{shared:Loc Key=NotebookListRenameMenuItem}"
+                                                    />
                                             </StackPanel>
                                         </Button>
                                         <Button
@@ -144,9 +145,9 @@
                                                     FontFamily="Segoe Fluent Icons"
                                                     Glyph="&#xE74D;"
                                                             />
-                                                <TextBlock>
-                                                    Delete
-                                                </TextBlock>
+                                                <TextBlock
+                                                    Text="{shared:Loc Key=NotebookListDeleteMenuItem}"
+                                                    />
                                             </StackPanel>
                                         </Button>
                                     </StackPanel>

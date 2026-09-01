@@ -180,4 +180,16 @@
   <data name="SettingsPageSectionNotetakingUseLassoWithRightClick" xml:space="preserve">
     <value>Use selection lasso with right click</value>
   </data>
+  <data name="NotebookListRenameMenuItem" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="NotebookListDeleteMenuItem" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="NotebookListCreateNewFolderTitle" xml:space="preserve">
+    <value>Create new folder</value>
+  </data>
+  <data name="NotebookListCreateNewFolderInputPlaceholder" xml:space="preserve">
+    <value>Enter name for folder</value>
+  </data>
 </root>
