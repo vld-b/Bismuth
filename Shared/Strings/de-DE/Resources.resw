@@ -117,20 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SettingsPageSectionHomescreenThumbnailSizeLarge" xml:space="preserve">
-    <value>Groß</value>
-  </data>
-  <data name="SettingsPageSectionHomescreenThumbnailSizeMedium" xml:space="preserve">
-    <value>Mittel</value>
-  </data>
   <data name="SettingPageSectionHomescreenThumbnailSize" xml:space="preserve">
     <value>Vorschaugröße</value>
   </data>
   <data name="SettingsPageSectionHomescreenTitle" xml:space="preserve">
     <value>Startbildschirm</value>
-  </data>
-  <data name="SettingsPageSectionNotetakingInkToolbarPlacement" xml:space="preserve">
-    <value>Platzierung der Werkzeuge</value>
   </data>
   <data name="SettingsPageSectionNotetakingInputDeviceMouse" xml:space="preserve">
     <value>Maus</value>
@@ -141,11 +132,20 @@
   <data name="SettingsPageSectionNotetakingInputDevices" xml:space="preserve">
     <value>Eingabegeräte</value>
   </data>
-  <data name="SettingsPageSectionNotetakingInputDeviceTouch" xml:space="preserve">
-    <value>Touch</value>
-  </data>
   <data name="SettingsPageSectionNotetakingTitle" xml:space="preserve">
     <value>Bearbeiten der Notizen</value>
+  </data>
+  <data name="SettingsPageSectionHomescreenThumbnailSizeLarge" xml:space="preserve">
+    <value>Groß</value>
+  </data>
+  <data name="SettingsPageSectionHomescreenThumbnailSizeMedium" xml:space="preserve">
+    <value>Mittel</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInkToolbarPlacement" xml:space="preserve">
+    <value>Platzierung der Werkzeuge</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInputDeviceTouch" xml:space="preserve">
+    <value>Touch</value>
   </data>
   <data name="SettingsPageSectionHomescreenThumbnailSizeSmall" xml:space="preserve">
     <value>Klein</value>
@@ -187,9 +187,84 @@
     <value>Löschen</value>
   </data>
   <data name="NotebookListCreateNewFolderTitle" xml:space="preserve">
-    <value>Neuen Ordner erstellen</value>
+    <value>Neuen Ordner anlegen</value>
   </data>
   <data name="NotebookListCreateNewFolderInputPlaceholder" xml:space="preserve">
     <value>Name für neuen Ordner eingeben</value>
+  </data>
+  <data name="NotebookListCreateNewElementCreate" xml:space="preserve">
+    <value>Anlegen</value>
+  </data>
+  <data name="NotebookListCreateNewElementCancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="NotebookListCreateNewElementNoNameTitle" xml:space="preserve">
+    <value>Kein Name eingegeben</value>
+  </data>
+  <data name="NotebookListCreateNewFolderNoNameContent" xml:space="preserve">
+    <value>Ordner mit leeren Namen werden nicht unterstützt</value>
+  </data>
+  <data name="NotebookListCreateNewFolderInvalidNameTitle" xml:space="preserve">
+    <value>Name nicht unterstützt</value>
+  </data>
+  <data name="NotebookListCreateNewFolderInvalidNameContent" xml:space="preserve">
+    <value>Ordner mit der Endung '.notebook' werden nicht unterstützt</value>
+  </data>
+  <data name="NotebookListCreateNewElementOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="NotebookListCreateNewFolderAlreadyExistsTitle" xml:space="preserve">
+    <value>Anlegen des Ordners fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListCreateNewFolderAlreadyExistsContent" xml:space="preserve">
+    <value>Ein Ordner mit demselben Namen existiert bereits</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookTitle" xml:space="preserve">
+    <value>Neues Notizbuch anlegen</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookNoNameContent" xml:space="preserve">
+    <value>Leere Notiznamen werden nicht unterstützt</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookAlreadyExistsTitle" xml:space="preserve">
+    <value>Anlegen des Notizbuches fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookAlreadyExistsContent" xml:space="preserve">
+    <value>Ein Notizbuch mit demselben Namen existiert bereits</value>
+  </data>
+  <data name="NotebookListDeleteFolderTitle" xml:space="preserve">
+    <value>Ordner &lt;itemName&gt; löschen?</value>
+  </data>
+  <data name="NotebookListDeleteFileTitle" xml:space="preserve">
+    <value>Notizbuch &lt;itemName&gt; löschen?</value>
+  </data>
+  <data name="NotebookListDeleteItemContent" xml:space="preserve">
+    <value>Das Löschen ist irreversibel</value>
+  </data>
+  <data name="NotebookListDeleteMenuItemCancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="NotebookListDeleteFileFailedTitle" xml:space="preserve">
+    <value>Löschen des Notizbuches fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListDeleteFolderFailedTitle" xml:space="preserve">
+    <value>Löschen des Ordners fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListDeleteItemOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="NotebookListDeleteItemFailedContent" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten</value>
+  </data>
+  <data name="NotebookListRenameItemPlaceholder" xml:space="preserve">
+    <value>Neuen Namen eingeben</value>
+  </data>
+  <data name="NotebookListRenameFileTitle" xml:space="preserve">
+    <value>Notizbuch umbenennen</value>
+  </data>
+  <data name="NotebookListRenameFolderTitle" xml:space="preserve">
+    <value>Ordner umbenennen</value>
+  </data>
+  <data name="NotebookListRenameItemCancel" xml:space="preserve">
+    <value>Abbrechen</value>
   </data>
 </root>

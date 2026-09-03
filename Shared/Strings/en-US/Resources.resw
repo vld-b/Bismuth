@@ -117,20 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SettingsPageSectionHomescreenThumbnailSizeLarge" xml:space="preserve">
-    <value>Large</value>
-  </data>
-  <data name="SettingsPageSectionHomescreenThumbnailSizeMedium" xml:space="preserve">
-    <value>Medium</value>
-  </data>
   <data name="SettingPageSectionHomescreenThumbnailSize" xml:space="preserve">
     <value>Thumbnail size</value>
   </data>
   <data name="SettingsPageSectionHomescreenTitle" xml:space="preserve">
     <value>Home screen</value>
-  </data>
-  <data name="SettingsPageSectionNotetakingInkToolbarPlacement" xml:space="preserve">
-    <value>Ink toolbar placement</value>
   </data>
   <data name="SettingsPageSectionNotetakingInputDeviceMouse" xml:space="preserve">
     <value>Mouse</value>
@@ -141,11 +132,20 @@
   <data name="SettingsPageSectionNotetakingInputDevices" xml:space="preserve">
     <value>Input devices</value>
   </data>
-  <data name="SettingsPageSectionNotetakingInputDeviceTouch" xml:space="preserve">
-    <value>Touch</value>
-  </data>
   <data name="SettingsPageSectionNotetakingTitle" xml:space="preserve">
     <value>Note-taking experience</value>
+  </data>
+  <data name="SettingsPageSectionHomescreenThumbnailSizeLarge" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="SettingsPageSectionHomescreenThumbnailSizeMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInkToolbarPlacement" xml:space="preserve">
+    <value>Ink toolbar placement</value>
+  </data>
+  <data name="SettingsPageSectionNotetakingInputDeviceTouch" xml:space="preserve">
+    <value>Touch</value>
   </data>
   <data name="SettingsPageSectionHomescreenThumbnailSizeSmall" xml:space="preserve">
     <value>Small</value>
@@ -191,5 +191,80 @@
   </data>
   <data name="NotebookListCreateNewFolderInputPlaceholder" xml:space="preserve">
     <value>Enter name for folder</value>
+  </data>
+  <data name="NotebookListCreateNewElementCreate" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="NotebookListCreateNewElementCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NotebookListCreateNewElementNoNameTitle" xml:space="preserve">
+    <value>No name entered</value>
+  </data>
+  <data name="NotebookListCreateNewFolderNoNameContent" xml:space="preserve">
+    <value>Folders with empty names are not supported</value>
+  </data>
+  <data name="NotebookListCreateNewFolderInvalidNameTitle" xml:space="preserve">
+    <value>Invalid name entered</value>
+  </data>
+  <data name="NotebookListCreateNewFolderInvalidNameContent" xml:space="preserve">
+    <value>Folders with the ending '.notebook' are not supported</value>
+  </data>
+  <data name="NotebookListCreateNewElementOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="NotebookListCreateNewFolderAlreadyExistsTitle" xml:space="preserve">
+    <value>Failed to create folder</value>
+  </data>
+  <data name="NotebookListCreateNewFolderAlreadyExistsContent" xml:space="preserve">
+    <value>A folder with the same name already exists</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookTitle" xml:space="preserve">
+    <value>Create new notebook</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookNoNameContent" xml:space="preserve">
+    <value>Empty notebook names are not supported</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookAlreadyExistsTitle" xml:space="preserve">
+    <value>Failed to create notebook</value>
+  </data>
+  <data name="NotebookListCreateNewNotebookAlreadyExistsContent" xml:space="preserve">
+    <value>A notebook with the same name already exists</value>
+  </data>
+  <data name="NotebookListDeleteFolderTitle" xml:space="preserve">
+    <value>Delete folder &lt;itemName&gt;?</value>
+  </data>
+  <data name="NotebookListDeleteFileTitle" xml:space="preserve">
+    <value>Delete &lt;itemName&gt; notebook?</value>
+  </data>
+  <data name="NotebookListDeleteItemContent" xml:space="preserve">
+    <value>This action cannot be undone</value>
+  </data>
+  <data name="NotebookListDeleteMenuItemCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NotebookListDeleteFileFailedTitle" xml:space="preserve">
+    <value>Failed to delete notebook</value>
+  </data>
+  <data name="NotebookListDeleteFolderFailedTitle" xml:space="preserve">
+    <value>Failed to delete the folder</value>
+  </data>
+  <data name="NotebookListDeleteItemOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="NotebookListDeleteItemFailedContent" xml:space="preserve">
+    <value>An error occured</value>
+  </data>
+  <data name="NotebookListRenameItemPlaceholder" xml:space="preserve">
+    <value>Enter new name</value>
+  </data>
+  <data name="NotebookListRenameFileTitle" xml:space="preserve">
+    <value>Rename notebook</value>
+  </data>
+  <data name="NotebookListRenameFolderTitle" xml:space="preserve">
+    <value>Rename folder</value>
+  </data>
+  <data name="NotebookListRenameItemCancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
 </root>

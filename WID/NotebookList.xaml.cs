@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas.UI.Xaml;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -135,10 +136,10 @@ namespace WID
 
             ContentDialog dialog = new ContentDialog
             {
-                Title = "Create new notebook",
+                Title = Loc.GetLocalizedString("NotebookListCreateNewNotebookTitle"),
                 Content = options,
-                PrimaryButtonText = "Create",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementCreate"),
+                CloseButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementCancel"),
                 DefaultButton = ContentDialogButton.Primary,
             };
 
@@ -150,9 +151,9 @@ namespace WID
             {
                 ContentDialog dialogNoName = new ContentDialog
                 {
-                    Title = "No name entered",
-                    Content = "Empty file names are not supported",
-                    PrimaryButtonText = "Ok",
+                    Title = Loc.GetLocalizedString("NotebookListCreateNewElementNoNameTitle"),
+                    Content = Loc.GetLocalizedString("NotebookListCreateNewNotebookNoNameContent"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
                 await dialogNoName.ShowAsync();
@@ -184,9 +185,9 @@ namespace WID
             {
                 ContentDialog dialogFailed = new ContentDialog
                 {
-                    Title = "Failed to create notebook",
+                    Title = Loc.GetLocalizedString("NotebookListCreateNewNotebookAlreadyExistsTitle"),
                     Content = "A notebook with the same name already exists",
-                    PrimaryButtonText = "Ok",
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
                 await dialogFailed.ShowAsync();
@@ -197,16 +198,16 @@ namespace WID
         {
             TextBox txtbox = new TextBox
             {
-                PlaceholderText = "Enter name for folder",
+                PlaceholderText = Loc.GetLocalizedString("NotebookListCreateNewFolderInputPlaceholder"),
                 AcceptsReturn = false,
             };
 
             ContentDialog dialog = new ContentDialog
             {
-                Title = new Shared.Loc { Key = "NotebookListCreateNewFolderTitle" },
+                Title = Loc.GetLocalizedString("NotebookListCreateNewFolderTitle"),
                 Content = txtbox,
-                PrimaryButtonText = "Create",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementCreate"),
+                CloseButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementCancel"),
                 DefaultButton = ContentDialogButton.Primary,
             };
 
@@ -218,9 +219,9 @@ namespace WID
             {
                 ContentDialog dialogNoName = new ContentDialog
                 {
-                    Title = "No name entered",
-                    Content = "Empty folder names are not supported",
-                    PrimaryButtonText = "Ok",
+                    Title = Loc.GetLocalizedString("NotebookListCreateNewElementNoNameTitle"),
+                    Content = Loc.GetLocalizedString("NotebookListCreateNewFolderNoNameContent"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
                 await dialogNoName.ShowAsync();
@@ -230,9 +231,9 @@ namespace WID
             {
                 ContentDialog dialogInvalidEnding = new ContentDialog
                 {
-                    Title = "Invalid ending entered",
-                    Content = "Folders with the ending '.notebook' are considered notebooks",
-                    PrimaryButtonText = "Ok",
+                    Title = Loc.GetLocalizedString("NotebookListCreateNewFolderInvalidNameTitle"),
+                    Content = Loc.GetLocalizedString("NotebookListCreateNewFolderInvalidNameContent"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
                 await dialogInvalidEnding.ShowAsync();
@@ -249,9 +250,9 @@ namespace WID
             {
                 ContentDialog dialogFailed = new ContentDialog
                 {
-                    Title = "Failed to create notebook",
-                    Content = "A notebook with the same name already exists",
-                    PrimaryButtonText = "Ok",
+                    Title = Loc.GetLocalizedString("NotebookListCreateNewFolderAlreadyExistsTitle"),
+                    Content = Loc.GetLocalizedString("NotebookListCreateNewFolderAlreadyExistsContent"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
                 await dialogFailed.ShowAsync();
@@ -268,16 +269,16 @@ namespace WID
             {
                 TextBox txtbox = new TextBox
                 {
-                    PlaceholderText = "Enter new name",
+                    PlaceholderText = Loc.GetLocalizedString("NotebookListRenameItemPlaceholder"),
                     AcceptsReturn = false,
                 };
 
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = "Rename " + (element.isFolder ? "folder" : "notebook"),
+                    Title = Loc.GetLocalizedString("NotebookListRename" + (element.isFolder ? "Folder" : "File") + "Title"),
                     Content = txtbox,
-                    PrimaryButtonText = "Rename",
-                    CloseButtonText = "Cancel",
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameItemPlaceholder"),
+                    CloseButtonText = Loc.GetLocalizedString("NotebookListRenameItemCancel"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
 
@@ -340,10 +341,10 @@ namespace WID
             {
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = "Delete " + (element.isFolder ? "folder" : "notebook") + "?",
-                    Content = "This action cannot be undone",
-                    PrimaryButtonText = "Delete",
-                    CloseButtonText = "Cancel",
+                    Title = Loc.GetLocalizedString("NotebookListDelete" + (element.isFolder ? "Folder" : "File") + "Title").Replace("<itemName>", element.itemName.Replace(".notebook", "")),
+                    Content = Loc.GetLocalizedString("NotebookListDeleteItemContent"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListDeleteMenuItem"),
+                    CloseButtonText = Loc.GetLocalizedString("NotebookListDeleteMenuItemCancel"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
 
@@ -362,9 +363,9 @@ namespace WID
                 {
                     ContentDialog dialogFailed = new ContentDialog
                     {
-                        Title = "Failed to delete " + (element.isFolder ? "folder" : "notebook"),
-                        Content = "An error occured",
-                        PrimaryButtonText = "Ok",
+                        Title = Loc.GetLocalizedString("NotebookListDelete" + (element.isFolder ? "Folder" : "File") + "FailedTitle"),
+                        Content = Loc.GetLocalizedString("NotebookListDeleteItemFailedContent"),
+                        PrimaryButtonText = Loc.GetLocalizedString("NotebookListDeleteItemOk"),
                         DefaultButton = ContentDialogButton.Primary,
                     };
                     await dialogFailed.ShowAsync();

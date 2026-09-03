@@ -19,5 +19,10 @@ namespace Shared
 
             return loader.GetString(Key);
         }
+
+        public static string GetLocalizedString(string key)
+        {
+            return loader.GetString(key);
+        }
     }
 }
