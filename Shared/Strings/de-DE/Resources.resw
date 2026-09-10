@@ -267,4 +267,31 @@
   <data name="NotebookListRenameItemCancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
+  <data name="NotebookListRenameItemOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="NotebookListRenameItemSameNameTitle" xml:space="preserve">
+    <value>Name ist gleich wie der derzeitige</value>
+  </data>
+  <data name="NotebookListRenameItemSameNameContent" xml:space="preserve">
+    <value>Anders umbenennen</value>
+  </data>
+  <data name="NotebookListRenameItemInvalidNameTitle" xml:space="preserve">
+    <value>Ungültiger Name eingegeben</value>
+  </data>
+  <data name="NotebookListRenameFileInvalidNameContent" xml:space="preserve">
+    <value>'.notebook' Endungen werden nicht unterstützt</value>
+  </data>
+  <data name="NotebookListRenameItemFailTitle" xml:space="preserve">
+    <value>Umbenennen des Notizbuches fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListRenameFolderFailTitle" xml:space="preserve">
+    <value>Umbenennen des Ordners fehlgeschlagen</value>
+  </data>
+  <data name="NotebookListRenameFileFailContent" xml:space="preserve">
+    <value>Möglicherweise existiert ein Notizbuch mit demselben Namen bereits</value>
+  </data>
+  <data name="NotebookListRenameFolderFailContent" xml:space="preserve">
+    <value>Möglicherweise existiert ein Ordner mit demselben Namen bereits</value>
+  </data>
 </root>

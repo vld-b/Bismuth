@@ -186,7 +186,7 @@ namespace WID
                 ContentDialog dialogFailed = new ContentDialog
                 {
                     Title = Loc.GetLocalizedString("NotebookListCreateNewNotebookAlreadyExistsTitle"),
-                    Content = "A notebook with the same name already exists",
+                    Content = Loc.GetLocalizedString("NotebookListCreateNewNotebookAlreadyExistsContent"),
                     PrimaryButtonText = Loc.GetLocalizedString("NotebookListCreateNewElementOk"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
@@ -277,7 +277,7 @@ namespace WID
                 {
                     Title = Loc.GetLocalizedString("NotebookListRename" + (element.isFolder ? "Folder" : "File") + "Title"),
                     Content = txtbox,
-                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameItemPlaceholder"),
+                    PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameMenuItem"),
                     CloseButtonText = Loc.GetLocalizedString("NotebookListRenameItemCancel"),
                     DefaultButton = ContentDialogButton.Primary,
                 };
@@ -290,9 +290,9 @@ namespace WID
                 {
                     ContentDialog dialogNoName = new ContentDialog
                     {
-                        Title = "Name equals current name",
-                        Content = "Rename to another name",
-                        PrimaryButtonText = "Ok",
+                        Title = Loc.GetLocalizedString("NotebookListRenameItemSameNameTitle"),
+                        Content = Loc.GetLocalizedString("NotebookListRenameItemSameNameContent"),
+                        PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameItemOk"),
                         DefaultButton = ContentDialogButton.Primary,
                     };
                     await dialogNoName.ShowAsync();
@@ -302,9 +302,9 @@ namespace WID
                 {
                     ContentDialog dialogInvalidEnding = new ContentDialog
                     {
-                        Title = "Invalid ending entered",
-                        Content = "Folders with the ending '.notebook' are considered notebooks",
-                        PrimaryButtonText = "Ok",
+                        Title = Loc.GetLocalizedString("NotebookListRenameItemInvalidNameTitle"),
+                        Content = Loc.GetLocalizedString("NotebookListRenameItemInvalidNameContent"),
+                        PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameItemOk"),
                         DefaultButton = ContentDialogButton.Primary,
                     };
                     await dialogInvalidEnding.ShowAsync();
@@ -321,9 +321,9 @@ namespace WID
                 {
                     ContentDialog dialogFailed = new ContentDialog
                     {
-                        Title = "Failed to rename " + (element.isFolder ? "folder" : "notebook"),
-                        Content = "A " + (element.isFolder ? "folder" : "notebook") + " with the same name already exists",
-                        PrimaryButtonText = "Ok",
+                        Title = Loc.GetLocalizedString("NotebookListRename" + (element.isFolder ? "Folder" : "File") + "FailTitle"),
+                        Content = Loc.GetLocalizedString("NotebookListRename" + (element.isFolder ? "Folder" : "File") + "FailContent"),
+                        PrimaryButtonText = Loc.GetLocalizedString("NotebookListRenameItemOk"),
                         DefaultButton = ContentDialogButton.Primary,
                     };
                     await dialogFailed.ShowAsync();
