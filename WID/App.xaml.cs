@@ -39,9 +39,7 @@ namespace WID
         /// <inheritdoc/>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            ApplicationLanguages.PrimaryLanguageOverride = "de-DE";
-            ResourceContext.GetForCurrentView().Reset();
-            ResourceContext.GetForViewIndependentUse().Reset();
+            ResourceContext.GetForCurrentView().Languages = new string[] { ApplicationLanguages.PrimaryLanguageOverride };
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active.
             if (Window.Current.Content is not Frame rootFrame)

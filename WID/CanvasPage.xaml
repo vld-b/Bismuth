@@ -90,7 +90,7 @@
             <muxc:DropDownButton
                 Background="Transparent"
                 BorderBrush="Transparent"
-                ToolTipService.ToolTip="File Options"
+                ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipFileOptions}"
                 >
                 <muxc:DropDownButton.Content>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE160;" />
@@ -100,7 +100,7 @@
                         Placement="BottomEdgeAlignedLeft"
                         >
                         <MenuFlyoutItem
-                            Text="Save File"
+                            Text="{shared:Loc Key=CanvasPageDropDownSaveFile}"
                             Click="SaveFile"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
@@ -111,7 +111,7 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
-                            Text="File Settings"
+                            Text="{shared:Loc Key=CanvasPageDropDownFileSettings}"
                             Click="OpenFileOptions"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
@@ -123,7 +123,7 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutSeparator />
                         <MenuFlyoutItem
-                            Text="Paste object"
+                            Text="{shared:Loc Key=CanvasPageDropDownPasteObject}"
                             Click="PasteObject"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
@@ -136,7 +136,7 @@
                         <MenuFlyoutSeparator />
                         <MenuFlyoutItem
                             x:Name="btUndo"
-                            Text="Undo"
+                            Text="{shared:Loc Key=CanvasPageDropDownUndo}"
                             Click="UndoLastAction"
                             IsEnabled="False"
                             >
@@ -149,7 +149,7 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             x:Name="btRedo"
-                            Text="Redo"
+                            Text="{shared:Loc Key=CanvasPageDropDownRedo}"
                             Click="RedoLastAction"
                             IsEnabled="False"
                             >
@@ -166,7 +166,7 @@
             <muxc:DropDownButton
                 Background="Transparent"
                 BorderBrush="Transparent"
-                ToolTipService.ToolTip="Add item"
+                ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipAddItem}"
                 >
                 <muxc:DropDownButton.Content>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE109;" />
@@ -175,8 +175,8 @@
                     <MenuFlyout>
                         <MenuFlyoutItem
                             Click="AddPageClicked"
-                            Text="Add empty page"
-                            ToolTipService.ToolTip="Add empty page (with default template)"
+                            Text="{shared:Loc Key=CanvasPageDropDownAddEmptyPage}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipAddEmptyPage}"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="Add" Modifiers="Control" />
@@ -187,8 +187,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             Click="ImportFromFile"
-                            Text="Import file"
-                            ToolTipService.ToolTip="Import from an image or PDF file"
+                            Text="{shared:Loc Key=CanvasPageDropDownImportFile}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipImportFile}"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="I" Modifiers="Control" />
@@ -199,8 +199,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             Click="OpenCameraForFileImport"
-                            Text="Open camera"
-                            ToolTipService.ToolTip="Open the camera to capture a document"
+                            Text="{shared:Loc Key=CanvasPageDropDownOpenCamera}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipOpenCamera}"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="O" Modifiers="Control" />
@@ -211,8 +211,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             Click="AddTextToCurrentPage"
-                            Text="Add text"
-                            ToolTipService.ToolTip="Add an editable text block to the current page"
+                            Text="{shared:Loc Key=CanvasPageDropDownAddText}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipAddText}"
                             >
                             <MenuFlyoutItem.KeyboardAccelerators>
                                 <KeyboardAccelerator Key="T" Modifiers="Control" />
@@ -227,7 +227,7 @@
             <muxc:DropDownButton
                 Background="Transparent"
                 BorderBrush="Transparent"
-                ToolTipService.ToolTip="Export"
+                ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipExport}"
                 >
                 <muxc:DropDownButton.Content>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEDE1;" />
@@ -236,8 +236,8 @@
                     <MenuFlyout>
                         <MenuFlyoutItem
                             Click="ExportCurrentPageAsImage"
-                            Text="Current as image"
-                            ToolTipService.ToolTip="Export the current page as an image to the chosen location"
+                            Text="{shared:Loc Key=CanvasPageDropDownExportImage}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipExportImage}"
                             >
                             <MenuFlyoutItem.Icon>
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEE71;" />
@@ -248,8 +248,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             Click="PrepareExportAsPDF"
-                            Text="Pages as PDF"
-                            ToolTipService.ToolTip="Export selected pages as a PDF"
+                            Text="{shared:Loc Key=CanvasPageDropDownExportPDF}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipExportPDF}"
                             >
                             <MenuFlyoutItem.Icon>
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8A5;" />
@@ -260,8 +260,8 @@
                         </MenuFlyoutItem>
                         <MenuFlyoutItem
                             Click="PrepareExportAsBismuth"
-                            Text="Pages as Bismuth file"
-                            ToolTipService.ToolTip="Export selected pages to Bismuth file"
+                            Text="{shared:Loc Key=CanvasPageDropDownExportBismuth}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipExportBismuth}"
                             >
                             <MenuFlyoutItem.Icon>
                                 <muxc:ImageIcon Source="/Assets/icon128x128.png" />

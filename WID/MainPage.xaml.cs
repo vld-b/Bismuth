@@ -32,6 +32,7 @@ namespace WID
     public sealed partial class MainPage : Page
     {
         private string searchingFor = "";
+        private object? notebookData;
 
         public MainPage()
         {
@@ -51,8 +52,19 @@ namespace WID
                     new FolderNavigationData(null, Frame),
                     new SuppressNavigationTransitionInfo()
                     );
+            else if (e.Parameter is LanguageReloadData reloadData)
+            {
+                notebookData = reloadData.notebookData;
+                frMainMenu.Navigate(
+                    typeof(SettingsPage),
+                    new SettingsNavigationData(LanguageChangeReloadPage, reloadData.settingsPageVerticalOffset),
+                    new SuppressNavigationTransitionInfo()
+                    );
+                nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
+            }
             else
             {
+                notebookData = e.Parameter;
                 frMainMenu.Navigate(
                     typeof(NotebookList),
                     e.Parameter,
@@ -82,7 +94,7 @@ namespace WID
                     case "Settings":
                         frMainMenu.Navigate(
                             typeof(SettingsPage),
-                            null,
+                            new SettingsNavigationData(LanguageChangeReloadPage, 0.0d),
                             new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
                             );
                         break;
@@ -159,6 +171,11 @@ namespace WID
                 new DrillInNavigationTransitionInfo()
                 );
         }
+
+        private void LanguageChangeReloadPage(double verticalOffset)
+        {
+            Frame.Navigate(typeof(MainPage), new LanguageReloadData(notebookData, verticalOffset), new DrillInNavigationTransitionInfo());
+        }
     }
 
     public class SearchNavigation
@@ -174,6 +191,18 @@ namespace WID
             this.searchKeyword = searchKeyword;
             this.pageId = pageId;
             this.recText = recText;
+        }
+    }
+
+    public class LanguageReloadData
+    {
+        public object? notebookData;
+        public double settingsPageVerticalOffset;
+
+        public LanguageReloadData(object? notebookData, double verticalOffset)
+        {
+            this.notebookData = notebookData;
+            this.settingsPageVerticalOffset = verticalOffset;
         }
     }
 }

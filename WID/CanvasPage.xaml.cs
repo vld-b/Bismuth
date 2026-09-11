@@ -1614,7 +1614,7 @@ namespace WID
 
         private void PrepareExportAsPDF(object sender, RoutedEventArgs e)
         {
-            PrepareExportOfMultiplePages("Export as PDF", ExportPagesAsPDF);
+            PrepareExportOfMultiplePages(Loc.GetLocalizedString("CanvasPageButtonExportPDF"), ExportPagesAsPDF);
         }
 
         private async void ExportPagesAsPDF(object sender, RoutedEventArgs e)
@@ -1710,7 +1710,7 @@ namespace WID
 
         private void PrepareExportAsBismuth(object sender, RoutedEventArgs e)
         {
-            PrepareExportOfMultiplePages("Export as Bismuth", ExportAsBismuth);
+            PrepareExportOfMultiplePages(Loc.GetLocalizedString("CanvasPageButtonExportBismuth"), ExportAsBismuth);
         }
 
         private async void ExportAsBismuth(object sender, RoutedEventArgs e)

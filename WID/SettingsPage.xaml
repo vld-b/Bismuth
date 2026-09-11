@@ -12,6 +12,7 @@
     >
 
     <ScrollViewer
+        x:Name="svSettingsContainer"
         Padding="48, 48, 0, 0"
         VerticalAlignment="Stretch"
         HorizontalAlignment="Stretch"
@@ -24,6 +25,25 @@
             Orientation="Vertical"
             Spacing="32"
             >
+
+            <StackPanel
+                Style="{StaticResource SettingsPageSectionPanel}"
+                >
+                <TextBlock
+                    Text="{shared:Loc Key=SettingsPageSectionGeneralTitle}"
+                    Style="{StaticResource SettingsPageSectionHeader}"
+                    />
+
+                <ComboBox
+                    x:Name="cbxLanguage"
+                    SelectionChanged="ChangeAppLanguage"
+                    Style="{StaticResource SettingsPageComboBox}"
+                    >
+                    <ComboBoxItem Content="Deutsch (Deutschland)" Tag="de-DE" />
+                    <ComboBoxItem Content="English (American)" Tag="en-US" />
+                </ComboBox>
+            </StackPanel>
+            
             <StackPanel
                 Style="{StaticResource SettingsPageSectionPanel}"
                 >

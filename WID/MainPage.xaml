@@ -63,6 +63,7 @@
             Grid.Row="1"
             SelectionChanged="SwitchPage"
             IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="True"
             AlwaysShowHeader="False"
             IsTitleBarAutoPaddingEnabled="False"
             PaneDisplayMode="Left"

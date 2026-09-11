@@ -157,7 +157,7 @@
     <value>Unten</value>
   </data>
   <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacement" xml:space="preserve">
-    <value>Rückgängig/Vorgängig-knöpfe Platzierung</value>
+    <value>Rückgängig/Wiederholen-knöpfe Platzierung</value>
   </data>
   <data name="SettingsPageSectionNotetakingUndoRedoButtonsPlacementTopLeft" xml:space="preserve">
     <value>Oben links</value>
@@ -353,5 +353,80 @@
   </data>
   <data name="MainPageSearchNotesPlaceholder" xml:space="preserve">
     <value>Notizen durchsuchen</value>
+  </data>
+  <data name="CanvasPageToolTipFileOptions" xml:space="preserve">
+    <value>Dateioptionen</value>
+  </data>
+  <data name="CanvasPageDropDownSaveFile" xml:space="preserve">
+    <value>Datei speichern</value>
+  </data>
+  <data name="CanvasPageDropDownFileSettings" xml:space="preserve">
+    <value>Dateieinstellungen</value>
+  </data>
+  <data name="CanvasPageDropDownPasteObject" xml:space="preserve">
+    <value>Objekt Einfügen</value>
+  </data>
+  <data name="CanvasPageDropDownUndo" xml:space="preserve">
+    <value>Rückgängig</value>
+  </data>
+  <data name="CanvasPageDropDownRedo" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="CanvasPageToolTipAddItem" xml:space="preserve">
+    <value>Objekt hinzufügen</value>
+  </data>
+  <data name="CanvasPageDropDownAddEmptyPage" xml:space="preserve">
+    <value>Leere Seite hinzufügen</value>
+  </data>
+  <data name="CanvasPageToolTipAddEmptyPage" xml:space="preserve">
+    <value>Fügt eine neue, leere Seite hinzu (mit dem Standardhintergrund)</value>
+  </data>
+  <data name="CanvasPageDropDownImportFile" xml:space="preserve">
+    <value>Datei importieren</value>
+  </data>
+  <data name="CanvasPageToolTipImportFile" xml:space="preserve">
+    <value>Bild-, PDF- oder Bismuth-Datei importieren</value>
+  </data>
+  <data name="CanvasPageDropDownOpenCamera" xml:space="preserve">
+    <value>Kamera öffnen</value>
+  </data>
+  <data name="CanvasPageToolTipOpenCamera" xml:space="preserve">
+    <value>Kamera öffnen um ein Dokument einzuscannen</value>
+  </data>
+  <data name="CanvasPageDropDownAddText" xml:space="preserve">
+    <value>Text hinzufügen</value>
+  </data>
+  <data name="CanvasPageToolTipAddText" xml:space="preserve">
+    <value>Füge einen bearbeitbaren Textblock auf der Seite hinzu</value>
+  </data>
+  <data name="CanvasPageToolTipExport" xml:space="preserve">
+    <value>Exportieren</value>
+  </data>
+  <data name="CanvasPageToolTipExportImage" xml:space="preserve">
+    <value>Diese Seite als Bilddatei zum gewählten Ort exportieren</value>
+  </data>
+  <data name="CanvasPageDropDownExportImage" xml:space="preserve">
+    <value>Seite als Bild</value>
+  </data>
+  <data name="CanvasPageDropDownExportPDF" xml:space="preserve">
+    <value>Seiten als PDF</value>
+  </data>
+  <data name="CanvasPageDropDownExportBismuth" xml:space="preserve">
+    <value>Seiten als Bismuth-Datei</value>
+  </data>
+  <data name="CanvasPageToolTipExportPDF" xml:space="preserve">
+    <value>Ausgewählte Seiten als PDF exportieren</value>
+  </data>
+  <data name="CanvasPageToolTipExportBismuth" xml:space="preserve">
+    <value>Ausgewählte Seiten als Bismuth-Datei exportieren</value>
+  </data>
+  <data name="CanvasPageButtonExportPDF" xml:space="preserve">
+    <value>Als PDF exportieren</value>
+  </data>
+  <data name="CanvasPageButtonExportBismuth" xml:space="preserve">
+    <value>Als Bismuth exportieren</value>
+  </data>
+  <data name="SettingsPageSectionGeneralTitle" xml:space="preserve">
+    <value>Allgemein</value>
   </data>
 </root>

@@ -354,4 +354,79 @@
   <data name="MainPageSearchNotesPlaceholder" xml:space="preserve">
     <value>Search notes</value>
   </data>
+  <data name="CanvasPageToolTipFileOptions" xml:space="preserve">
+    <value>File options</value>
+  </data>
+  <data name="CanvasPageDropDownSaveFile" xml:space="preserve">
+    <value>Save File</value>
+  </data>
+  <data name="CanvasPageDropDownFileSettings" xml:space="preserve">
+    <value>File settings</value>
+  </data>
+  <data name="CanvasPageDropDownPasteObject" xml:space="preserve">
+    <value>Paste object</value>
+  </data>
+  <data name="CanvasPageDropDownUndo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="CanvasPageDropDownRedo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="CanvasPageToolTipAddItem" xml:space="preserve">
+    <value>Add item</value>
+  </data>
+  <data name="CanvasPageDropDownAddEmptyPage" xml:space="preserve">
+    <value>Add empty page</value>
+  </data>
+  <data name="CanvasPageToolTipAddEmptyPage" xml:space="preserve">
+    <value>Add empty page (with default template)</value>
+  </data>
+  <data name="CanvasPageDropDownImportFile" xml:space="preserve">
+    <value>Import file</value>
+  </data>
+  <data name="CanvasPageToolTipImportFile" xml:space="preserve">
+    <value>Import from an image, a PDF or a Bismuth file</value>
+  </data>
+  <data name="CanvasPageDropDownOpenCamera" xml:space="preserve">
+    <value>Open camera</value>
+  </data>
+  <data name="CanvasPageToolTipOpenCamera" xml:space="preserve">
+    <value>Open camera to capture a document</value>
+  </data>
+  <data name="CanvasPageDropDownAddText" xml:space="preserve">
+    <value>Add text</value>
+  </data>
+  <data name="CanvasPageToolTipAddText" xml:space="preserve">
+    <value>Add an editable block of text on the page</value>
+  </data>
+  <data name="CanvasPageToolTipExport" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="CanvasPageToolTipExportImage" xml:space="preserve">
+    <value>Export the current page as an image to the chosen location</value>
+  </data>
+  <data name="CanvasPageDropDownExportImage" xml:space="preserve">
+    <value>Page as image</value>
+  </data>
+  <data name="CanvasPageDropDownExportPDF" xml:space="preserve">
+    <value>Pages as PDF</value>
+  </data>
+  <data name="CanvasPageDropDownExportBismuth" xml:space="preserve">
+    <value>Pages as Bismuth</value>
+  </data>
+  <data name="CanvasPageToolTipExportPDF" xml:space="preserve">
+    <value>Export selected pages as PDF</value>
+  </data>
+  <data name="CanvasPageToolTipExportBismuth" xml:space="preserve">
+    <value>Export selected pages as a Bismuth file</value>
+  </data>
+  <data name="CanvasPageButtonExportPDF" xml:space="preserve">
+    <value>Export as PDF</value>
+  </data>
+  <data name="CanvasPageButtonExportBismuth" xml:space="preserve">
+    <value>Export as Bismuth</value>
+  </data>
+  <data name="SettingsPageSectionGeneralTitle" xml:space="preserve">
+    <value>General</value>
+  </data>
 </root>
