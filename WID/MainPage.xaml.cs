@@ -31,6 +31,7 @@ namespace WID
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private bool readyToChangePage = false;
         private string searchingFor = "";
         private object? notebookData;
 
@@ -38,8 +39,6 @@ namespace WID
         {
             InitializeComponent();
             SetTitlebar();
-
-            nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -47,11 +46,15 @@ namespace WID
             base.OnNavigatedTo(e);
 
             if (e.NavigationMode == NavigationMode.Back)
+            {
                 frMainMenu.Navigate(
                     typeof(NotebookList),
                     new FolderNavigationData(null, Frame),
                     new SuppressNavigationTransitionInfo()
                     );
+                nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
+                readyToChangePage = true;
+            }
             else if (e.Parameter is LanguageReloadData reloadData)
             {
                 notebookData = reloadData.notebookData;
@@ -61,7 +64,10 @@ namespace WID
                     new SuppressNavigationTransitionInfo()
                     );
                 if (nvMainNavigation.IsLoaded)
+                {
                     nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
+                    readyToChangePage = true;
+                }
                 else
                     nvMainNavigation.Loaded += SetSettingsHighlighted;
             }
@@ -73,6 +79,8 @@ namespace WID
                     e.Parameter,
                     new SuppressNavigationTransitionInfo()
                     );
+                nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
+                readyToChangePage = true;
             }
         }
 
@@ -85,11 +93,12 @@ namespace WID
         {
             nvMainNavigation.Loaded -= SetSettingsHighlighted;
             nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
+            readyToChangePage = true;
         }
 
         private void SwitchPage(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
-            if (args.SelectedItem is Microsoft.UI.Xaml.Controls.NavigationViewItem item)
+            if (args.SelectedItem is Microsoft.UI.Xaml.Controls.NavigationViewItem item && readyToChangePage)
             {
                 switch (item.Tag)
                 {
