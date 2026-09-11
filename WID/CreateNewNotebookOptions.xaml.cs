@@ -157,7 +157,7 @@ namespace WID
 
         private void ChoosePagePattern(object sender, SelectionChangedEventArgs e)
         {
-            string selectedItem = (string)e.AddedItems[0];
+            string selectedItem = (string)((ComboBoxItem)e.AddedItems[0]).Tag;
 
             switch (selectedItem)
             {

@@ -294,4 +294,31 @@
   <data name="NotebookListRenameFolderFailContent" xml:space="preserve">
     <value>Perhaps a folder with the same name already exists</value>
   </data>
+  <data name="CreateNewNotebookOptionsNotebookNamePlaceholder" xml:space="preserve">
+    <value>Enter name for new notebook</value>
+  </data>
+  <data name="CreateNewNotebookOptionsInkLanguage" xml:space="preserve">
+    <value>Ink recognizer language:</value>
+  </data>
+  <data name="CreateNewNotebookOptionsTemplateSettings" xml:space="preserve">
+    <value>Template settings</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternHeader" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternPlaceholder" xml:space="preserve">
+    <value>Choose a pattern</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternDots" xml:space="preserve">
+    <value>Dots</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternGrid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternLines" xml:space="preserve">
+    <value>Lines</value>
+  </data>
 </root>

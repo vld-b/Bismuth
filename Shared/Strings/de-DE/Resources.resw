@@ -294,4 +294,31 @@
   <data name="NotebookListRenameFolderFailContent" xml:space="preserve">
     <value>Möglicherweise existiert ein Ordner mit demselben Namen bereits</value>
   </data>
+  <data name="CreateNewNotebookOptionsNotebookNamePlaceholder" xml:space="preserve">
+    <value>Namen für neues Notizbuch eingeben</value>
+  </data>
+  <data name="CreateNewNotebookOptionsInkLanguage" xml:space="preserve">
+    <value>Sprache des Handschrifterkenners:</value>
+  </data>
+  <data name="CreateNewNotebookOptionsTemplateSettings" xml:space="preserve">
+    <value>Vorlageneinstellungen</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternHeader" xml:space="preserve">
+    <value>Hintergrundsmuster</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternPlaceholder" xml:space="preserve">
+    <value>Muster auswählen</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternEmpty" xml:space="preserve">
+    <value>Leer</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternDots" xml:space="preserve">
+    <value>Punktiert</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternGrid" xml:space="preserve">
+    <value>Kariert</value>
+  </data>
+  <data name="CreateNewNotebookOptionsPatternLines" xml:space="preserve">
+    <value>Liniert</value>
+  </data>
 </root>

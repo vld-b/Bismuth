@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:shared="using:Shared"
     mc:Ignorable="d"
     Background="Transparent"
     >
@@ -18,7 +19,7 @@
 
         <TextBox
         x:Name="tbNotebookName"
-        PlaceholderText="Enter name for new notebook"
+        PlaceholderText="{shared:Loc Key=CreateNewNotebookOptionsNotebookNamePlaceholder}"
         />
 
         <StackPanel
@@ -27,7 +28,7 @@
             HorizontalAlignment="Stretch"
             >
             <TextBlock
-                Text="Ink recognizer language:"
+                Text="{shared:Loc Key=CreateNewNotebookOptionsInkLanguage}"
                 />
             <ComboBox
                 x:Name="cbxNotebookInkLanguage"
@@ -64,20 +65,20 @@
                 >
 
                 <TextBlock
-                    Text="Template Settings"
+                    Text="{shared:Loc Key=CreateNewNotebookOptionsTemplateSettings}"
                     FontWeight="Bold"
                     />
 
                 <ComboBox
                     x:Name="cbxConfigPattern"
-                    Header="Pattern"
-                    PlaceholderText="Choose a pattern"
+                    Header="{shared:Loc Key=CreateNewNotebookOptionsPatternHeader}"
+                    PlaceholderText="{shared:Loc Key=CreateNewNotebookOptionsPatternPlaceholder}"
                     >
 
-                    <x:String>Empty</x:String>
-                    <x:String>Lines</x:String>
-                    <x:String>Grid</x:String>
-                    <x:String>Dots</x:String>
+                    <ComboBoxItem Tag="Empty" Content="{shared:Loc Key=CreateNewNotebookOptionsPatternEmpty}" />
+                    <ComboBoxItem Tag="Lines" Content="{shared:Loc Key=CreateNewNotebookOptionsPatternLines}" />
+                    <ComboBoxItem Tag="Grid" Content="{shared:Loc Key=CreateNewNotebookOptionsPatternGrid}" />
+                    <ComboBoxItem Tag="Dots" Content="{shared:Loc Key=CreateNewNotebookOptionsPatternDots}" />
 
                 </ComboBox>
 
