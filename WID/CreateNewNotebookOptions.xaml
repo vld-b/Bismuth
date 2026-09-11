@@ -95,7 +95,7 @@
 
                     <TextBlock
                         x:Name="tbSpacingLabel"
-                        Text="Grid Spacing"
+                        Text="{shared:Loc Key=CreateNewNotebookOptionsGridSpacingLabel}"
                         />
 
                     <Slider
@@ -112,7 +112,7 @@
 
                     <muxc:ToggleSplitButton
                         x:Name="tsbHasMargins"
-                        Content="Margins"
+                        Content="{shared:Loc Key=CreateNewNotebookOptionsMargins}"
                         >
                         <muxc:ToggleSplitButton.Flyout>
                             <Flyout
@@ -132,7 +132,8 @@
                                         x:Name="cbMarginTop"
                                         Grid.Column="0"
                                         Grid.Row="0"
-                                        Content="Top"
+                                        Content="{shared:Loc Key=CreateNewNotebookOptionsMarginTop}"
+                                        Tag="Top"
                                         IsChecked="True"
                                         />
 
@@ -140,7 +141,8 @@
                                         x:Name="cbMarginBottom"
                                         Grid.Column="0"
                                         Grid.Row="1"
-                                        Content="Bottom"
+                                        Content="{shared:Loc Key=CreateNewNotebookOptionsMarginBottom}"
+                                        Tag="Bottom"
                                         IsChecked="True"
                                         />
 
@@ -148,7 +150,8 @@
                                         x:Name="cbMarginLeft"
                                         Grid.Column="1"
                                         Grid.Row="0"
-                                        Content="Left"
+                                        Content="{shared:Loc Key=CreateNewNotebookOptionsMarginLeft}"
+                                        Tag="Left"
                                         IsChecked="True"
                                         />
 
@@ -156,7 +159,8 @@
                                         x:Name="cbMarginRight"
                                         Grid.Column="1"
                                         Grid.Row="1"
-                                        Content="Right"
+                                        Content="{shared:Loc Key=CreateNewNotebookOptionsMarginRight}"
+                                        Tag="Right"
                                         IsChecked="True"
                                         />
                                 </Grid>
@@ -199,7 +203,7 @@
                                 Grid.Row="0"
                                 >
                                 <TextBlock
-                                    Text="Top"
+                                    Text="{shared:Loc Key=CreateNewNotebookOptionsMarginTop}"
                                     />
                                 <Slider
                                     x:Name="slMarginTop"
@@ -215,7 +219,7 @@
                                 Grid.Row="1"
                                 >
                                 <TextBlock
-                                    Text="Bottom"
+                                    Text="{shared:Loc Key=CreateNewNotebookOptionsMarginBottom}"
                                     />
                                 <Slider
                                     x:Name="slMarginBottom"
@@ -231,7 +235,7 @@
                                 Grid.Row="0"
                                 >
                                 <TextBlock
-                                    Text="Left"
+                                    Text="{shared:Loc Key=CreateNewNotebookOptionsMarginLeft}"
                                     />
                                 <Slider
                                     x:Name="slMarginLeft"
@@ -247,7 +251,7 @@
                                 Grid.Row="1"
                                 >
                                 <TextBlock
-                                    Text="Right"
+                                    Text="{shared:Loc Key=CreateNewNotebookOptionsMarginRight}"
                                     />
                                 <Slider
                                     x:Name="slMarginRight"

@@ -34,8 +34,8 @@ namespace WID
         public PageTemplatePattern? chosenPattern;
         public string? chosenInkLanguage = null;
 
-        private const string defaultInkLanguageOption = "Default setting";
-        private List<string> possibleInkLanguages = new List<string>();
+        private readonly ComboBoxItem defaultInkLanguageOption = new ComboBoxItem { Content = Loc.GetLocalizedString("CreateNewNotebookOptionsDefaultLanguage"), Tag = "Default setting" };
+        private List<ComboBoxItem> possibleInkLanguages = new List<ComboBoxItem>();
 
         public CreateNewNotebookOptions()
         {
@@ -45,7 +45,7 @@ namespace WID
 
             possibleInkLanguages.Add(defaultInkLanguageOption);
             foreach (InkRecognizer rec in (new InkRecognizerContainer()).GetRecognizers())
-                possibleInkLanguages.Add(rec.Name);
+                possibleInkLanguages.Add(new ComboBoxItem { Content = rec.Name, Tag = rec.Name });
             cbxNotebookInkLanguage.ItemsSource = possibleInkLanguages;
             cbxNotebookInkLanguage.SelectedIndex = 0;
         }
@@ -60,32 +60,34 @@ namespace WID
             if (config.inkRecognizerLanguage is null)
                 cbxNotebookInkLanguage.SelectedItem = defaultInkLanguageOption;
             else
-                cbxNotebookInkLanguage.SelectedItem = config.inkRecognizerLanguage;
+                foreach (ComboBoxItem item in cbxNotebookInkLanguage.Items)
+                    if ((string)item.Tag == config.inkRecognizerLanguage)
+                        cbxNotebookInkLanguage.SelectedItem = item;
 
             chosenPattern = config.defaultTemplate.pattern?.Clone() ?? null;
             npTemplatePreview.currentPattern = chosenPattern;
 
             if (chosenPattern is null)
-                cbxConfigPattern.SelectedItem = "Empty";
+                cbxConfigPattern.SelectedIndex = 0;
             else
             {
                 switch (chosenPattern.type)
                 {
                     case PatternType.Empty:
-                        cbxConfigPattern.SelectedItem = "Empty";
+                        cbxConfigPattern.SelectedIndex = 0;
                         break;
                     case PatternType.Lines:
-                        cbxConfigPattern.SelectedItem = "Lines";
+                        cbxConfigPattern.SelectedIndex = 1;
                         spSpacingOptions.Opacity = 1d;
                         spSpacingOptions.IsHitTestVisible = true;
                         break;
                     case PatternType.Grid:
-                        cbxConfigPattern.SelectedItem = "Grid";
+                        cbxConfigPattern.SelectedIndex = 2;
                         spSpacingOptions.Opacity = 1d;
                         spSpacingOptions.IsHitTestVisible = true;
                         break;
                     case PatternType.Dots:
-                        cbxConfigPattern.SelectedItem = "Dots";
+                        cbxConfigPattern.SelectedIndex = 3;
                         spSpacingOptions.Opacity = 1d;
                         spSpacingOptions.IsHitTestVisible = true;
                         break;
@@ -168,19 +170,19 @@ namespace WID
                     npTemplatePreview.currentPattern = null;
                     return;
                 case "Lines":
-                    tbSpacingLabel.Text = "Line spacing";
+                    tbSpacingLabel.Text = Loc.GetLocalizedString("CreateNewNotebookOptionsLineSpacingLabel");
                     if (chosenPattern is null)
                         chosenPattern = new PageTemplatePattern(PatternType.Lines, slTemplateSpacing.Value);
                     chosenPattern.type = PatternType.Lines;
                     break;
                 case "Grid":
-                    tbSpacingLabel.Text = "Grid spacing";
+                    tbSpacingLabel.Text = Loc.GetLocalizedString("CreateNewNotebookOptionsGridSpacingLabel");
                     if (chosenPattern is null)
                         chosenPattern = new PageTemplatePattern(PatternType.Grid, slTemplateSpacing.Value);
                     chosenPattern.type = PatternType.Grid;
                     break;
                 case "Dots":
-                    tbSpacingLabel.Text = "Dot spacing";
+                    tbSpacingLabel.Text = Loc.GetLocalizedString("CreateNewNotebookOptionsDotsSpacingLabel");
                     if (chosenPattern is null)
                         chosenPattern = new PageTemplatePattern(PatternType.Dots, slTemplateSpacing.Value);
                     chosenPattern.type = PatternType.Dots;
@@ -239,7 +241,7 @@ namespace WID
         private void TemplateMarginToggled(object sender, RoutedEventArgs e)
         {
             CheckBox cb = (CheckBox)sender;
-            switch (cb.Content)
+            switch (cb.Tag)
             {
                 case "Left":
                     npTemplatePreview.currentPattern!.margin.hasLeft = cb.IsChecked ?? true;
@@ -281,8 +283,8 @@ namespace WID
 
         private void ChooseInkLanguage(object sender, SelectionChangedEventArgs e)
         {
-            string chosenItem = (string)e.AddedItems[0];
-            if (chosenItem == defaultInkLanguageOption)
+            string chosenItem = (string)((ComboBoxItem)e.AddedItems[0]).Tag;
+            if (chosenItem == (string)defaultInkLanguageOption.Tag)
                 chosenInkLanguage = null;
             else
                 chosenInkLanguage = chosenItem;

@@ -321,4 +321,31 @@
   <data name="CreateNewNotebookOptionsPatternLines" xml:space="preserve">
     <value>Liniert</value>
   </data>
+  <data name="CreateNewNotebookOptionsGridSpacingLabel" xml:space="preserve">
+    <value>Kästchengröße</value>
+  </data>
+  <data name="CreateNewNotebookOptionsLineSpacingLabel" xml:space="preserve">
+    <value>Linienabstand</value>
+  </data>
+  <data name="CreateNewNotebookOptionsDotsSpacingLabel" xml:space="preserve">
+    <value>Punkteabstand</value>
+  </data>
+  <data name="CreateNewNotebookOptionsMarginTop" xml:space="preserve">
+    <value>Oben</value>
+  </data>
+  <data name="CreateNewNotebookOptionsMarginRight" xml:space="preserve">
+    <value>Rechts</value>
+  </data>
+  <data name="CreateNewNotebookOptionsMarginLeft" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="CreateNewNotebookOptionsMarginBottom" xml:space="preserve">
+    <value>Unten</value>
+  </data>
+  <data name="CreateNewNotebookOptionsMargins" xml:space="preserve">
+    <value>Ränder</value>
+  </data>
+  <data name="CreateNewNotebookOptionsDefaultLanguage" xml:space="preserve">
+    <value>Standardeinstellung</value>
+  </data>
 </root>
