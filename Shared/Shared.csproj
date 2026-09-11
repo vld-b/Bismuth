@@ -5,6 +5,8 @@
 	<UseUWP>true</UseUWP>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
 
   <ItemGroup>
