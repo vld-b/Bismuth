@@ -348,4 +348,10 @@
   <data name="CreateNewNotebookOptionsDefaultLanguage" xml:space="preserve">
     <value>Standardeinstellung</value>
   </data>
+  <data name="MainPageNotebooks" xml:space="preserve">
+    <value>Notizen</value>
+  </data>
+  <data name="MainPageSearchNotesPlaceholder" xml:space="preserve">
+    <value>Notizen durchsuchen</value>
+  </data>
 </root>
