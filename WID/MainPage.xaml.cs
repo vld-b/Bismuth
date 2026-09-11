@@ -60,7 +60,10 @@ namespace WID
                     new SettingsNavigationData(LanguageChangeReloadPage, reloadData.settingsPageVerticalOffset),
                     new SuppressNavigationTransitionInfo()
                     );
-                nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
+                if (nvMainNavigation.IsLoaded)
+                    nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
+                else
+                    nvMainNavigation.Loaded += SetSettingsHighlighted;
             }
             else
             {
@@ -76,6 +79,12 @@ namespace WID
         private void SetTitlebar()
         {
             Window.Current.SetTitleBar(TitleBar);
+        }
+
+        private void SetSettingsHighlighted(object sender, RoutedEventArgs e)
+        {
+            nvMainNavigation.Loaded -= SetSettingsHighlighted;
+            nvMainNavigation.SelectedItem = nvMainNavigation.SettingsItem;
         }
 
         private void SwitchPage(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
