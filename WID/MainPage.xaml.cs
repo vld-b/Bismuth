@@ -179,6 +179,9 @@ namespace WID
 
         private async void NavigateToSelectedItem(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            if (args.ChosenSuggestion is null)
+                return;
+
             NotebookSearchResult selItem = (NotebookSearchResult)args.ChosenSuggestion;
 
             SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, searchingFor, selItem.pageId, selItem.recText);
