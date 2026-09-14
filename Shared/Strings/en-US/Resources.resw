@@ -429,4 +429,25 @@
   <data name="SettingsPageSectionGeneralTitle" xml:space="preserve">
     <value>General</value>
   </data>
+  <data name="CanvasPageTeachingTipFileSavedTitle" xml:space="preserve">
+    <value>File saved successfully ✅</value>
+  </data>
+  <data name="CanvasPageTeachingTipImportFailTitle" xml:space="preserve">
+    <value>Import failed ❌</value>
+  </data>
+  <data name="CanvasPageTeachingTipImportFailDesc" xml:space="preserve">
+    <value>Corrupt file provided</value>
+  </data>
+  <data name="CanvasPageToolTipInkFailPaste" xml:space="preserve">
+    <value>Could not paste ink ❌</value>
+  </data>
+  <data name="^" xml:space="preserve">
+    <value>Ink copied ✅</value>
+  </data>
+  <data name="CanvasPageInkToolbarAddNewColor" xml:space="preserve">
+    <value>Add color</value>
+  </data>
+  <data name="ColorPickerButtonRemoveColor" xml:space="preserve">
+    <value>Remove color</value>
+  </data>
 </root>

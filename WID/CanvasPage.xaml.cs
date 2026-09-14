@@ -273,7 +273,7 @@ namespace WID
 
             savingBar = null;
             popup.Hide();
-            _ = Utils.ShowTeachingTip(ttInfoPopup, "File saved successfully ✅", "", 3000);
+            _ = Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageTeachingTipFileSavedTitle"), "", 3000);
         }
 
         private async Task SaveFileSilent()
@@ -764,7 +764,7 @@ namespace WID
                     } else
                     {
                         popup.Hide();
-                        await Utils.ShowTeachingTip(ttInfoPopup, "Import failed ❌", "Corrupt file provided", 3000);
+                        await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageTeachingTipImportFailTitle"), Loc.GetLocalizedString("CanvasPageTeachingTipImportFailDesc"), 3000);
                         return;
                     }
 
@@ -1507,7 +1507,7 @@ namespace WID
                 }
                 catch
                 {
-                    await Utils.ShowTeachingTip(ttInfoPopup, "Could not paste ink❌", "", 3000);
+                    await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageToolTipInkFailPaste"), "", 3000);
                 }
             }
             else if (clip.Contains(StandardDataFormats.Bitmap))
@@ -1774,7 +1774,7 @@ namespace WID
         private async void CopyStrokesToClipboard(object sender, RoutedEventArgs e)
         {
             pageState.currentlyActivePage!.inkPres.StrokeContainer.CopySelectedToClipboard();
-            await Utils.ShowTeachingTip(ttInfoPopup, "Copied ink to clipboard ✅", "", 3000);
+            await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageToolTipInkCopied"), "", 3000);
         }
 
         private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)

@@ -429,4 +429,25 @@
   <data name="SettingsPageSectionGeneralTitle" xml:space="preserve">
     <value>Allgemein</value>
   </data>
+  <data name="CanvasPageTeachingTipFileSavedTitle" xml:space="preserve">
+    <value>Datei erfolgreich gespeichert ✅</value>
+  </data>
+  <data name="CanvasPageTeachingTipImportFailTitle" xml:space="preserve">
+    <value>Importieren fehlgeschlagen ❌</value>
+  </data>
+  <data name="CanvasPageTeachingTipImportFailDesc" xml:space="preserve">
+    <value>Korrupte Datei vorhanden</value>
+  </data>
+  <data name="CanvasPageToolTipInkFailPaste" xml:space="preserve">
+    <value>Schrift konnte nicht eingefügt werden ❌</value>
+  </data>
+  <data name="^" xml:space="preserve">
+    <value>Schrift kopiert ✅</value>
+  </data>
+  <data name="CanvasPageInkToolbarAddNewColor" xml:space="preserve">
+    <value>Farbe hinzufügen</value>
+  </data>
+  <data name="ColorPickerButtonRemoveColor" xml:space="preserve">
+    <value>Farbe entfernen</value>
+  </data>
 </root>

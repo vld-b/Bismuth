@@ -35,9 +35,8 @@
                     />
                 <Button
                     Click="RemoveCurrentColor"
-                    >
-                    Remove color
-                </Button>
+                    Content="{local:Loc Key=ColorPickerButtonRemoveColor}"
+                    />
             </StackPanel>
         </Flyout>
     </Button.Flyout>

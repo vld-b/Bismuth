@@ -857,7 +857,7 @@
                                                             x:Name="cpColor"
                                                             />
                                                         <Button
-                                                            Content="Add color"
+                                                            Content="{shared:Loc Key=CanvasPageInkToolbarAddNewColor}"
                                                             Click="AddNewColor"
                                                             />
                                                     </StackPanel>
