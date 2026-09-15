@@ -16,6 +16,7 @@
         StrokeDashArray="7.0, 3.0"
         Stroke="{StaticResource SystemAccentColor}"
         StrokeThickness="4"
+        Margin="-2"
         >
         
     </Rectangle>

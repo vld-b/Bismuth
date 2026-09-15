@@ -63,6 +63,12 @@ namespace WID
         public UndoRedoSystem undoRedoSystem { get; private set; }
 
         private Polyline? selectionLasso;
+        private DateTime lassoAnimationStart;
+        private bool isClockwiseLasso = false;
+        private int topLeftPointIndex = 0;
+        private List<Point> startLassoPoints = new List<Point>();
+        private List<Point> targetLassoPoints = new List<Point>();
+        private static readonly TimeSpan lassoAnimationDuration = TimeSpan.FromMilliseconds(400);
         private ManipulateInkRect? selectionRect;
         private PageState pageState;
         private SelectionMode _selectionMode;
@@ -285,7 +291,7 @@ namespace WID
             }
         }
 
-        public void SelectInkWithPolyline(IEnumerable<Point> points)
+        public async Task SelectInkWithPolyline(IEnumerable<Point> points, bool shouldAnimate)
         {
             if (pageState.selectedStrokes is not null)
             {
@@ -309,10 +315,149 @@ namespace WID
             pageState.currentlyActivePage = this;
             pageState.ShowInkSelectionPopup();
 
+            if (shouldAnimate)
+            {
+                SetStartLassoPoints();
+                SetTargetLassoPoints(selectionRect);
+
+                lassoAnimationStart = DateTime.Now;
+                CompositionTarget.Rendering += AnimateLasso;
+
+                await Task.Delay(TimeSpan.FromMilliseconds(440)); // Animation time is 400 ms, but add 10% as buffer to account for clock inconsistencies
+            }
+
             pageContent.Children.Remove(selectionLasso!);
             selectionLasso = null;
             this.selectionRect = new ManipulateInkRect(selectionRect, this, pageState.selectedStrokes, undoRedoSystem);
             cvManipulationRects.Children.Add(this.selectionRect);
+        }
+
+        private void AnimateLasso(object? sender, object e)
+        {
+            double animationProgress = (DateTime.Now - lassoAnimationStart).TotalMilliseconds / lassoAnimationDuration.TotalMilliseconds;
+            if (animationProgress >= 1)
+            {
+                CompositionTarget.Rendering -= AnimateLasso;
+                return;
+            }
+
+            double easedAnimationProgress = FastQuinticEaseInOutInterpolation(animationProgress);
+            
+            for (int i = 0; i < selectionLasso!.Points.Count; ++i)
+            {
+                Point currentStartPoint = startLassoPoints[(i + topLeftPointIndex) % selectionLasso!.Points.Count];
+                Point currentTargetPoint = targetLassoPoints[i];
+
+                double currentX = currentStartPoint.X + (currentTargetPoint.X - currentStartPoint.X) * easedAnimationProgress;
+                double currentY = currentStartPoint.Y + (currentTargetPoint.Y - currentStartPoint.Y) * easedAnimationProgress;
+
+                selectionLasso!.Points[i] = new Point(currentX, currentY);
+            }
+        }
+
+        private double FastQuinticEaseInOutInterpolation(double t)
+        {
+            return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+        }
+
+        private void SetStartLassoPoints()
+        {
+            // Set correct order of lasso points
+            startLassoPoints.Clear();
+            //foreach (Point p in selectionLasso!.Points)
+            //    startLassoPoints.Add(p);
+
+            isClockwiseLasso = IsClockwise(selectionLasso!.Points);
+
+            if (isClockwiseLasso)
+                for (int i = selectionLasso!.Points.Count - 1; i >= 0; --i)
+                    startLassoPoints.Add(selectionLasso!.Points[i]);
+            else
+                for (int i = 0; i < selectionLasso!.Points.Count; ++i)
+                    startLassoPoints.Add(selectionLasso!.Points[i]);
+
+            // Offset the points so the transition looks more natural
+            topLeftPointIndex = 0;
+
+            for (int i = 0; i < startLassoPoints.Count; i++)
+            {
+                Point current = startLassoPoints[i];
+                Point best = startLassoPoints[topLeftPointIndex];
+
+                // Check if higher up; if equal Y, check if further left
+                if (current.Y < best.Y || (current.Y == best.Y && current.X < best.X))
+                {
+                    topLeftPointIndex = i;
+                }
+            }
+
+            //Point[] originalPoints = new Point[startLassoPoints.Count];
+            //startLassoPoints.CopyTo(originalPoints);
+
+            //for (int i = 0; i < startLassoPoints.Count; ++i)
+            //{
+            //    startLassoPoints[i] = originalPoints[(i + topLeftPointIndex) % startLassoPoints.Count];
+            //}
+        }
+
+        private void SetTargetLassoPoints(Rect selectionRect)
+        {
+            targetLassoPoints.Clear();
+            float i = 0;
+            float quarterOfPoints = selectionLasso!.Points.Count / 4;
+            float halfOfPoints = selectionLasso!.Points.Count / 2;
+            float threeQuartersOfPoints = selectionLasso!.Points.Count * 3 / 4;
+            float pointsInFirstQuarter = quarterOfPoints;
+            float pointsInSecondQuarter = halfOfPoints - quarterOfPoints;
+            float pointsInThirdQuarter = threeQuartersOfPoints - halfOfPoints;
+            float pointsInFourthQuarter = selectionLasso!.Points.Count - threeQuartersOfPoints;
+            foreach (Point p in selectionLasso!.Points)
+            {
+                if (i < quarterOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.X + selectionRect.Width * i / pointsInFirstQuarter, selectionRect.Y));
+                else if (i == quarterOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.Right, selectionRect.Y));
+                else if (i < halfOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.Right, selectionRect.Y + selectionRect.Height * (i - quarterOfPoints) / pointsInSecondQuarter));
+                else if (i == halfOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.Right, selectionRect.Bottom));
+                else if (i < threeQuartersOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.Right - selectionRect.Width * (i - halfOfPoints) / pointsInThirdQuarter, selectionRect.Bottom));
+                else if (i == threeQuartersOfPoints)
+                    targetLassoPoints.Add(new Point(selectionRect.X, selectionRect.Bottom));
+                else if (i < selectionLasso!.Points.Count)
+                    targetLassoPoints.Add(new Point(selectionRect.X, selectionRect.Bottom - selectionRect.Height * (i - threeQuartersOfPoints) / pointsInFourthQuarter));
+                else
+                    targetLassoPoints.Add(new Point(selectionRect.X, selectionRect.Y));
+                ++i;
+            }
+        }
+
+        private bool IsClockwise(PointCollection points)
+        {
+            // Need at least 3 points to define a 2D shape direction
+            if (points == null || points.Count < 3)
+            {
+                return false;
+            }
+
+            double totalSum = 0.0;
+            int count = points.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                Point p1 = points[i];
+                // Connect the last point back to the first point to close the loop
+                Point p2 = points[(i + 1) % count];
+
+                // Shoelace edge evaluation formula
+                totalSum += (p2.X - p1.X) * (p2.Y + p1.Y);
+            }
+
+            // In XAML/Screen coordinates (Y increases downwards):
+            // Positive sum => Clockwise
+            // Negative sum => Counter-Clockwise
+            return totalSum > 0.0;
         }
 
         public void SetInkLanguage(string? lang)
@@ -558,13 +703,13 @@ namespace WID
             selectionLasso?.Points.Add(e.CurrentPoint.RawPosition);
         }
 
-        private void EndLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
+        private async void EndLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
         {
             if (selectionMode != SelectionMode.Lasso)
                 return;
 
             selectionLasso!.Points.Add(e.CurrentPoint.RawPosition);
-            SelectInkWithPolyline(selectionLasso!.Points);
+            await SelectInkWithPolyline(selectionLasso!.Points, true);
         }
     }
 

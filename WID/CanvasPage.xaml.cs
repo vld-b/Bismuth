@@ -1501,7 +1501,7 @@ namespace WID
                     rectPoints.Add(new Windows.Foundation.Point(strokesRect.Right, strokesRect.Bottom));
                     rectPoints.Add(new Windows.Foundation.Point(strokesRect.Right, strokesRect.Top));
                     currentPage!.RemoveManipulationRect();
-                    currentPage!.SelectInkWithPolyline(rectPoints);
+                    await currentPage!.SelectInkWithPolyline(rectPoints, false);
                     undoRedoSystem.AddToUndoStack(new UndoAddStroke(pageState.selectedStrokes!, currentPage!.inkPres, undoRedoSystem));
                     ChangeCurrentInkingTool(btLassoTool, new RoutedEventArgs());
                 }
