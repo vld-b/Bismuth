@@ -1,0 +1,79 @@
+﻿<Grid
+    x:Class="WID.FirstTour"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WID"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shared="using:Shared"
+    mc:Ignorable="d"
+    Background="Transparent"
+    VerticalAlignment="Center"
+    HorizontalAlignment="Center"
+    >
+
+    <StackPanel
+        Orientation="Vertical"
+        >
+        <FlipView
+            x:Name="fvFirstTourVideos"
+            Background="Transparent"
+            Height="330"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            IsHitTestVisible="False"
+            >
+            <StackPanel
+                Orientation="Vertical"
+                >
+                <MediaPlayerElement
+                    Style="{StaticResource IntroVideoMediaPlayerElement}"
+                    Source="ms-appx:///Assets/FirstTourVideos/Bismuth-Create-Notebook.mp4"
+                    />
+                <TextBlock Text="{shared:Loc Key=MainPageFirstTourCaption1}" Style="{StaticResource IntroTextBlock}" />
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Vertical"
+                >
+                <MediaPlayerElement
+                    Style="{StaticResource IntroVideoMediaPlayerElement}"
+                    Source="ms-appx:///Assets/FirstTourVideos/Bismuth-Create-Folder.mp4"
+                    />
+                <TextBlock Text="{shared:Loc Key=MainPageFirstTourCaption2}" Style="{StaticResource IntroTextBlock}" />
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Vertical"
+                >
+                <MediaPlayerElement
+                    Style="{StaticResource IntroVideoMediaPlayerElement}"
+                    Source="ms-appx:///Assets/FirstTourVideos/Bismuth-Open-Settings.mp4"
+                    />
+                <TextBlock Text="{shared:Loc Key=MainPageFirstTourCaption3}" Style="{StaticResource IntroTextBlock}" />
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Vertical"
+                >
+                <MediaPlayerElement
+                    Style="{StaticResource IntroVideoMediaPlayerElement}"
+                    Source="ms-appx:///Assets/FirstTourVideos/Bismuth-Search-Notes.mp4"
+                    />
+                <TextBlock Text="{shared:Loc Key=MainPageFirstTourCaption4}" Style="{StaticResource IntroTextBlock}" />
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Vertical"
+                >
+                <MediaPlayerElement
+                    Style="{StaticResource IntroVideoMediaPlayerElement}"
+                    Source="ms-appx:///Assets/FirstTourVideos/Bismuth-Select-And-Delete.mp4"
+                    />
+                <TextBlock Text="{shared:Loc Key=MainPageFirstTourCaption5}" Style="{StaticResource IntroTextBlock}" />
+            </StackPanel>
+
+        </FlipView>
+    </StackPanel>
+    
+</Grid>

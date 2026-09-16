@@ -450,4 +450,34 @@
   <data name="ColorPickerButtonRemoveColor" xml:space="preserve">
     <value>Farbe entfernen</value>
   </data>
+  <data name="MainPageFirstTourTitle" xml:space="preserve">
+    <value>Willkommen zu Bismuth!</value>
+  </data>
+  <data name="MainPageFirstTourNext" xml:space="preserve">
+    <value>Nächstes</value>
+  </data>
+  <data name="MainPageFirstTourSkip" xml:space="preserve">
+    <value>Überspringen</value>
+  </data>
+  <data name="MainPageFirstTourCaption1" xml:space="preserve">
+    <value>Du kannst Notizhefte mit unterschiedlichen Optionen herstellen, wie z.B. unterschiedliche Hintergrundsmuster oder Ränder.</value>
+  </data>
+  <data name="MainPageFirstTourCaption2" xml:space="preserve">
+    <value>Ordner können mit eigenen Namen erstellt werden.</value>
+  </data>
+  <data name="MainPageFirstTourCaption3" xml:space="preserve">
+    <value>Die Einstellungen befinden sich unten links und enthalten viele Optionen, um das Schreiben zu personalisieren.</value>
+  </data>
+  <data name="MainPageFirstTourCaption4" xml:space="preserve">
+    <value>Durchsuche deine Notizen nach Inhalten. Handgeschriebenes wird automatisch erkannt.</value>
+  </data>
+  <data name="MainPageFirstTourCaption5" xml:space="preserve">
+    <value>Geschriebenes mit Rechtsclick (oder Slim Pen Rechtsclick) auswählen und bearbeiten. Es sind viele Werkzeuge verfügbar.</value>
+  </data>
+  <data name="MainPageFirstTourFinish" xml:space="preserve">
+    <value>Fertig</value>
+  </data>
+  <data name="MainPageFirstTourBack" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
 </root>

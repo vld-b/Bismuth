@@ -46,6 +46,22 @@
             <Style x:Key="SettingsPageComboBox" TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
                 <Setter Property="Width" Value="256" />
             </Style>
+
+            <Style x:Key="IntroVideoMediaPlayerElement" TargetType="MediaPlayerElement">
+                <Setter Property="AreTransportControlsEnabled" Value="False" />
+                <Setter Property="ElementSoundMode" Value="Off" />
+                <Setter Property="Stretch" Value="Fill" />
+                <Setter Property="Height" Value="280" />
+                <Setter Property="CornerRadius" Value="2" />
+            </Style>
+
+            <Style x:Key="IntroTextBlock" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextWrapping" Value="WrapWholeWords" />
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="TextAlignment" Value="Center" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

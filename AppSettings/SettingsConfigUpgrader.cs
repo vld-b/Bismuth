@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography.Core;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 
@@ -13,7 +14,17 @@ namespace AppSettings
     {
         public static Settings UpgradeToLatest(Settings current)
         {
-            return Upgrade9To10(current);
+            return Upgrade10To11(current);
+        }
+
+        private static Settings Upgrade10To11(Settings current)
+        {
+            if (current.configVersion < 11)
+                current = Upgrade9To10(current);
+
+            current.configVersion = 11;
+
+            return current;
         }
 
         private static Settings Upgrade9To10(Settings current)
@@ -22,6 +33,7 @@ namespace AppSettings
                 current = Upgrade8To9(current);
 
             current.configVersion = 10;
+            current.hasTakenFirstTour = false;
 
             return current;
         }

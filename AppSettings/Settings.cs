@@ -242,6 +242,21 @@ namespace AppSettings
             }
         }
 
+        private bool _hasTakenFirstTour;
+        public bool hasTakenFirstTour
+        {
+            get => _hasTakenFirstTour;
+            set
+            {
+                if (_hasTakenFirstTour != value)
+                {
+                    _hasTakenFirstTour = value;
+                    if (configHasLoaded)
+                        RequestSave();
+                }
+            }
+        }
+
         private StorageFile? configFile;
 
         [JsonIgnore]

@@ -450,4 +450,34 @@
   <data name="ColorPickerButtonRemoveColor" xml:space="preserve">
     <value>Remove color</value>
   </data>
+  <data name="MainPageFirstTourTitle" xml:space="preserve">
+    <value>Welcome to Bismuth!</value>
+  </data>
+  <data name="MainPageFirstTourNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="MainPageFirstTourSkip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="MainPageFirstTourCaption1" xml:space="preserve">
+    <value>You can create notebooks with various options, such as different background templates and margins.</value>
+  </data>
+  <data name="MainPageFirstTourCaption2" xml:space="preserve">
+    <value>Folders can be created with a custom name.</value>
+  </data>
+  <data name="MainPageFirstTourCaption3" xml:space="preserve">
+    <value>The settings are located in the bottom left and have many options to customize your note-taking experience.</value>
+  </data>
+  <data name="MainPageFirstTourCaption4" xml:space="preserve">
+    <value>Search through your notebooks to find content. Handwriting is automatically recognized.</value>
+  </data>
+  <data name="MainPageFirstTourCaption5" xml:space="preserve">
+    <value>Select ink with right click (or Slim Pen right click), then take an action. There are many more tools at your disposal.</value>
+  </data>
+  <data name="MainPageFirstTourFinish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="MainPageFirstTourBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
 </root>

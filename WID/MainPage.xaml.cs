@@ -82,6 +82,53 @@ namespace WID
                 nvMainNavigation.SelectedItem = nvMainNavigation.MenuItems[0];
                 readyToChangePage = true;
             }
+
+            if (!App.AppSettings.hasTakenFirstTour)
+            {
+                //Flyout lol = new Flyout();
+                //lol.ShowAt(this, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Full });
+                FirstTour tour = new FirstTour();
+
+                ContentDialog dialog = new ContentDialog
+                {
+                    Title = Loc.GetLocalizedString("MainPageFirstTourTitle"),
+                    Content = tour,
+                    PrimaryButtonText = Loc.GetLocalizedString("MainPageFirstTourSkip"),
+                    SecondaryButtonText = Loc.GetLocalizedString("MainPageFirstTourNext"),
+                    SecondaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
+                    DefaultButton = ContentDialogButton.Secondary,
+                    XamlRoot = this.Content.XamlRoot,
+                    Background = null,
+                };
+
+                dialog.SecondaryButtonClick += (s, e) =>
+                {
+                    if (tour.currentVideo < 4)
+                    {
+                        e.Cancel = true;
+                        tour.NextVideo();
+                        dialog.PrimaryButtonText = Loc.GetLocalizedString("MainPageFirstTourBack");
+                        dialog.SecondaryButtonText = Loc.GetLocalizedString(tour.currentVideo < 4 ? "MainPageFirstTourNext" : "MainPageFirstTourFinish");
+                    }
+                    else
+                        App.AppSettings.hasTakenFirstTour = true;
+                };
+
+                dialog.PrimaryButtonClick += (s, e) =>
+                {
+                    if (tour.currentVideo > 0)
+                    {
+                        e.Cancel = true;
+                        tour.PreviousVideo();
+                        dialog.PrimaryButtonText = Loc.GetLocalizedString(tour.currentVideo > 0 ? "MainPageFirstTourBack" : "MainPageFirstTourSkip");
+                        dialog.SecondaryButtonText = Loc.GetLocalizedString("MainPageFirstTourNext");
+                    }
+                    else
+                        App.AppSettings.hasTakenFirstTour = true;
+                };
+
+                _ = dialog.ShowAsync();
+            }
         }
 
         private void SetTitlebar()
