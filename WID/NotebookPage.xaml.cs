@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -66,6 +67,7 @@ namespace WID
         private DateTime lassoAnimationStart;
         private bool isClockwiseLasso = false;
         private int topLeftPointIndex = 0;
+        private CancellationTokenSource? animationCancelToken;
         private List<Point> startLassoPoints = new List<Point>();
         private List<Point> targetLassoPoints = new List<Point>();
         private static readonly TimeSpan lassoAnimationDuration = TimeSpan.FromMilliseconds(400);
@@ -323,8 +325,14 @@ namespace WID
                 lassoAnimationStart = DateTime.Now;
                 CompositionTarget.Rendering += AnimateLasso;
 
-                await Task.Delay(TimeSpan.FromMilliseconds(440)); // Animation time is 400 ms, but add 10% as buffer to account for clock inconsistencies
+                animationCancelToken = new CancellationTokenSource();
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(440), animationCancelToken.Token); // Animation time is 400 ms, but add 10% as buffer to account for clock inconsistencies
+                } catch { }
             }
+            if (animationCancelToken is not null && animationCancelToken.IsCancellationRequested)
+                return;
 
             pageContent.Children.Remove(selectionLasso!);
             selectionLasso = null;
@@ -687,12 +695,22 @@ namespace WID
             if (selectionMode != SelectionMode.Lasso)
                 return;
 
+            if (selectionLasso is not null)
+            {
+                CompositionTarget.Rendering -= AnimateLasso;
+                pageContent.Children.Remove(selectionLasso!);
+                selectionLasso = null;
+                pageState.DeselectStrokes();
+                animationCancelToken?.Cancel();
+            }
+
             selectionLasso = new Polyline
             {
                 Stroke = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]),
                 StrokeThickness = 4,
                 StrokeDashArray = new DoubleCollection { 7, 3 },
                 IsHitTestVisible = false,
+                Fill =  null,
             };
             selectionLasso.Points.Add(e.CurrentPoint.RawPosition);
             contentCanvas.Children.Add(selectionLasso);
