@@ -1761,6 +1761,7 @@ namespace WID
         {
             undoRedoSystem.AddToUndoStack(new UndoDeleteStroke(pageState.selectedStrokes!, pageState.currentlyActivePage!.inkPres, undoRedoSystem));
             pageState.currentlyActivePage!.inkPres.StrokeContainer.DeleteSelected();
+            pageState.currentlyActivePage!.hasBeenModifiedSinceSave = true;
             pageState.currentlyActivePage!.RemoveManipulationRect();
             pageState.DeselectStrokes();
         }
