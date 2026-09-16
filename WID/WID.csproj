@@ -33,6 +33,7 @@
     <PackageIcon>icon128x128.png</PackageIcon>
     <RepositoryUrl>https://github.com/vld-b/Bismuth</RepositoryUrl>
     <PackageCertificateThumbprint>36F1F1D6EC9D005A2DEC5B665040F708DF2EEA0E</PackageCertificateThumbprint>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AppPackages\**" />
