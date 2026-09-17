@@ -319,7 +319,7 @@ namespace WID
 
             if (shouldAnimate)
             {
-                SetStartLassoPoints();
+                SetStartLassoPoints(new Point(selectionRect.X, selectionRect.Y));
                 SetTargetLassoPoints(selectionRect);
 
                 lassoAnimationStart = DateTime.Now;
@@ -368,7 +368,7 @@ namespace WID
             return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
         }
 
-        private void SetStartLassoPoints()
+        private void SetStartLassoPoints(Point topLeftOfRectangle)
         {
             // Set correct order of lasso points
             startLassoPoints.Clear();
@@ -386,16 +386,18 @@ namespace WID
 
             // Offset the points so the transition looks more natural
             topLeftPointIndex = 0;
+            double bestDistance = double.PositiveInfinity;
 
             for (int i = 0; i < startLassoPoints.Count; i++)
             {
                 Point current = startLassoPoints[i];
-                Point best = startLassoPoints[topLeftPointIndex];
 
-                // Check if higher up; if equal Y, check if further left
-                if (current.Y < best.Y || (current.Y == best.Y && current.X < best.X))
+                // Check for closest point
+                double currentDistance = distanceBetweenPoints(current, topLeftOfRectangle);
+                if (bestDistance > currentDistance)
                 {
                     topLeftPointIndex = i;
+                    bestDistance = currentDistance;
                 }
             }
 
@@ -466,6 +468,14 @@ namespace WID
             // Positive sum => Clockwise
             // Negative sum => Counter-Clockwise
             return totalSum > 0.0;
+        }
+
+        private double distanceBetweenPoints(Point p1, Point p2)
+        {
+            double deltaX = p1.X - p2.X;
+            double deltaY = p1.Y - p2.Y;
+
+            return Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
         }
 
         public void SetInkLanguage(string? lang)
