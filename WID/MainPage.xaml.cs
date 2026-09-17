@@ -98,7 +98,6 @@ namespace WID
                     SecondaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
                     DefaultButton = ContentDialogButton.Secondary,
                     XamlRoot = this.Content.XamlRoot,
-                    Background = null,
                 };
 
                 dialog.SecondaryButtonClick += (s, e) =>
