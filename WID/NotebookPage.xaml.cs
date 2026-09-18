@@ -70,7 +70,7 @@ namespace WID
         private CancellationTokenSource? animationCancelToken;
         private List<Point> startLassoPoints = new List<Point>();
         private List<Point> targetLassoPoints = new List<Point>();
-        private static readonly TimeSpan lassoAnimationDuration = TimeSpan.FromMilliseconds(400);
+        private static readonly TimeSpan lassoAnimationDuration = TimeSpan.FromMilliseconds(200);
         private ManipulateInkRect? selectionRect;
         private PageState pageState;
         private SelectionMode _selectionMode;
@@ -328,7 +328,7 @@ namespace WID
                 animationCancelToken = new CancellationTokenSource();
                 try
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(440), animationCancelToken.Token); // Animation time is 400 ms, but add 10% as buffer to account for clock inconsistencies
+                    await Task.Delay(TimeSpan.FromMilliseconds(220), animationCancelToken.Token); // Animation time is 400 ms, but add 10% as buffer to account for clock inconsistencies
                 } catch { }
             }
             if (animationCancelToken is not null && animationCancelToken.IsCancellationRequested)
