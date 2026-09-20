@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -152,6 +153,13 @@ namespace WID
                         frMainMenu.Navigate(
                             typeof(NotebookList),
                             new FolderNavigationData(null, Frame),
+                            new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
+                            );
+                        break;
+                    case "searchNotesPage":
+                        frMainMenu.Navigate(
+                            typeof(SearchNotesPage),
+                            null,
                             new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
                             );
                         break;

@@ -480,4 +480,7 @@
   <data name="MainPageFirstTourBack" xml:space="preserve">
     <value>Back</value>
   </data>
+  <data name="MainPageSearchNotes" xml:space="preserve">
+    <value>Search notes</value>
+  </data>
 </root>

@@ -69,12 +69,19 @@
             PaneDisplayMode="Left"
             IsPaneOpen="False"
             >
-            
+
             <muxc:NavigationView.MenuItems>
                 <muxc:NavigationViewItem
                     Content="{shared:Loc Key=MainPageNotebooks}"
                     Icon="Library"
                     Tag="notebooksPage"
+                    >
+                </muxc:NavigationViewItem>
+
+                <muxc:NavigationViewItem
+                    Content="{shared:Loc Key=MainPageSearchNotes}"
+                    Icon="Find"
+                    Tag="searchNotesPage"
                     >
                 </muxc:NavigationViewItem>
             </muxc:NavigationView.MenuItems>
