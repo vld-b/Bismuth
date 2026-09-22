@@ -44,8 +44,10 @@ jobs:
     #   run: |
     #     powershell -command "Import-PfxCertificate -FilePath MyAppCert.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String '${{ secrets.SIGNING_PASSWORD }}' -AsPlainText -Force)"
 
-    - name: Publish project using MSBuild
+    - name: Setup VS Developer command prompt
       uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Publish project using MSBuild
       run: msbuild WID\WID.csproj /p:Configuration=Release /p:Platform=${{ matrix.arch }} /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always /p:AppxPackageSigningEnabled=false
 
     - name: Copy build bins
