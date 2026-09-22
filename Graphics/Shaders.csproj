@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="BuildShaders.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BuildShaders.bat">
+      <Generator>BuildShaders.bat</Generator>
+    </Content>
+  </ItemGroup>
+
+	<ItemGroup>
+		<UpToDateCheckInput Include="BuildShaders.bat; SearchNotesBackground.hlsl"/>
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Update="SearchNotesBackground.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="BuildShaders.bat" />
+  </Target>
+</Project>
