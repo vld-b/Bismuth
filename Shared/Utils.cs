@@ -12,6 +12,7 @@ using Windows.ApplicationModel.UserDataTasks.DataProvider;
 using Windows.Foundation.Diagnostics;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -81,6 +82,68 @@ namespace Shared
             return folder.Path[(ApplicationData.Current.LocalFolder.Path.Length + 1)..(folder.Path.Length - 9)];
         }
 
+        public static Color HsvToColor(byte alpha, float h, float s, float v)
+        {
+            int i = (int)(h * 6.0f);
+            float f = h * 6.0f - i;
+            float p = v * (1.0f - s);
+            float q = v * (1.0f - f * s);
+            float t = v * (1.0f - (1.0f - f) * s);
+
+            float r, g, b;
+            switch (i % 6)
+            {
+                case 0: r = v; g = t; b = p; break;
+                case 1: r = q; g = v; b = p; break;
+                case 2: r = p; g = v; b = t; break;
+                case 3: r = p; g = q; b = v; break;
+                case 4: r = t; g = p; b = v; break;
+                default: r = v; g = p; b = q; break;
+            }
+
+            return Color.FromArgb(
+                alpha,
+                (byte)Math.Round(r * 255.0f),
+                (byte)Math.Round(g * 255.0f),
+                (byte)Math.Round(b * 255.0f)
+            );
+        }
+
+        public static Color MaximizeSaturation(this Color color)
+        {
+            // 1. Convert RGB (0-255) to normalized floats (0.0 - 1.0)
+            float r = color.R / 255.0f;
+            float g = color.G / 255.0f;
+            float b = color.B / 255.0f;
+
+            float max = Math.Max(r, Math.Max(g, b));
+            float min = Math.Min(r, Math.Min(g, b));
+            float delta = max - min;
+
+            // If delta is 0, the color is grayscale (white, gray, black) with no hue
+            if (delta == 0.0f)
+            {
+                return color;
+            }
+
+            float s = delta / max;
+
+            // 2. Calculate Hue (0 to 360 degrees)
+            float hue;
+            if (max == r)
+                hue = (g - b) / delta + (g < b ? 6.0f : 0.0f);
+            else if (max == g)
+                hue = (b - r) / delta + 2.0f;
+            else
+                hue = (r - g) / delta + 4.0f;
+
+            hue /= 6.0f; // Normalize hue to 0.0 - 1.0
+
+            // 3. Reconstruct RGB with Saturation forced to 1.0f (100%)
+            // Keep original Value/Brightness (max) and Alpha
+            return HsvToColor(color.A, hue, MathF.Min(1.0f, 1.2f * s), max);
+        }
+
         public async static Task MovePending(List<StorageFile> items, StorageFolder folder)
         {
             foreach (StorageFile item in items)
@@ -92,6 +155,11 @@ namespace Shared
                 await item.MoveAsync(folder);
             }
             items.Clear();
+        }
+
+        public static Windows.UI.Color MultiplyColorWithScalar(Windows.UI.Color color, float scalar)
+        {
+            return Windows.UI.Color.FromArgb((byte)((float)color.A * scalar), color.R, color.G, color.B);
         }
 
         public static T Pop<T>(this List<T> list, int index)
@@ -113,6 +181,22 @@ namespace Shared
                 await item.file.RenameAsync(item.to);
             }
             items.Clear();
+        }
+        
+        // Raises the maximum value between r, g and b to 255 and adjusts others accordingly
+        public static Windows.UI.Color SaturateColor(Windows.UI.Color color)
+        {
+            float r = (float)color.R;
+            float g = (float)color.G;
+            float b = (float)color.B;
+
+            float max = MathF.Max(r, MathF.Max(g, b));
+
+            r *= max;
+            g *= max;
+            b *= max;
+
+            return Windows.UI.Color.FromArgb(color.A, (byte)r, (byte)g, (byte)b);
         }
 
         public static ContentDialog ShowLoadingPopup(string title)

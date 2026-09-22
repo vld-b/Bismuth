@@ -8,14 +8,30 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     xmlns:media="using:Microsoft.UI.Xaml.Media"
     mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     >
 
     <Grid>
 
         <canvas:CanvasAnimatedControl
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             Draw="DrawBackgroundBlur"
             CreateResources="CreateBackgroundBlurResources"
             />
-
+<!--
+        <Grid
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            >
+            <Grid.Background>
+                <AcrylicBrush
+                    BackgroundSource="HostBackdrop"
+                    TintColor="Black"
+                    TintOpacity="0.6"
+                    FallbackColor="Black" />
+            </Grid.Background>
+        </Grid>
+-->
     </Grid>
 </Page>
