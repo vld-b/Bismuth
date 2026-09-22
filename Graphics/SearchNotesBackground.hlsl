@@ -40,5 +40,8 @@ D2D_PS_ENTRY(main)
     float4 finalColor = float4(color, smoothAlpha);
     finalColor.rgb *= finalColor.a;
 
-    return finalColor;
+    float a = length(uv - float2(.5f, .5f)) < .5f ? 1.0f : 0.0f;
+
+    //return finalColor;
+    return float4(1.0f, 1.0f, 1.0f, 1.0f);
 }

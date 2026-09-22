@@ -15,5 +15,11 @@ if defined VSINSTALLDIR (
 
 set INCLUDEPATH="%WindowsSdkDir%\Include\%WindowsSDKVersion%\um"
 
-fxc SearchNotesBackground.hlsl /nologo /T lib_4_0 /D D2D_FUNCTION /D D2D_ENTRY=main /Fl SearchNotesBackground.fxlib /I %INCLUDEPATH%
-fxc SearchNotesBackground.hlsl /nologo /T ps_4_0 /D D2D_FULL_SHADER /D D2D_ENTRY=main /E main /setprivate SearchNotesBackground.fxlib /Fo:SearchNotesBackground.bin /I %INCLUDEPATH%
+set TARGET_ARCH=%~1
+
+set FXC_PATH="%WindowsSdkDir%\bin\%WindowsSDKVersion%\%~1\fxc.exe"
+
+echo "%WindowsSdkDir%\bin\%WindowsSDKVersion%\%~1\fxc.exe"
+
+%FXC_PATH% SearchNotesBackground.hlsl /nologo /T lib_4_0 /D D2D_FUNCTION /D D2D_ENTRY=main /Fl SearchNotesBackground.fxlib /I %INCLUDEPATH%
+%FXC_PATH% SearchNotesBackground.hlsl /nologo /T ps_4_0 /D D2D_FULL_SHADER /D D2D_ENTRY=main /E main /setprivate SearchNotesBackground.fxlib /Fo:SearchNotesBackground.bin /I %INCLUDEPATH%

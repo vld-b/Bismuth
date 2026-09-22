@@ -4,6 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Platforms>x64;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +19,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<UpToDateCheckInput Include="BuildShaders.bat; SearchNotesBackground.hlsl"/>
+		<UpToDateCheckInput Include="BuildShaders.bat; SearchNotesBackground.hlsl" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -27,6 +29,6 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="BuildShaders.bat" />
+    <Exec Command="BuildShaders.bat $(Platform)" />
   </Target>
 </Project>
