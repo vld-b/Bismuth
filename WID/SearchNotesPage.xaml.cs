@@ -46,9 +46,23 @@ namespace WID
             this.InitializeComponent();
         }
 
+        private void LoadAutoSuggestBox(object sender, RoutedEventArgs e)
+        {
+            asbMainSearch.ScaleTransition.Duration = TimeSpan.FromMilliseconds(1500);
+            asbMainSearch.CenterPoint = new Vector3((float)asbMainSearch.ActualWidth / 2.0f, (float)asbMainSearch.ActualHeight / 2.0f, 0.0f);
+            asbMainSearch.Scale = new Vector3(1.0f);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            asbMainSearch.Scale = new Vector3(1.4f);
+        }
+
         private async void CreateBackgroundBlurResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
-            pointRadius = (float)sender.Size.Height / 1.2f;
+            pointRadius = (float)sender.Size.Height / 2.0f;
 
             pointBounds = new Rect(0.0f, 0.0f, (float)sender.Size.Width, (float)sender.Size.Height);
 

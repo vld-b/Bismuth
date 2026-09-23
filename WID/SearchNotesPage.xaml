@@ -19,19 +19,22 @@
             Draw="DrawBackgroundBlur"
             CreateResources="CreateBackgroundBlurResources"
             />
-<!--
-        <Grid
+
+        <AutoSuggestBox
+            x:Name="asbMainSearch"
+            Loaded="LoadAutoSuggestBox"
+            QueryIcon="Find"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
+            Width="512"
+            Height="40"
+            FontSize="20"
+            PlaceholderText="Search notes"
+            Scale="1.4, 1.4, 1.4"
             >
-            <Grid.Background>
-                <AcrylicBrush
-                    BackgroundSource="HostBackdrop"
-                    TintColor="Black"
-                    TintOpacity="0.6"
-                    FallbackColor="Black" />
-            </Grid.Background>
-        </Grid>
--->
+            <AutoSuggestBox.ScaleTransition>
+                <Vector3Transition />
+            </AutoSuggestBox.ScaleTransition>
+        </AutoSuggestBox>
     </Grid>
 </Page>
