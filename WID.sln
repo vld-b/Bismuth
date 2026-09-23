@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings", "AppSettings\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaders", "Graphics\Shaders.csproj", "{530D815E-DE8E-455E-9B92-44905A4BBEAC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -63,18 +61,6 @@ Global
 		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x64.Build.0 = Release|Any CPU
 		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE95EE77-1200-4BF4-8B65-8CF2D780F63B}.Release|x86.Build.0 = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|arm64.ActiveCfg = Debug|ARM64
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|arm64.Build.0 = Debug|ARM64
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|x64.ActiveCfg = Debug|x64
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|x64.Build.0 = Debug|x64
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Debug|x86.Build.0 = Debug|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|arm64.ActiveCfg = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|arm64.Build.0 = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|x64.ActiveCfg = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|x64.Build.0 = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|x86.ActiveCfg = Release|Any CPU
-		{530D815E-DE8E-455E-9B92-44905A4BBEAC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

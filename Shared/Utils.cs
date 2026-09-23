@@ -109,7 +109,7 @@ namespace Shared
             );
         }
 
-        public static Color MaximizeSaturation(this Color color)
+        public static Color AdjustSaturation(this Color color)
         {
             // 1. Convert RGB (0-255) to normalized floats (0.0 - 1.0)
             float r = color.R / 255.0f;

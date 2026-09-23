@@ -48,17 +48,6 @@ namespace WID
 
         private async void CreateBackgroundBlurResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
-            //bgShader = new PixelShaderEffect(bgShaderByteCode);
-            //bgShader.Source1 = null;
-            //bgShader.Source1Mapping = SamplerCoordinateMapping.Offset;
-            //bgShader.Properties["p1"] = new System.Numerics.Vector2(0.5f, 0.5f);
-            //bgShader.Properties["p2"] = new System.Numerics.Vector2(0.2f, 0.4f);
-            //bgShader.Properties["p3"] = new System.Numerics.Vector2(0.9f, 0.75f);
-            //bgShader.Properties["aspectRatio"] = (float)(sender.Size.Width / sender.Size.Height);
-            //Windows.UI.Color accentColor = (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"];
-            //bgShader.Properties["color"] = new System.Numerics.Vector3((float)accentColor.R / 255.0f, (float)accentColor.G / 255.0f, (float)accentColor.B / 255.0f);
-            //bgShader.Properties["glowStrength"] = 5.0f;
-
             pointRadius = (float)sender.Size.Height / 1.2f;
 
             pointBounds = new Rect(0.0f, 0.0f, (float)sender.Size.Width, (float)sender.Size.Height);
@@ -80,7 +69,7 @@ namespace WID
                 float currentY = Random.Shared.NextSingle() * (float)sender.Size.Height;
                 pointPositions[i] = new Vector2(currentX, currentY);
 
-                pointColors[i] = new CanvasRadialGradientBrush(sender, ((Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]).MaximizeSaturation(), Windows.UI.Colors.Transparent)
+                pointColors[i] = new CanvasRadialGradientBrush(sender, ((Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]).AdjustSaturation(), Windows.UI.Colors.Transparent)
                 {
                     Center = new System.Numerics.Vector2(currentX, currentY),
                     RadiusX = pointRadius,
@@ -95,11 +84,6 @@ namespace WID
 
         private void DrawBackgroundBlur(Microsoft.Graphics.Canvas.UI.Xaml.ICanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedDrawEventArgs args)
         {
-            //if (bgShader is null)
-            //    return;
-
-            //CanvasRadialGradientBrush cgr = new CanvasRadialGradientBrush(args.DrawingSession, (Windows.UI.Color)Application.Current.Resources["SystemAccentColor"], Windows.UI.Colors.Transparent);
-
             args.DrawingSession.Antialiasing = CanvasAntialiasing.Antialiased;
 
             using CanvasCommandList commands = new CanvasCommandList(sender);
@@ -139,8 +123,6 @@ namespace WID
             };
 
             args.DrawingSession.DrawImage(blur);
-
-            //args.DrawingSession.DrawImage(bgShader);
         }
     }
 }
