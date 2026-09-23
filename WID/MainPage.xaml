@@ -46,6 +46,7 @@
 
 
             <AutoSuggestBox
+                x:Name="asbQuickSearch"
                 QueryIcon="Find"
                 PlaceholderText="{shared:Loc Key=MainPageSearchNotesPlaceholder}"
                 Width="512"
@@ -54,7 +55,13 @@
                 TextChanged="SearchNotebooks"
                 SuggestionChosen="SelectItem"
                 QuerySubmitted="NavigateToSelectedItem"
-                />
+                Opacity="1.0"
+                IsHitTestVisible="True"
+                >
+                <AutoSuggestBox.OpacityTransition>
+                    <ScalarTransition />
+                </AutoSuggestBox.OpacityTransition>
+            </AutoSuggestBox>
         </Grid>
         
 

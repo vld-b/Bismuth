@@ -138,5 +138,11 @@ namespace WID
 
             args.DrawingSession.DrawImage(blur);
         }
+
+        private void SearchForContentInNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            asbMainSearch.VerticalAlignment = asbMainSearch.VerticalAlignment == VerticalAlignment.Top ? VerticalAlignment.Center : VerticalAlignment.Top;
+            //asbMainSearch.Translation = new Vector3(0.0f);
+        }
     }
 }

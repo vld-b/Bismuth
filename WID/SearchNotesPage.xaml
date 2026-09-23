@@ -22,16 +22,20 @@
 
         <AutoSuggestBox
             x:Name="asbMainSearch"
+            TextChanged="SearchForContentInNotebooks"
             Loaded="LoadAutoSuggestBox"
             QueryIcon="Find"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Width="512"
             Height="40"
             FontSize="20"
             PlaceholderText="Search notes"
             Scale="1.4, 1.4, 1.4"
             >
+            <AutoSuggestBox.TranslationTransition>
+                <Vector3Transition />
+            </AutoSuggestBox.TranslationTransition>
             <AutoSuggestBox.ScaleTransition>
                 <Vector3Transition />
             </AutoSuggestBox.ScaleTransition>

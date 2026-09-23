@@ -150,6 +150,8 @@ namespace WID
                 switch (item.Tag)
                 {
                     case "notebooksPage":
+                        asbQuickSearch.Opacity = 1.0f;
+                        asbQuickSearch.IsHitTestVisible = true;
                         frMainMenu.Navigate(
                             typeof(NotebookList),
                             new FolderNavigationData(null, Frame),
@@ -157,6 +159,8 @@ namespace WID
                             );
                         break;
                     case "searchNotesPage":
+                        asbQuickSearch.Opacity = 0.0f;
+                        asbQuickSearch.IsHitTestVisible = false;
                         frMainMenu.Navigate(
                             typeof(SearchNotesPage),
                             null,
@@ -164,6 +168,8 @@ namespace WID
                             );
                         break;
                     case "Settings":
+                        asbQuickSearch.Opacity = 1.0f;
+                        asbQuickSearch.IsHitTestVisible = true;
                         frMainMenu.Navigate(
                             typeof(SettingsPage),
                             new SettingsNavigationData(LanguageChangeReloadPage, 0.0d),
