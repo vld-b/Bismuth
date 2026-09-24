@@ -9,6 +9,7 @@
     xmlns:media="using:Microsoft.UI.Xaml.Media"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    SizeChanged="AdjustElementSizes"
     >
 
     <Grid>
@@ -26,12 +27,13 @@
             Loaded="LoadAutoSuggestBox"
             QueryIcon="Find"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"
+            VerticalAlignment="Top"
             Width="512"
             Height="40"
             FontSize="20"
             PlaceholderText="Search notes"
-            Scale="1.4, 1.4, 1.4"
+            Scale="0.8, 0.8, 1"
+            Translation="-36, -36, 0"
             >
             <AutoSuggestBox.TranslationTransition>
                 <Vector3Transition />

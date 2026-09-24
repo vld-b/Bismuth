@@ -49,8 +49,10 @@ namespace WID
         private void LoadAutoSuggestBox(object sender, RoutedEventArgs e)
         {
             asbMainSearch.ScaleTransition.Duration = TimeSpan.FromMilliseconds(1500);
+            asbMainSearch.TranslationTransition.Duration = TimeSpan.FromMilliseconds(1500);
             asbMainSearch.CenterPoint = new Vector3((float)asbMainSearch.ActualWidth / 2.0f, (float)asbMainSearch.ActualHeight / 2.0f, 0.0f);
             asbMainSearch.Scale = new Vector3(1.0f);
+            asbMainSearch.Translation = new Vector3(0.0f, (float)this.ActualHeight / 2.0f, 0.0f);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -141,8 +143,26 @@ namespace WID
 
         private void SearchForContentInNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            asbMainSearch.VerticalAlignment = asbMainSearch.VerticalAlignment == VerticalAlignment.Top ? VerticalAlignment.Center : VerticalAlignment.Top;
+            //asbMainSearch.VerticalAlignment = asbMainSearch.VerticalAlignment == VerticalAlignment.Top ? VerticalAlignment.Center : VerticalAlignment.Top;
             //asbMainSearch.Translation = new Vector3(0.0f);
+        }
+
+        private void AdjustElementSizes(object sender, SizeChangedEventArgs e)
+        {
+            float factorWidth = (float)(e.NewSize.Width / e.PreviousSize.Width);
+            float factorHeight = (float)(e.NewSize.Height / e.PreviousSize.Height);
+            for (int i = 0; i < 3; ++i)
+                pointPositions[i] = new Vector2(pointPositions[i].X * factorWidth, pointPositions[i].Y * factorHeight);
+
+            pointRadius = (float)e.NewSize.Height / 2.0f;
+
+            if (asbMainSearch.Text == string.Empty)
+            {
+                Vector3Transition searchBoxTransition = asbMainSearch.TranslationTransition;
+                asbMainSearch.TranslationTransition = null;
+                asbMainSearch.Translation = new Vector3(0.0f, (float)e.NewSize.Height / 2.0f, 0.0f);
+                asbMainSearch.TranslationTransition = searchBoxTransition;
+            }
         }
     }
 }
