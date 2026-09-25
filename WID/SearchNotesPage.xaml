@@ -23,8 +23,9 @@
 
         <AutoSuggestBox
             x:Name="asbMainSearch"
-            TextChanged="SearchForContentInNotebooks"
+            TextChanged="SearchNotebooks"
             Loaded="LoadAutoSuggestBox"
+            QuerySubmitted="NavigateToSelectedItem"
             QueryIcon="Find"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
@@ -33,7 +34,7 @@
             FontSize="20"
             PlaceholderText="Search notes"
             Scale="0.8, 0.8, 1"
-            Translation="-36, -36, 0"
+            Translation="-36, -36, 1"
             >
             <AutoSuggestBox.TranslationTransition>
                 <Vector3Transition />

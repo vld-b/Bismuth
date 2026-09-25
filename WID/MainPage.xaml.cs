@@ -163,7 +163,7 @@ namespace WID
                         asbQuickSearch.IsHitTestVisible = false;
                         frMainMenu.Navigate(
                             typeof(SearchNotesPage),
-                            null,
+                            Frame,
                             new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }
                             );
                         break;
@@ -182,53 +182,10 @@ namespace WID
 
         private void SearchNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            if (string.IsNullOrWhiteSpace(sender.Text))
-            {
-                searchingFor = "";
-                sender.ItemsSource = null;
-                return;
-            }
-
             if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen || args.Reason == AutoSuggestionBoxTextChangeReason.ProgrammaticChange)
                 return;
 
-            searchingFor = sender.Text;
-            List<NotebookSearchResult> matches = new List<NotebookSearchResult>();
-            string[] searches = searchingFor.Split(" ");
-            for (int i = 0; i < searches.Length; ++i)
-                searches[i] = searches[i].Trim().ToLower();
-
-            int currentPage = 0;
-            foreach (SearchableNotebook nb in App.SearchableNotebooks)
-            {
-                currentPage = 0;
-                foreach (SearchableNotebookPage page in nb.pages)
-                {
-                    ++currentPage;
-                    foreach (RecognizedText text in page.recTextCol.recText)
-                    {
-                        foreach (string str in searches)
-                        {
-                            bool matchAlreadyExists = false;
-                            foreach (NotebookSearchResult match in matches)
-                            {
-                                if (match.notebookFolder.Path == nb.notebookFolder.Path && match.pageId == page.pageId)
-                                {
-                                    ++match.rating;
-                                    matchAlreadyExists = true;
-                                    break;
-                                }
-                            }
-                            if (text.text.ToLower().Contains(str) && !matchAlreadyExists)
-                                matches.Add(new NotebookSearchResult(nb.notebookFolder, Utils.GetNotebookPathFromFolder(nb.notebookFolder), currentPage, page.pageId, text));
-                        }
-                    }
-                }
-            }
-
-            matches.Sort();
-
-            sender.ItemsSource = matches;
+            sender.ItemsSource = SearchNotesPage.SearchForContentInNotebooks(ref searchingFor, sender);
         }
 
         private void SelectItem(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
@@ -239,18 +196,7 @@ namespace WID
 
         private async void NavigateToSelectedItem(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (args.ChosenSuggestion is null)
-                return;
-
-            NotebookSearchResult selItem = (NotebookSearchResult)args.ChosenSuggestion;
-
-            SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, searchingFor, selItem.pageId, selItem.recText);
-
-            Frame.Navigate(
-                typeof(CanvasPage),
-                objectToPass,
-                new DrillInNavigationTransitionInfo()
-                );
+            SearchNotesPage.NavigateToItem(args, searchingFor, Frame);
         }
 
         private void LanguageChangeReloadPage(double verticalOffset)

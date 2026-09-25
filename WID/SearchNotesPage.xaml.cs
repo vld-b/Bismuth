@@ -1,4 +1,8 @@
-﻿using Shared;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Effects;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,21 +11,19 @@ using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Capture;
+using Windows.Graphics.Imaging;
+using Windows.Media.Audio;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Graphics.Canvas.Effects;
-using Windows.Media.Audio;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.Storage.Streams;
-using Windows.Graphics.Imaging;
-using Microsoft.Graphics.Canvas;
-using Windows.Graphics.Capture;
-using Microsoft.Graphics.Canvas.Brushes;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -41,9 +43,20 @@ namespace WID
 
         private Rect pointBounds;
 
+        private string searchingFor = string.Empty;
+
+        Frame? mainFrame;
+
         public SearchNotesPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            mainFrame = (Frame)e.Parameter;
         }
 
         private void LoadAutoSuggestBox(object sender, RoutedEventArgs e)
@@ -52,14 +65,7 @@ namespace WID
             asbMainSearch.TranslationTransition.Duration = TimeSpan.FromMilliseconds(1500);
             asbMainSearch.CenterPoint = new Vector3((float)asbMainSearch.ActualWidth / 2.0f, (float)asbMainSearch.ActualHeight / 2.0f, 0.0f);
             asbMainSearch.Scale = new Vector3(1.0f);
-            asbMainSearch.Translation = new Vector3(0.0f, (float)this.ActualHeight / 2.0f, 0.0f);
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            asbMainSearch.Scale = new Vector3(1.4f);
+            asbMainSearch.Translation = new Vector3(0.0f, (float)this.ActualHeight / 2.0f, 1.0f);
         }
 
         private async void CreateBackgroundBlurResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
@@ -141,10 +147,17 @@ namespace WID
             args.DrawingSession.DrawImage(blur);
         }
 
-        private void SearchForContentInNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void SearchNotebooks(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            //asbMainSearch.VerticalAlignment = asbMainSearch.VerticalAlignment == VerticalAlignment.Top ? VerticalAlignment.Center : VerticalAlignment.Top;
-            //asbMainSearch.Translation = new Vector3(0.0f);
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen || args.Reason == AutoSuggestionBoxTextChangeReason.ProgrammaticChange)
+                return;
+
+            //if (string.IsNullOrWhiteSpace(sender.Text))
+            //    asbMainSearch.Translation = new Vector3(0.0f, (float)this.ActualHeight / 2.0f, 1.0f);
+            //else
+            //    asbMainSearch.Translation = new Vector3(0.0f, 0.0f, 1.0f);
+
+            sender.ItemsSource = SearchForContentInNotebooks(ref searchingFor, sender);
         }
 
         private void AdjustElementSizes(object sender, SizeChangedEventArgs e)
@@ -163,6 +176,73 @@ namespace WID
                 asbMainSearch.Translation = new Vector3(0.0f, (float)e.NewSize.Height / 2.0f, 0.0f);
                 asbMainSearch.TranslationTransition = searchBoxTransition;
             }
+        }
+
+        private void NavigateToSelectedItem(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            NavigateToItem(args, searchingFor, mainFrame!);
+        }
+
+        public static void NavigateToItem(AutoSuggestBoxQuerySubmittedEventArgs args, string searchingFor, Frame mainFrame)
+        {
+            if (args.ChosenSuggestion is null)
+                return;
+
+            NotebookSearchResult selItem = (NotebookSearchResult)args.ChosenSuggestion;
+
+            SearchNavigation objectToPass = new SearchNavigation(selItem.notebookFolder, searchingFor, selItem.pageId, selItem.recText);
+
+            mainFrame.Navigate(
+                typeof(CanvasPage),
+                objectToPass,
+                new DrillInNavigationTransitionInfo()
+                );
+        }
+
+        public static List<NotebookSearchResult>? SearchForContentInNotebooks(ref string searchingFor, AutoSuggestBox sender)
+        {
+            if (string.IsNullOrWhiteSpace(sender.Text))
+            {
+                searchingFor = "";
+                sender.ItemsSource = null;
+                return null;
+            }
+
+            searchingFor = sender.Text;
+            List<NotebookSearchResult> matches = new List<NotebookSearchResult>();
+            string[] searches = searchingFor.Split(" ");
+            for (int i = 0; i < searches.Length; ++i)
+                searches[i] = searches[i].Trim().ToLower();
+
+            int currentPage = 0;
+            foreach (SearchableNotebook nb in App.SearchableNotebooks)
+            {
+                currentPage = 0;
+                foreach (SearchableNotebookPage page in nb.pages)
+                {
+                    ++currentPage;
+                    foreach (RecognizedText text in page.recTextCol.recText)
+                    {
+                        foreach (string str in searches)
+                        {
+                            bool matchAlreadyExists = false;
+                            foreach (NotebookSearchResult match in matches)
+                            {
+                                if (match.notebookFolder.Path == nb.notebookFolder.Path && match.pageId == page.pageId)
+                                {
+                                    ++match.rating;
+                                    matchAlreadyExists = true;
+                                    break;
+                                }
+                            }
+                            if (text.text.ToLower().Contains(str) && !matchAlreadyExists)
+                                matches.Add(new NotebookSearchResult(nb.notebookFolder, Utils.GetNotebookPathFromFolder(nb.notebookFolder), currentPage, page.pageId, text));
+                        }
+                    }
+                }
+            }
+
+            return matches;
         }
     }
 }
