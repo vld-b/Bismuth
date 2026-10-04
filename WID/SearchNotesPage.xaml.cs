@@ -35,11 +35,11 @@ namespace WID
     /// 
     public sealed partial class SearchNotesPage : Page
     {
-        private CanvasRadialGradientBrush[] pointColors = new CanvasRadialGradientBrush[3];
-        private Vector2[] pointPositions = new Vector2[3];
+        private CanvasRadialGradientBrush[] pointColors = new CanvasRadialGradientBrush[4];
+        private Vector2[] pointPositions = new Vector2[4];
         private float pointRadius;
 
-        private Vector2[] pointDirections = new Vector2[3];
+        private Vector2[] pointDirections = new Vector2[4];
 
         private Rect pointBounds;
 
@@ -68,6 +68,15 @@ namespace WID
             asbMainSearch.Translation = new Vector3(0.0f, (float)this.ActualHeight / 2.0f, 1.0f);
         }
 
+        protected override void OnPointerMoved(PointerRoutedEventArgs e)
+        {
+            base.OnPointerMoved(e);
+
+            Vector2 currentCursorPos = Utils.PointToVector2(e.GetCurrentPoint(this).RawPosition);
+            pointPositions[3] = currentCursorPos;
+            pointColors[3].Center = currentCursorPos;
+        }
+
         private async void CreateBackgroundBlurResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
             pointRadius = (float)sender.Size.Height / 2.0f;
@@ -85,7 +94,7 @@ namespace WID
             //    new CanvasGradientStop { Position = 1.0f, Color = Utils.MultiplyColorWithScalar(mainColor, 0.02f) },
             //};
 
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 float currentX = Random.Shared.NextSingle() * (float)sender.Size.Width;
                 float currentY = Random.Shared.NextSingle() * (float)sender.Size.Height;
@@ -136,6 +145,7 @@ namespace WID
                 pointDirections[i] = currentDir;
                 pointPositions[i] = nextPos;
             }
+            ds.FillCircle(pointPositions[3], pointRadius, pointColors[3]);
 
             using GaussianBlurEffect blur = new GaussianBlurEffect
             {

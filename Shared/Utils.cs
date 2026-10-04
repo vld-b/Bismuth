@@ -170,6 +170,11 @@ namespace Shared
             return val;
         }
 
+        public static System.Numerics.Vector2 PointToVector2(Windows.Foundation.Point p)
+        {
+            return new System.Numerics.Vector2((float)p.X, (float)p.Y);
+        }
+
         public async static Task RenamePending(List<RenameItem> items)
         {
             foreach (RenameItem item in items)
