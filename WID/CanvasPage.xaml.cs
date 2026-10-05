@@ -1507,7 +1507,7 @@ namespace WID
                 }
                 catch
                 {
-                    await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageToolTipInkFailPaste"), "", 3000);
+                    await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageTeachingTipInkFailPaste"), "", 3000);
                 }
             }
             else if (clip.Contains(StandardDataFormats.Bitmap))
@@ -1775,7 +1775,7 @@ namespace WID
         private async void CopyStrokesToClipboard(object sender, RoutedEventArgs e)
         {
             pageState.currentlyActivePage!.inkPres.StrokeContainer.CopySelectedToClipboard();
-            await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageToolTipInkCopied"), "", 3000);
+            await Utils.ShowTeachingTip(ttInfoPopup, Loc.GetLocalizedString("CanvasPageTeachingTipInkCopied"), "", 3000);
         }
 
         private void ChangeSelectedInkColor(Microsoft.UI.Xaml.Controls.ColorPicker sender, Microsoft.UI.Xaml.Controls.ColorChangedEventArgs args)

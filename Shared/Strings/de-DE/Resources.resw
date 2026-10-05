@@ -438,7 +438,7 @@
   <data name="CanvasPageTeachingTipImportFailDesc" xml:space="preserve">
     <value>Korrupte Datei vorhanden</value>
   </data>
-  <data name="CanvasPageToolTipInkFailPaste" xml:space="preserve">
+  <data name="CanvasPageTeachingTipInkFailPaste" xml:space="preserve">
     <value>Schrift konnte nicht eingefügt werden ❌</value>
   </data>
   <data name="^" xml:space="preserve">
@@ -482,5 +482,8 @@
   </data>
   <data name="MainPageSearchNotes" xml:space="preserve">
     <value>Notizen durchsuchen</value>
+  </data>
+  <data name="CanvasPageTeachingTipInkCopied" xml:space="preserve">
+    <value>Schrift kopiert ✅</value>
   </data>
 </root>

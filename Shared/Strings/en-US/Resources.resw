@@ -438,7 +438,7 @@
   <data name="CanvasPageTeachingTipImportFailDesc" xml:space="preserve">
     <value>Corrupt file provided</value>
   </data>
-  <data name="CanvasPageToolTipInkFailPaste" xml:space="preserve">
+  <data name="CanvasPageTeachingTipInkFailPaste" xml:space="preserve">
     <value>Could not paste ink ❌</value>
   </data>
   <data name="^" xml:space="preserve">
@@ -482,5 +482,8 @@
   </data>
   <data name="MainPageSearchNotes" xml:space="preserve">
     <value>Search notes</value>
+  </data>
+  <data name="CanvasPageTeachingTipInkCopied" xml:space="preserve">
+    <value>Ink copied ✅</value>
   </data>
 </root>
