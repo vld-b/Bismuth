@@ -32,6 +32,41 @@ namespace Shared
                 origin.Add(item);
         }
 
+        public static Color AdjustSaturation(this Color color)
+        {
+            // 1. Convert RGB (0-255) to normalized floats (0.0 - 1.0)
+            float r = color.R / 255.0f;
+            float g = color.G / 255.0f;
+            float b = color.B / 255.0f;
+
+            float max = Math.Max(r, Math.Max(g, b));
+            float min = Math.Min(r, Math.Min(g, b));
+            float delta = max - min;
+
+            // If delta is 0, the color is grayscale (white, gray, black) with no hue
+            if (delta == 0.0f)
+            {
+                return color;
+            }
+
+            float s = delta / max;
+
+            // 2. Calculate Hue (0 to 360 degrees)
+            float hue;
+            if (max == r)
+                hue = (g - b) / delta + (g < b ? 6.0f : 0.0f);
+            else if (max == g)
+                hue = (b - r) / delta + 2.0f;
+            else
+                hue = (r - g) / delta + 4.0f;
+
+            hue /= 6.0f; // Normalize hue to 0.0 - 1.0
+
+            // 3. Reconstruct RGB with Saturation forced to 1.0f (100%)
+            // Keep original Value/Brightness (max) and Alpha
+            return HsvToColor(color.A, hue, MathF.Min(1.0f, 1.2f * s), max);
+        }
+
         public async static Task CreatePending(List<string> items, StorageFolder folder)
         {
             foreach (string item in items)
@@ -54,6 +89,16 @@ namespace Shared
                 } catch { }
             }
             items.Clear();
+        }
+
+        public static float FastQuinticEaseInOutInterpolation(float t)
+        {
+            return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+        }
+
+        public static double FastQuinticEaseInOutInterpolation(double t)
+        {
+            return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
         }
 
         public static async Task<BitmapImage> GetBMPFromFile(StorageFile bgFile)
@@ -108,41 +153,6 @@ namespace Shared
                 (byte)Math.Round(g * 255.0f),
                 (byte)Math.Round(b * 255.0f)
             );
-        }
-
-        public static Color AdjustSaturation(this Color color)
-        {
-            // 1. Convert RGB (0-255) to normalized floats (0.0 - 1.0)
-            float r = color.R / 255.0f;
-            float g = color.G / 255.0f;
-            float b = color.B / 255.0f;
-
-            float max = Math.Max(r, Math.Max(g, b));
-            float min = Math.Min(r, Math.Min(g, b));
-            float delta = max - min;
-
-            // If delta is 0, the color is grayscale (white, gray, black) with no hue
-            if (delta == 0.0f)
-            {
-                return color;
-            }
-
-            float s = delta / max;
-
-            // 2. Calculate Hue (0 to 360 degrees)
-            float hue;
-            if (max == r)
-                hue = (g - b) / delta + (g < b ? 6.0f : 0.0f);
-            else if (max == g)
-                hue = (b - r) / delta + 2.0f;
-            else
-                hue = (r - g) / delta + 4.0f;
-
-            hue /= 6.0f; // Normalize hue to 0.0 - 1.0
-
-            // 3. Reconstruct RGB with Saturation forced to 1.0f (100%)
-            // Keep original Value/Brightness (max) and Alpha
-            return HsvToColor(color.A, hue, MathF.Min(1.0f, 1.2f * s), max);
         }
 
         public async static Task MovePending(List<StorageFile> items, StorageFolder folder)

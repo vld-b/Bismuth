@@ -40,6 +40,8 @@ namespace WID
         private float pointRadius;
 
         private Vector2[] pointDirections = new Vector2[4];
+        private Vector2 currentCursorPos = new Vector2();
+        private float maxPointDistance = 1.0f;
 
         private Rect pointBounds;
 
@@ -57,6 +59,16 @@ namespace WID
             base.OnNavigatedTo(e);
 
             mainFrame = (Frame)e.Parameter;
+
+            maxPointDistance = (new Vector2((float)this.ActualWidth, (float)this.ActualHeight)).Length();
+            CompositionTarget.Rendering += InterpolateFollowingLightPos;
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            CompositionTarget.Rendering -= InterpolateFollowingLightPos;
         }
 
         private void LoadAutoSuggestBox(object sender, RoutedEventArgs e)
@@ -72,9 +84,19 @@ namespace WID
         {
             base.OnPointerMoved(e);
 
-            Vector2 currentCursorPos = Utils.PointToVector2(e.GetCurrentPoint(this).RawPosition);
-            pointPositions[3] = currentCursorPos;
-            pointColors[3].Center = currentCursorPos;
+            currentCursorPos = Utils.PointToVector2(e.GetCurrentPoint(this).RawPosition);
+        }
+
+        private void InterpolateFollowingLightPos(object? sender, object e)
+        {
+            Vector2 delta = currentCursorPos - pointPositions[3];
+            float distance = delta.Length();
+            if (distance > 0.0f)
+            {
+                Vector2 distanceToMove = delta * 0.05f;
+                pointPositions[3] += distanceToMove;
+                pointColors[3].Center += distanceToMove;
+            }
         }
 
         private async void CreateBackgroundBlurResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)

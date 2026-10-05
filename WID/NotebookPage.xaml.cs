@@ -349,7 +349,7 @@ namespace WID
                 return;
             }
 
-            double easedAnimationProgress = FastQuinticEaseInOutInterpolation(animationProgress);
+            double easedAnimationProgress = Utils.FastQuinticEaseInOutInterpolation(animationProgress);
             
             for (int i = 0; i < selectionLasso!.Points.Count; ++i)
             {
@@ -363,10 +363,7 @@ namespace WID
             }
         }
 
-        private double FastQuinticEaseInOutInterpolation(double t)
-        {
-            return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-        }
+
 
         private void SetStartLassoPoints(Point topLeftOfRectangle)
         {
