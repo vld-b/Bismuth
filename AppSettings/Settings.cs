@@ -310,7 +310,12 @@ namespace AppSettings
         {
             Settings settings;
 
-            StorageFile configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            string roamingConfigPath = ApplicationData.Current.RoamingFolder.Path + "\\config.json";
+            StorageFile configFile;
+            if (File.Exists(roamingConfigPath) && (new FileInfo(roamingConfigPath)).Length > 0)
+                configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
+            else
+                configFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("config.json", CreationCollisionOption.OpenIfExists);
             bool configWasPresent = true;
 
             if ((new FileInfo(configFile.Path).Length) > 0)
@@ -434,6 +439,10 @@ namespace AppSettings
         {
             configFile = await ApplicationData.Current.RoamingFolder.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
             using (Stream opStream = await configFile!.OpenStreamForWriteAsync())
+                JsonSerializer.Serialize(opStream, this, SettingsJsonContext.Default.Settings);
+
+            StorageFile localConfigFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("config.json", CreationCollisionOption.ReplaceExisting);
+            using (Stream opStream = await localConfigFile.OpenStreamForWriteAsync())
                 JsonSerializer.Serialize(opStream, this, SettingsJsonContext.Default.Settings);
         }
     }
