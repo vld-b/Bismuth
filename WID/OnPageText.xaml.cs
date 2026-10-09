@@ -132,7 +132,7 @@ namespace WID
                 double distanceOfLeftMargin = 0.0d;
                 bool snapToMargin = false;
 
-                if (containingPage.hasPattern)
+                if (containingPage.hasPattern && containingPage.currentPattern.margin.hasLeft)
                 {
                     distanceOfLeftMargin = (double)containingPage.currentPattern.margin.left * containingPage.Width;
                     Point mousePosRelativeToMoveBtn = e.GetCurrentPoint(btMove).Position;
@@ -179,8 +179,22 @@ namespace WID
             {
                 Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
+                double distanceOfRightMargin = 0.0d;
+                bool snapToMargin = false;
+
+                if (containingPage.hasPattern && containingPage.currentPattern.margin.hasRight)
+                {
+                    distanceOfRightMargin = (1.0d - (double)containingPage.currentPattern.margin.right) * containingPage.Width;
+                    Point mousePosRelativeToResizeBtn = e.GetCurrentPoint(btResize).Position;
+                    if (Math.Abs(Left + Width - distanceOfRightMargin) < 25.0d && Math.Abs(mousePosRelativeToResizeBtn.X) < 30.0d)
+                        snapToMargin = true;
+                }
+
                 this.Height = Math.Max(50, Math.Min(containingPage.Height - Top, oldHeight + currentPos.Y - mousePos.Value.Y));
-                this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, oldWidth + currentPos.X - mousePos.Value.X));
+                if (snapToMargin)
+                    this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, distanceOfRightMargin - Left));
+                else
+                    this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, oldWidth + currentPos.X - mousePos.Value.X));
             }
         }
 
