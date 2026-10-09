@@ -136,20 +136,20 @@ namespace WID
                 {
                     distanceOfLeftMargin = (double)containingPage.currentPattern.margin.left * containingPage.Width;
                     Point mousePosRelativeToMoveBtn = e.GetCurrentPoint(btMove).Position;
-                    if (Math.Abs(Left - distanceOfLeftMargin) < 100.0d && Math.Abs(mousePosRelativeToMoveBtn.X) < 100.0d)
+                    if (Math.Abs(Left - distanceOfLeftMargin) < 25.0d && Math.Abs(mousePosRelativeToMoveBtn.X) < 30.0d)
                         snapToMargin = true;
                 }
 
                 Canvas.SetTop(this, Math.Max(0, Math.Min(containingPage.Height - this.Height, oldY + currentPos.Y - mousePos.Value.Y)));
-                //if (snapToMargin)
-                //    Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, distanceOfLeftMargin)));
-                //else
+                if (snapToMargin)
+                    Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, distanceOfLeftMargin)));
+                else
                     Canvas.SetLeft(this, Math.Max(0, Math.Min(containingPage.Width - this.Width, oldX + currentPos.X - mousePos.Value.X)));
 
-                if (oldY != Top)
-                    mousePos = new Point(mousePos.Value.X, currentPos.Y);
-                if (oldX != Left)
-                    mousePos = new Point(currentPos.X, mousePos.Value.Y);
+                //if (oldY != Top)
+                //    mousePos = new Point(mousePos.Value.X, currentPos.Y);
+                //if (oldX != Left)
+                //    mousePos = new Point(currentPos.X, mousePos.Value.Y);
             }
         }
 
