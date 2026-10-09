@@ -939,7 +939,10 @@ namespace WID
         private double GetCurrentPage()
         {
             if (spPageView.Children.Count == 0)
+            {
+                currentPage = null;
                 return -1d;
+            }
 
             int pageIndex = 0;
             double verticalOffset = svPageZoom.VerticalOffset/svPageZoom.ZoomFactor + Window.Current.Bounds.Height/(2*svPageZoom.ZoomFactor); // Add half window height because user likely refers to middle page
@@ -1071,6 +1074,9 @@ namespace WID
         private void AddTextToCurrentPage(object sender, RoutedEventArgs e)
         {
             double pageOffset = GetCurrentPage();
+            if (currentPage is null)
+                return;
+
             OnPageText txt = new OnPageText(
                 config!.GetNewTextID(),
                 500d,
