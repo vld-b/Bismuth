@@ -177,17 +177,10 @@ namespace WID
         {
             if (mousePos is not null)
             {
-                double oldHeight = this.Height;
-                double oldWidth = this.Width;
                 Point currentPos = e.GetCurrentPoint(containingPage).Position;
 
-                this.Height = Math.Max(50, Math.Min(containingPage.Height - Top, this.Height + currentPos.Y - mousePos.Value.Y));
-                this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, this.Width + currentPos.X - mousePos.Value.X));
-
-                if (oldWidth != this.Width)
-                    mousePos = new Point(currentPos.X, mousePos.Value.Y);
-                if (oldHeight != this.Height)
-                    mousePos = new Point(mousePos.Value.X, currentPos.Y);
+                this.Height = Math.Max(50, Math.Min(containingPage.Height - Top, oldHeight + currentPos.Y - mousePos.Value.Y));
+                this.Width = Math.Max(50, Math.Min(containingPage.Width - Left, oldWidth + currentPos.X - mousePos.Value.X));
             }
         }
 
