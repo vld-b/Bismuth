@@ -118,6 +118,16 @@ namespace Shared
             return bmp;
         }
 
+        public static async Task<WriteableBitmap> GetWBMPFromFile(StorageFile imgFile)
+        {
+            BitmapImage img = await GetBMPFromFile(imgFile);
+            WriteableBitmap wbmp = new WriteableBitmap(img.PixelWidth, img.PixelHeight);
+            using IRandomAccessStream stream = (await imgFile.OpenStreamForReadAsync()).AsRandomAccessStream();
+            await wbmp.SetSourceAsync(stream);
+
+            return wbmp;
+        }
+
         public static string GetNotebookNameFromFolder(StorageFolder folder)
         {
             return folder.DisplayName[..(folder.DisplayName.Length - 9)];

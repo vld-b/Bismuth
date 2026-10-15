@@ -486,4 +486,10 @@
   <data name="CanvasPageTeachingTipInkCopied" xml:space="preserve">
     <value>Schrift kopiert ✅</value>
   </data>
+  <data name="CanvasPageDropDownAddImageToPage" xml:space="preserve">
+    <value>Bild zur Seite hinzufügen</value>
+  </data>
+  <data name="CanvasPageToolTipAddImageToPage" xml:space="preserve">
+    <value>Fügt ein Bild, das vergrößert, verkleinert und bewegt werden kann, auf der aktuellen Seite hinzu.</value>
+  </data>
 </root>

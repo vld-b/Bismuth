@@ -221,6 +221,18 @@
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D2;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
+                        <MenuFlyoutItem
+                            Click="AddImageToCurrentPage"
+                            Text="{shared:Loc Key=CanvasPageDropDownAddImageToPage}"
+                            ToolTipService.ToolTip="{shared:Loc Key=CanvasPageToolTipAddImageToPage}"
+                            >
+                            <MenuFlyoutItem.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="N" Modifiers="Control" />
+                            </MenuFlyoutItem.KeyboardAccelerators>
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE7AA;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
                     </MenuFlyout>
                 </muxc:DropDownButton.Flyout>
             </muxc:DropDownButton>

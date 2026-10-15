@@ -1541,16 +1541,21 @@ namespace WID
                     svPageZoom,
                     true
                     );
-                currentPage!.AddOnPageItemToPage(opI);
-                opI.ImageGotFocus += FocusedOnPageItem;
-                opI.ImageLostFocus += UnfocusedOnPageItem;
-                pending.AddPendingCreations(opI.FileName);
-                pending.RemovePendingDeletions(opI.FileName);
-                undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, opI, undoRedoSystem));
-
-                ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
-                opI.SetIsSelectable(true);
+                AddImageToPage(opI);
             }
+        }
+
+        private void AddImageToPage(OnPageImage opI)
+        {
+            currentPage!.AddOnPageItemToPage(opI);
+            opI.ImageGotFocus += FocusedOnPageItem;
+            opI.ImageLostFocus += UnfocusedOnPageItem;
+            pending.AddPendingCreations(opI.FileName);
+            pending.RemovePendingDeletions(opI.FileName);
+            undoRedoSystem.AddToUndoStack(new UndoAddOnPageElement(currentPage!, opI, undoRedoSystem));
+
+            ChangeCurrentInkingTool(btObjectTool, new RoutedEventArgs());
+            opI.SetIsSelectable(true);
         }
 
         private async void ExportCurrentPageAsImage(object sender, RoutedEventArgs e)
@@ -2100,6 +2105,47 @@ namespace WID
 
             config!.inkRecognizerLanguage = options.chosenInkLanguage;
             config!.defaultTemplate = new DefaultTemplate(options.chosenPattern);
+        }
+
+        private async void AddImageToCurrentPage(object sender, RoutedEventArgs e)
+        {
+            double pageOffset = GetCurrentPage();
+
+            FileOpenPicker imgFilePicker = new FileOpenPicker
+            {
+                SuggestedStartLocation = PickerLocationId.Downloads,
+                FileTypeFilter =
+                {
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                    ".bmp",
+                    ".gif",
+                },
+            };
+            StorageFile pickedImage = await imgFilePicker.PickSingleFileAsync();
+            if (pickedImage is null)
+                return;
+
+            //using IRandomAccessStream imgStream = (await pickedImage.OpenStreamForReadAsync()).AsRandomAccessStream();
+            //BitmapImage bmp = new BitmapImage();
+            //await bmp.SetSourceAsync(imgStream);
+            //WriteableBitmap wbmp = new WriteableBitmap(bmp.PixelWidth, bmp.PixelHeight);
+            //imgStream.Seek(0);
+            //await wbmp.SetSourceAsync(imgStream);
+
+            WriteableBitmap wbmp = await Utils.GetWBMPFromFile(pickedImage);
+
+            OnPageImage opI = new OnPageImage(
+                config!.GetNewImageID(),
+                Math.Min(pageOffset, currentPage!.Height - 500d),
+                (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
+                wbmp,
+                currentPage!,
+                svPageZoom,
+                true
+                );
+            AddImageToPage(opI);
         }
     }
 
