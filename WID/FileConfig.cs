@@ -175,7 +175,8 @@ namespace WID
 
             if (inkShouldBeSaved || anyTextBoxHasBeenModified || !File.Exists(destFolder.Path + "\\" + "recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json"))
             {
-                await page.CollectText();
+                if ((await page.CollectText()) is null) // chapussyklat
+                    return;
                 StorageFile containtedTextFile = await destFolder.CreateFileAsync("recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json", CreationCollisionOption.ReplaceExisting);
                 await page.recTextCollection.SerializeToFile(containtedTextFile);
             }

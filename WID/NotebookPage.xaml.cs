@@ -157,14 +157,16 @@ namespace WID
             inkCanvas.InkPresenter.StrokesErased += DeletedStrokes;
             currentPattern = null;
 
-            foreach (InkRecognizer rec in recContainer.GetRecognizers())
-            {
-                if (rec.Name == App.AppSettings.defaultInkLanguage)
-                {
-                    recContainer.SetDefaultRecognizer(rec);
-                    break;
-                }
-            }
+            SetInkLanguage(App.AppSettings.defaultInkLanguage);
+
+            //foreach (InkRecognizer rec in recContainer.GetRecognizers())
+            //{
+            //    if (rec.Name == App.AppSettings.defaultInkLanguage)
+            //    {
+            //        recContainer.SetDefaultRecognizer(rec);
+            //        break;
+            //    }
+            //}
 
             this.Unloaded += (s, e) => templateCanvas = null;
             inkPres.UnprocessedInput.PointerPressed += StartLasso;
@@ -490,19 +492,27 @@ namespace WID
             }
         }
 
-        public async Task<RecognizedTextCollection> CollectText()
+        public async Task<RecognizedTextCollection?> CollectText()
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
             if (canvas.InkPresenter.StrokeContainer.GetStrokes().Count == 0)
                 goto afterInkAnalysis;
 
-            IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
-
-            foreach (InkRecognitionResult r in res)
+            try
             {
-                recognizedInk.Add(new RecognizedText(r.GetTextCandidates()[0], SimpleRect.FromRect(r.BoundingRect)));
+                IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+
+                foreach (InkRecognitionResult r in res)
+                {
+                    recognizedInk.Add(new RecognizedText(r.GetTextCandidates()[0], SimpleRect.FromRect(r.BoundingRect)));
+                }
             }
+            catch
+            {
+                return null; // In case recContainer crashes
+            }
+
 
             //InkAnalyzer analyzer = new InkAnalyzer();
             //IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
