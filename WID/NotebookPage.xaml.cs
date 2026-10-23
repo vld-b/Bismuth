@@ -82,20 +82,7 @@ namespace WID
                 if (_selectionMode != value)
                 {
                     _selectionMode = value;
-                    if (_selectionMode == SelectionMode.Lasso)
-                    {
-                        foreach (IOnPageItem onPageItem in onPageItems)
-                            onPageItem.SetIsSelectable(false);
-                        inkCanvas.IsHitTestVisible = true;
-                        inkCanvas.InkPresenter.InputDeviceTypes = App.AppSettings.inputDevices;
-                    }
-                    else if (_selectionMode == SelectionMode.Object)
-                    {
-                        foreach (IOnPageItem onPageItem in onPageItems)
-                            onPageItem.SetIsSelectable(true);
-                        inkCanvas.IsHitTestVisible = false;
-                        inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
-                    }
+                    SetSelectionMode(_selectionMode);
                 }
             }
         }
@@ -682,6 +669,24 @@ namespace WID
             this.RemoveManipulationRect();
         }
         private void DeletedStrokes(InkPresenter sender, InkStrokesErasedEventArgs e) => this.hasBeenModifiedSinceSave = true;
+
+        private void SetSelectionMode(SelectionMode mode)
+        {
+            if (mode == SelectionMode.Lasso)
+            {
+                foreach (IOnPageItem onPageItem in onPageItems)
+                    onPageItem.SetIsSelectable(false);
+                inkCanvas.IsHitTestVisible = true;
+                inkCanvas.InkPresenter.InputDeviceTypes = App.AppSettings.inputDevices;
+            }
+            else if (mode == SelectionMode.Object)
+            {
+                foreach (IOnPageItem onPageItem in onPageItems)
+                    onPageItem.SetIsSelectable(true);
+                inkCanvas.IsHitTestVisible = false;
+                inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.None;
+            }
+        }
 
         private void StartLasso(InkUnprocessedInput sender, Windows.UI.Core.PointerEventArgs e)
         {
