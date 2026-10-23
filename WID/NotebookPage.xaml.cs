@@ -513,21 +513,6 @@ namespace WID
                 return null; // In case recContainer crashes
             }
 
-
-            //InkAnalyzer analyzer = new InkAnalyzer();
-            //IReadOnlyList<InkStroke> strokesToBeAnalyzed = canvas.InkPresenter.StrokeContainer.GetStrokes();
-            //analyzer.AddDataForStrokes(strokesToBeAnalyzed);
-            //foreach (InkStroke stroke in strokesToBeAnalyzed)
-            //    analyzer.SetStrokeDataKind(stroke.Id, InkAnalysisStrokeKind.Writing);
-            //InkAnalysisResult result = await analyzer.AnalyzeAsync();
-
-            //IReadOnlyList<IInkAnalysisNode> words = analyzer.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
-            //foreach (IInkAnalysisNode word in words)
-            //{
-            //    InkAnalysisInkWord inkWord = (InkAnalysisInkWord)word;
-            //    recognizedInk.Add(new RecognizedText(inkWord.RecognizedText, SimpleRect.FromRect(inkWord.BoundingRect)));
-            //}
-
         afterInkAnalysis:
 
             List<RecognizedText> textFromTextboxes = new List<RecognizedText>();
