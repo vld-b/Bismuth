@@ -1532,21 +1532,21 @@ namespace WID
                     await wbmp.SetSourceAsync(randomStream);
                 }
 
-                OnPageImage opI = new OnPageImage(
-                    config!.GetNewImageID(),
-                    Math.Min(pageOffset, currentPage!.Height - 500d),
-                    (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
-                    wbmp,
-                    currentPage!,
-                    svPageZoom,
-                    true
-                    );
-                AddImageToPage(opI);
+                AddImageToPage(wbmp, pageOffset);
             }
         }
 
-        private void AddImageToPage(OnPageImage opI)
+        private void AddImageToPage(WriteableBitmap wbmp, double pageOffset)
         {
+            OnPageImage opI = new OnPageImage(
+                config!.GetNewImageID(),
+                Math.Min(pageOffset, currentPage!.Height - 500d),
+                (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
+                wbmp,
+                currentPage!,
+                svPageZoom,
+                true
+                );
             currentPage!.AddOnPageItemToPage(opI);
             opI.ImageGotFocus += FocusedOnPageItem;
             opI.ImageLostFocus += UnfocusedOnPageItem;
@@ -2136,16 +2136,7 @@ namespace WID
 
             WriteableBitmap wbmp = await Utils.GetWBMPFromFile(pickedImage);
 
-            OnPageImage opI = new OnPageImage(
-                config!.GetNewImageID(),
-                Math.Min(pageOffset, currentPage!.Height - 500d),
-                (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
-                wbmp,
-                currentPage!,
-                svPageZoom,
-                true
-                );
-            AddImageToPage(opI);
+            AddImageToPage(wbmp, pageOffset);
         }
     }
 
