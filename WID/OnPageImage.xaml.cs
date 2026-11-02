@@ -50,8 +50,17 @@ namespace WID
             this.wbmp = imgSource;
             this.img.Source = imgSource;
             widthToHeight = (double)imgSource.PixelWidth / (double)imgSource.PixelHeight;
-            this.Height = 500d;
-            this.Width = this.Height * widthToHeight;
+
+            double newWidth = 500d * widthToHeight;
+            if (newWidth > containingPage.Width)
+            {
+                this.Width = containingPage.Width;
+                this.Height = this.Width / widthToHeight;
+            } else
+            {
+                this.Height = 500d;
+                this.Width = this.Height * widthToHeight;
+            }
 
             this.containingPage = containingPage;
             this.pageContainer = pageContainer;

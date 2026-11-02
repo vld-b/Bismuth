@@ -1541,7 +1541,7 @@ namespace WID
             OnPageImage opI = new OnPageImage(
                 config!.GetNewImageID(),
                 Math.Min(pageOffset, currentPage!.Height - 500d),
-                (currentPage!.Width - wbmp.PixelWidth * 500d / wbmp.PixelHeight) * .5d,
+                0.0d,
                 wbmp,
                 currentPage!,
                 svPageZoom,
