@@ -82,8 +82,6 @@ namespace WID
         private PageState pageState;
         private List<RecoloredStroke>? recoloredStrokes;
 
-        private Task? savingTask;
-
         private NotebookPage? currentPage;
         private int currentPageIndex = -1;
         private NotebookPage? pageToScrollTo;
@@ -252,16 +250,11 @@ namespace WID
 
         private async Task SaveFileSafe()
         {
-            if (savingTask == null)
-            {
-                await HaltPeriodicSave(); // Make sure previous save is finished or cancelled the wait
+            await HaltPeriodicSave(); // Make sure previous save is finished or cancelled the wait
 
-                savingTask = SaveFileWithDialog();
-                await savingTask;
-                savingTask = null;
+            await SaveFileWithDialog();
 
-                ResumePeriodicSave();
-            }
+            ResumePeriodicSave();
         }
 
         private async Task SaveFileWithDialog()
