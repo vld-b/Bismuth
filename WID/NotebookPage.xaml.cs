@@ -63,6 +63,9 @@ namespace WID
 
         public UndoRedoSystem undoRedoSystem { get; private set; }
 
+        // This canvas will have data cloned to it when saving, and this will be used to save data and analyze ink strokes without affecting the main canvas.
+        private InkCanvas? cloneCanvas;
+
         private Polyline? selectionLasso;
         private DateTime lassoAnimationStart;
         private bool isClockwiseLasso = false;
@@ -479,16 +482,33 @@ namespace WID
             }
         }
 
+        // Clone items before saving so saving doesn't interfere with main canvas
+        public void CloneItems()
+        {
+            cloneCanvas = new InkCanvas();
+            foreach (InkStroke stroke in inkPres.StrokeContainer.GetStrokes())
+            {
+                cloneCanvas.InkPresenter.StrokeContainer.AddStroke(stroke.Clone());
+            }
+        }
+
+        public void ClearClones()
+        {
+            cloneCanvas = null;
+        }
+
         public async Task<RecognizedTextCollection?> CollectText()
         {
             List<RecognizedText> recognizedInk = new List<RecognizedText>();
 
-            if (canvas.InkPresenter.StrokeContainer.GetStrokes().Count == 0)
+            InkCanvas activeCanvas = cloneCanvas ?? canvas;
+
+            if (activeCanvas.InkPresenter.StrokeContainer.GetStrokes().Count == 0)
                 goto afterInkAnalysis;
 
             try
             {
-                IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(canvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+                IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(activeCanvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
 
                 foreach (InkRecognitionResult r in res)
                 {
@@ -651,15 +671,22 @@ namespace WID
                 await this.LoadFromStream(stream);
         }
 
-        public async Task SaveToStream(IOutputStream stream)
+        public async Task SaveToStream(IOutputStream stream, bool useCloneIfAvailable)
         {
-            await inkPres.StrokeContainer.SaveAsync(stream);
+            if (cloneCanvas is not null && useCloneIfAvailable)
+            {
+                await cloneCanvas.InkPresenter.StrokeContainer.SaveAsync(stream);
+            }
+            else
+            {
+                await inkPres.StrokeContainer.SaveAsync(stream);
+            }
         }
 
-        public async Task SaveToFile(StorageFile file)
+        public async Task SaveToFile(StorageFile file, bool useCloneIfAvailable)
         {
             using (IOutputStream stream = (await file.OpenStreamForWriteAsync()).AsOutputStream())
-                await this.SaveToStream(stream);
+                await this.SaveToStream(stream, useCloneIfAvailable);
         }
 
         private void StartedDrawingInk(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs e)

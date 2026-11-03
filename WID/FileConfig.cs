@@ -88,11 +88,13 @@ namespace WID
 
         public async Task AddPageWhileSaving(NotebookPage page, StorageFolder destFolder, StorageFolder originFolder, bool isExporting)
         {
+            page.CloneItems();
+
             bool inkShouldBeSaved = page.hasBeenModifiedSinceSave;
             if (page.hasBeenModifiedSinceSave || isExporting)
             {
                 StorageFile pageFile = await destFolder.CreateFileAsync("page" + (page.id == 0 ? "" : " (" + page.id + ")") + ".gif", CreationCollisionOption.OpenIfExists);
-                await page.SaveToFile(pageFile);
+                await page.SaveToFile(pageFile, !isExporting);
                 page.hasBeenModifiedSinceSave = false;
             }
             if (isExporting && page.hasBg)
@@ -180,6 +182,8 @@ namespace WID
                 StorageFile containtedTextFile = await destFolder.CreateFileAsync("recText" + (page.id == 0 ? "" : (" (" + page.id + ")")) + ".json", CreationCollisionOption.ReplaceExisting);
                 await page.recTextCollection.SerializeToFile(containtedTextFile);
             }
+
+            page.ClearClones();
         }
 
         public async Task<NotebookPage> LoadPage(
