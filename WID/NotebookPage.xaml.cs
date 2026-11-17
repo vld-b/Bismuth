@@ -53,7 +53,8 @@ namespace WID
         public string bgFileName { get => "bg" + (id == 0 ? "" : (" (" + id + ")")) + ".png"; }
         public List<IOnPageItem> onPageItems { get; private set; } = new List<IOnPageItem>();
         public RecognizedTextCollection recTextCollection { get; set; } = new RecognizedTextCollection();
-        InkRecognizerContainer recContainer = new InkRecognizerContainer();
+        private InkRecognizerContainer recContainer = new InkRecognizerContainer();
+        private InkAnalyzer inkAnal = new InkAnalyzer();
 
         public Canvas contentCanvas { get; private set; }
         public InkCanvas canvas { get; private set; }
@@ -508,11 +509,17 @@ namespace WID
 
             try
             {
-                IReadOnlyList<InkRecognitionResult> res = await recContainer.RecognizeAsync(activeCanvas.InkPresenter.StrokeContainer, InkRecognitionTarget.All);
+                inkAnal.ClearDataForAllStrokes();
+                inkAnal.AddDataForStrokes(activeCanvas.InkPresenter.StrokeContainer.GetStrokes());
+                InkAnalysisResult res = await inkAnal.AnalyzeAsync();
 
-                foreach (InkRecognitionResult r in res)
+                if (res.Status == InkAnalysisStatus.Updated)
                 {
-                    recognizedInk.Add(new RecognizedText(r.GetTextCandidates()[0], SimpleRect.FromRect(r.BoundingRect)));
+                    IReadOnlyList<IInkAnalysisNode> analNodes = inkAnal.AnalysisRoot.FindNodes(InkAnalysisNodeKind.InkWord);
+                    foreach (InkAnalysisInkWord node in analNodes)
+                    {
+                        recognizedInk.Add(new RecognizedText(node.RecognizedText, SimpleRect.FromRect(node.BoundingRect)));
+                    }
                 }
             }
             catch
