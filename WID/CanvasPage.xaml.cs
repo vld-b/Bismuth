@@ -474,7 +474,7 @@ namespace WID
                     //spPageView.Children.Insert(i, page);
                     //spPageView.Children.Add(page);
 
-                    pbFileStatus.Value = i + 1;
+                    pbFileStatus.Value = config!.pageMapping.Count - i;
                 }
             } else
             {
