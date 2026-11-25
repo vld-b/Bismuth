@@ -160,6 +160,11 @@ namespace WID
                         HorizontalAlignmentRatio = .5d,
                     }
                     );
+                ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
+                if (anim is not null)
+                {
+                    anim.TryStart(spPageView.Children.Last());
+                }
             } else
             {
                 foreach (NotebookPage p in spPageView.Children)
@@ -450,7 +455,7 @@ namespace WID
                 {
                     NotebookPage page = (NotebookPage)spPageView.Children[i];
                     await config.LoadPage(page, file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
-                    page.Unload();
+                    //page.Unload();
 
                     if (config is null)
                         return;
@@ -459,8 +464,13 @@ namespace WID
                     {
                         page.LayoutUpdated += ScrollToLastPage;
                         pageToScrollTo = page;
-                    } else if (i == config.pageMapping.Count - 1 && !customNavigationNeeded)
+                    }
+                    else if (i == config.pageMapping.Count - 1 && !customNavigationNeeded)
+                    {
                         pageToScrollTo = page;
+                        page.LayoutUpdated += ScrollToLastPage;
+                        page.UpdateLayout();
+                    }
 
                     undoRedoSystem.RegisterPageToSystem(page, spPageView);
 
@@ -469,10 +479,6 @@ namespace WID
 
                     else
                         this.Loaded += (s, e) => page.SetupForDrawing(attrs, currentInkingTool);
-
-                    //spPageView.Children.RemoveAt(i);
-                    //spPageView.Children.Insert(i, page);
-                    //spPageView.Children.Add(page);
 
                     pbFileStatus.Value = config!.pageMapping.Count - i;
                 }
@@ -497,19 +503,8 @@ namespace WID
                     this.Loaded += async (s, e) => await AddPage();
             }
 
+            finishedLoading = true;
 
-            if (pageToScrollTo is not null && !customNavigationNeeded)
-            {
-                pageToScrollTo.LayoutUpdated += ScrollToLastPage;
-                ConnectedAnimation anim = ConnectedAnimationService.GetForCurrentView().GetAnimation("OpenNotebook");
-                if (anim is not null)
-                {
-                    anim.TryStart(spPageView.Children.Last());
-                }
-            } else
-            {
-                finishedLoading = true;
-            }
             HideFileStatus();
 
             undoRedoSystem.FlushStacks();

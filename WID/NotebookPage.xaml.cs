@@ -597,11 +597,13 @@ namespace WID
 
             if (this.Children[0] is CanvasControl)
                 this.Children.RemoveAt(0);
+
             CanvasControl c = new CanvasControl
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
             };
+            c.CreateResources += _currPattern!.CreateResources;
             c.Draw += _currPattern!.DrawOnCanvas;
             this.templateCanvas = c;
         }

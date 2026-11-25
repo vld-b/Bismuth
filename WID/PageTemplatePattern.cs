@@ -1,5 +1,7 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -10,6 +12,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Media.Protection;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
 
@@ -189,6 +192,8 @@ namespace WID
         [JsonIgnore]
         public EventHandler? TemplatePropertiesChanged { get; set; }
 
+        private CanvasCommandList? cmd;
+
         public PageTemplatePattern()
         {
             this.type = PatternType.Empty;
@@ -221,20 +226,28 @@ namespace WID
             return newTemp;
         }
 
-        public void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        public void CreateResources(CanvasControl c, CanvasCreateResourcesEventArgs args)
         {
-            switch (_type) {
+            cmd = new CanvasCommandList(c);
+            CanvasDrawingSession ds = cmd.CreateDrawingSession();
+            switch (_type)
+            {
                 case PatternType.Lines:
-                    DrawLinesOnCanvas(c, args);
+                    DrawLinesOnCanvas(c, new CanvasDrawEventArgs(ds));
                     break;
                 case PatternType.Grid:
-                    DrawGridOnCanvas(c, args);
+                    DrawGridOnCanvas(c, new CanvasDrawEventArgs(ds));
                     break;
                 case PatternType.Dots:
-                    DrawDotsOnCanvas(c, args);
+                    DrawDotsOnCanvas(c, new CanvasDrawEventArgs(ds));
                     break;
             }
-            DrawMargins(c, args);
+            DrawMargins(c, new CanvasDrawEventArgs(ds));
+        }
+
+        public void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
+        {
+            args.DrawingSession.DrawImage(cmd);
         }
 
         protected void DrawMargins(CanvasControl c, CanvasDrawEventArgs args)
