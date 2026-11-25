@@ -15,7 +15,7 @@
     <Version>$(AssemblyVersion)</Version>
     <AssemblyName></AssemblyName>
     <UseWPF>False</UseWPF>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.1.5</VersionPrefix>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
