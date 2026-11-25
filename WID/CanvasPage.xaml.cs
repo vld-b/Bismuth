@@ -439,7 +439,17 @@ namespace WID
 
                 for (int i = 0; i < config!.pageMapping.Count; ++i)
                 {
-                    NotebookPage page = await config.LoadPage(file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
+                    spPageView.Children.Add(new NotebookPage
+                    {
+                        Width = 2100,
+                        Height = 2970,
+                    });
+                }
+
+                for (int i = config!.pageMapping.Count-1; 0 <= i; --i) // Load pages backwards because user sees last page first
+                {
+                    NotebookPage page = (NotebookPage)spPageView.Children[i];
+                    await config.LoadPage(page, file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
                     page.Unload();
 
                     if (config is null)
@@ -459,7 +469,10 @@ namespace WID
 
                     else
                         this.Loaded += (s, e) => page.SetupForDrawing(attrs, currentInkingTool);
-                    spPageView.Children.Add(page);
+
+                    //spPageView.Children.RemoveAt(i);
+                    //spPageView.Children.Insert(i, page);
+                    //spPageView.Children.Add(page);
 
                     pbFileStatus.Value = i + 1;
                 }

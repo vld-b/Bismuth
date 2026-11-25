@@ -185,6 +185,7 @@ namespace WID
         }
 
         public async Task<NotebookPage> LoadPage(
+            NotebookPage page,
             StorageFolder folder,
             int pageIndex,
             ScrollViewer scrollViewer,
@@ -195,7 +196,6 @@ namespace WID
             )
         {
             StorageFile ink = await folder.GetFileAsync(pageMapping[pageIndex].fileName);
-            NotebookPage page;
 
             if (pageMapping[pageIndex].hasBg)
             {
@@ -203,11 +203,11 @@ namespace WID
                     await folder.GetFileAsync(pageMapping[pageIndex].BgName),
                     (int)pageMapping[pageIndex].width
                     );
-                page = new NotebookPage(pageMapping[pageIndex].id, bgImage, undoRedoSystem, pageState);
+                page.Rebuild(pageMapping[pageIndex].id, bgImage, undoRedoSystem, pageState);
             }
             else
             {
-                page = new NotebookPage(
+                page.Rebuild(
                     pageMapping[pageIndex].id,
                     pageMapping[pageIndex].width,
                     pageMapping[pageIndex].height,
