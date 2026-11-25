@@ -15,7 +15,7 @@
     <Version>$(AssemblyVersion)</Version>
     <AssemblyName></AssemblyName>
     <UseWPF>False</UseWPF>
-    <VersionPrefix>0.1.5</VersionPrefix>
+    <VersionPrefix>0.1.6</VersionPrefix>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
@@ -32,7 +32,7 @@
     <PackageProjectUrl>https://github.com/vld-b/Bismuth</PackageProjectUrl>
     <PackageIcon>icon128x128.png</PackageIcon>
     <RepositoryUrl>https://github.com/vld-b/Bismuth</RepositoryUrl>
-    <PackageCertificateThumbprint>36F1F1D6EC9D005A2DEC5B665040F708DF2EEA0E</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>0170414422C2AC0453A830A17A687A0BB2CFFD98</PackageCertificateThumbprint>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
