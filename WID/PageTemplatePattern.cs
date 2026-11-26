@@ -194,6 +194,9 @@ namespace WID
 
         private CanvasCommandList? cmd;
 
+        [JsonIgnore]
+        public TaskCompletionSource drawingTask { get; private set; } = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
         public PageTemplatePattern()
         {
             this.type = PatternType.Empty;
@@ -248,6 +251,7 @@ namespace WID
         public void DrawOnCanvas(CanvasControl c, CanvasDrawEventArgs args)
         {
             args.DrawingSession.DrawImage(cmd);
+            drawingTask.TrySetResult();
         }
 
         protected void DrawMargins(CanvasControl c, CanvasDrawEventArgs args)

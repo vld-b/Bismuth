@@ -455,7 +455,9 @@ namespace WID
                 {
                     NotebookPage page = (NotebookPage)spPageView.Children[i];
                     await config.LoadPage(page, file!, i, svPageZoom, FocusedOnPageItem, UnfocusedOnPageItem, undoRedoSystem, pageState);
-                    //page.Unload();
+                    if (page.currentPattern is not null)
+                        await page.currentPattern.drawingTask.Task;
+                    page.Unload();
 
                     if (config is null)
                         return;
