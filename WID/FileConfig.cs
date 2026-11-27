@@ -195,24 +195,26 @@ namespace WID
             PageState pageState
             )
         {
-            StorageFile ink = await folder.GetFileAsync(pageMapping[pageIndex].fileName);
+            PageConfig currentConfig = pageMapping[pageIndex];
 
-            if (pageMapping[pageIndex].hasBg)
+            StorageFile ink = await folder.GetFileAsync(currentConfig.fileName);
+
+            if (currentConfig.hasBg)
             {
                 BitmapImage bgImage = await Utils.GetBMPFromFileWithWidth(
-                    await folder.GetFileAsync(pageMapping[pageIndex].BgName),
-                    (int)pageMapping[pageIndex].width
+                    await folder.GetFileAsync(currentConfig.BgName),
+                    (int)currentConfig.width
                     );
-                page.Rebuild(pageMapping[pageIndex].id, bgImage, undoRedoSystem, pageState);
+                page.Rebuild(currentConfig.id, bgImage, undoRedoSystem, pageState);
             }
             else
             {
                 page.Rebuild(
-                    pageMapping[pageIndex].id,
-                    pageMapping[pageIndex].width,
-                    pageMapping[pageIndex].height,
-                    pageMapping[pageIndex].pagePattern,
-                    pageMapping[pageIndex].hasTemplate,
+                    currentConfig.id,
+                    currentConfig.width,
+                    currentConfig.height,
+                    currentConfig.pagePattern,
+                    currentConfig.hasTemplate,
                     undoRedoSystem,
                     pageState
                     );
@@ -226,7 +228,7 @@ namespace WID
             else
                 page.recTextCollection = new RecognizedTextCollection();
 
-            foreach (TextData textData in pageMapping[pageIndex].textBoxes)
+            foreach (TextData textData in currentConfig.textBoxes)
             {
                 OnPageText txt = new OnPageText(
                     textData.id,
@@ -248,7 +250,7 @@ namespace WID
                 txt.TextBoxLostFocus += unfocusedOnPageItem;
             }
 
-            foreach (ImageData imgData in pageMapping[pageIndex].images)
+            foreach (ImageData imgData in currentConfig.images)
             {
                 StorageFile imgFile = await folder.GetFileAsync("img" + (imgData.id == 0 ? "" : (" (" + imgData.id + ")")) + ".jpg");
                 BitmapImage bmp = await Utils.GetBMPFromFile(imgFile);
