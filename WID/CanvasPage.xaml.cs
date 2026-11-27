@@ -910,8 +910,8 @@ namespace WID
                 pageThumb.page.inkPres.StrokeContainer = page.inkPres.StrokeContainer;
                 pageThumb.page.RenderTransform = new ScaleTransform
                 {
-                    ScaleX = 176 / page.Width,
-                    ScaleY = 264 / page.Height,
+                    ScaleX = 176.0d / page.Width,
+                    ScaleY = 264.0d / page.Height,
                     CenterX = 0,
                     CenterY = 0,
                 };
