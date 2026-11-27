@@ -253,6 +253,7 @@ namespace WID
 
                 IRandomAccessStream stream = await (await streamTask);
                 txt.LoadFromStream(stream);
+                txt.hasBeenModifiedSinceSave = false;
             }
 
             foreach (ImageData imgData in currentConfig.images)

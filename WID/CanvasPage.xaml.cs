@@ -200,8 +200,6 @@ namespace WID
                 await Task.Delay(1000);
                 await page.HighlightText(searchNav.searchKeyword, searchNav.recText);
             }
-
-            finishedLoading = true;
         }
 
         private void ShowFileStatus()
@@ -396,6 +394,9 @@ namespace WID
 
         private void AdjustLoadedPages(object sender, ScrollViewerViewChangedEventArgs e)
         {
+            if (!finishedLoading)
+                return;
+
             GetCurrentPage();
 
             for (int i = -10; i < 11; ++i)
