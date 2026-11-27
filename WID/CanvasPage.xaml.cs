@@ -512,6 +512,8 @@ namespace WID
             HideFileStatus();
 
             undoRedoSystem.FlushStacks();
+
+            InitializeThumbnails();
         }
 
         private async void AddPageClicked(object sender, RoutedEventArgs e)
@@ -893,12 +895,16 @@ namespace WID
         {
             svPageOverview.IsPaneOpen = !svPageOverview.IsPaneOpen;
             ((ToggleButton)sender).IsChecked = svPageOverview.IsPaneOpen;
-            gvThumbnails.Items.Clear();
             if (!svPageOverview.IsPaneOpen)
             {
                 btExport.Visibility = Visibility.Collapsed;
                 return;
             }
+        }
+
+        private void InitializeThumbnails()
+        {
+            gvThumbnails.Items.Clear();
             foreach (NotebookPage page in spPageView.Children)
             {
                 PageThumbnail pageThumb;
