@@ -129,6 +129,7 @@ namespace WID
 
         private UIElement[]? storedElements;
         public bool isLoaded { get; private set; } = true;
+        public bool hasFinishedLoadingFromConfig = false;
 
         public NotebookPage()
         {

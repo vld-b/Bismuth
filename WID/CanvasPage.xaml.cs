@@ -394,9 +394,6 @@ namespace WID
 
         private void AdjustLoadedPages(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            if (!finishedLoading)
-                return;
-
             GetCurrentPage();
 
             for (int i = -10; i < 11; ++i)
@@ -405,6 +402,9 @@ namespace WID
                 if (0 <= currentlyEvaluatingPageIndex && currentlyEvaluatingPageIndex < spPageView.Children.Count)
                 {
                     NotebookPage currentlyEvaluatingPage = (NotebookPage)spPageView.Children[currentlyEvaluatingPageIndex];
+                    if (!currentlyEvaluatingPage.hasFinishedLoadingFromConfig)
+                        continue;
+
                     if (-3 < i && i < 3)
                         currentlyEvaluatingPage.Load();
                     else
@@ -459,6 +459,7 @@ namespace WID
                     if (page.currentPattern is not null)
                         await page.currentPattern.drawingTask.Task;
                     page.Unload();
+                    page.hasFinishedLoadingFromConfig = true;
 
                     if (config is null)
                         return;
