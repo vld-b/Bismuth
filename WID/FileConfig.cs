@@ -230,12 +230,6 @@ namespace WID
 
             foreach (TextData textData in currentConfig.textBoxes)
             {
-                Task<Task<IRandomAccessStream>> streamTask =
-                    folder.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf")
-                    .AsTask<StorageFile>().ContinueWith<Task<IRandomAccessStream>>(async (t) =>
-                {
-                    return await (await t).OpenAsync(FileAccessMode.Read);
-                });
 
                 OnPageText txt = new OnPageText(
                     textData.id,
@@ -246,14 +240,15 @@ namespace WID
                     page,
                     scrollViewer
                     );
-
+                using (IRandomAccessStream stream = await
+                    (await folder.GetFileAsync("text" + (textData.id == 0 ? "" : (" (" + textData.id + ")")) + ".rtf"))
+                    .OpenAsync(FileAccessMode.Read))
+                {
+                    txt.LoadFromStream(stream);
+                }
                 page.AddOnPageItemToPage(txt);
                 txt.TextBoxGotFocus += focusedOnPageItem;
                 txt.TextBoxLostFocus += unfocusedOnPageItem;
-
-                IRandomAccessStream stream = await (await streamTask);
-                txt.LoadFromStream(stream);
-                txt.hasBeenModifiedSinceSave = false;
             }
 
             foreach (ImageData imgData in currentConfig.images)
